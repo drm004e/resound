@@ -46,9 +46,10 @@ IMPLEMENT_APP(ResoundClientApp)
 
 bool ResoundClientApp::OnInit()
 {
+	wxInitAllImageHandlers();
 	try {
 		DEBUG_TRACE(_T("ResoundClientApp::OnInit"));
-		MainFrame *win = new MainFrame(_T("Resound Client"), wxPoint (100, 100),wxSize(450, 340));
+		MainFrame *win = new MainFrame(_T("Resound Client"), wxPoint (100, 100),wxSize(0, 0));
 		win->Show(TRUE);
 		SetTopWindow(win);
 

@@ -79,7 +79,7 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 
 	wxTextCtrl *netLog = new wxTextCtrl(rightBook, wxID_ANY,
 	                                    _T("Netlog...\n"),
-	                                    wxPoint(0,0), wxSize(300,450),
+	                                    wxPoint(0,0), wxSize(300,100),
 	                                    wxTE_MULTILINE | wxTE_READONLY);
 
 	rightBook->AddPage(netLog,_T("Network Console"),true);

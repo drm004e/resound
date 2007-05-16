@@ -35,8 +35,8 @@ SA::StaticVUMeterWidget::StaticVUMeterWidget(wxWindow *parent,int id,int _val, i
 {
 	SetWindowStyle(wxCLIP_CHILDREN);
 	// insert your code here
-	bmMeterOff.LoadFile(offFilename,wxBITMAP_TYPE_BMP);
-	bmMeterOn.LoadFile(onFilename,wxBITMAP_TYPE_BMP);
+	bmMeterOff.LoadFile(offFilename,wxBITMAP_TYPE_PNG);
+	bmMeterOn.LoadFile(onFilename,wxBITMAP_TYPE_PNG);
 	dcMeterOff.SelectObject(bmMeterOff);
 	dcMeterOn.SelectObject(bmMeterOn);
 

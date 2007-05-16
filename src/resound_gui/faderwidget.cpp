@@ -38,8 +38,8 @@ SA::FaderWidget::FaderWidget(wxWindow *parent, int id, int _val, int _min, int _
 		: wxControl(parent, id,wxPoint(0,0), wxSize(0,0))
 {
 	// insert your code here
-	bmFaderBack.LoadFile(_("image/faderBack.png"),wxBITMAP_TYPE_BMP);
-	bmFaderKnob.LoadFile(_("image/faderKnob.png"),wxBITMAP_TYPE_BMP);
+	bmFaderBack.LoadFile(_("image/faderBack.png"),wxBITMAP_TYPE_PNG);
+	bmFaderKnob.LoadFile(_("image/faderKnob.png"),wxBITMAP_TYPE_PNG);
 	dcFaderBack.SelectObject(bmFaderBack);
 	dcFaderKnob.SelectObject(bmFaderKnob);
 
