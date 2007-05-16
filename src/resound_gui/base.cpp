@@ -18,26 +18,26 @@
  *   MA 02111-1307 USA
  *   
 */
-#include "sa_cpch.h" // precompiler header
+#include "pch.h" // precompiler header
 
-#include "sa_automation.h"
-#include "sa_pvar.h"
-#include "sa_behaviour.h"
-#include "sa_basebehaviour.h"
+#include "automation.h"
+#include "pvar.h"
+#include "behaviour.h"
+#include "basebehaviour.h"
 
 // view classes
-#include "sa_vumeterwidget.h"
-#include "sa_faderwidget.h"
-#include "sa_pvarwidgets.h"
-#include "sa_masterfader.h"
-#include "sa_performanceview.h"
+#include "vumeterwidget.h"
+#include "faderwidget.h"
+#include "pvarwidgets.h"
+#include "masterfader.h"
+#include "performanceview.h"
 
-#include "sa_comms.h"
-#include "sa_amclient.h"
-#include "sa_monitorview.h"
-#include "sa_behaviourView.h"
+#include <resound_common/comms.h>
+#include "amclient.h"
+#include "monitorview.h"
+#include "behaviourview.h"
 
-#include "sa_base.h"
+#include "base.h"
 
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)
@@ -99,6 +99,8 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 	SA::PVarSubSystemManager::GetSingleton().RegisterPVarSubSystem(theBehaviourManager);
 
 	// setup midi system
+	/* this system is undefined in linux!! FIXME
+
 	MIDIDeviceNameArray& inNames = MManager::GetSingleton().GetInputDeviceNames();
 	MIDIDeviceNameArray& outNames = MManager::GetSingleton().GetOutputDeviceNames();
 
@@ -110,6 +112,7 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 		netLog->AppendText(wxString(_T(" MIDI output device found: ")) + wxString(outNames[n].c_str())+ wxString(_T("\n")));
 		MManager::GetSingleton().OpenOutputDevice(n);
 	}
+	*/
 
 	// add any behaviours
 	// eventually load plugins!

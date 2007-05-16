@@ -26,7 +26,7 @@
 #endif
 
 #ifndef __ARRAY2__ // redundant include guard // improves compile time
-#include <Array2.h>
+#include "array2.h"
 #endif
 // -----------------
 

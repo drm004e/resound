@@ -18,18 +18,18 @@
  *   MA 02111-1307 USA
  *   
 */
-#include "sa_cpch.h" // precompiler header
+#include "pch.h" // precompiler header
 
-#include "sa_comms.h"
-#include "sa_automation.h"
-#include "sa_pvar.h"
-#include "sa_vumeterwidget.h"
-#include "sa_faderwidget.h"
-#include "sa_pvarwidgets.h"
-#include "sa_util.h"
+#include <resound_common/comms.h>
+#include "automation.h"
+#include "pvar.h"
+#include "vumeterwidget.h"
+#include "faderwidget.h"
+#include "pvarwidgets.h"
+#include "util.h"
 
-#include "sa_app.h"
-#include "sa_amclient.h" // classes header
+#include "app.h"
+#include "amclient.h" // classes header
 
 // AMPVar -------------------------------------------------------------------------------------
 SA::AMPVar::AMPVar()

@@ -17,7 +17,7 @@
 //   MA 02111-1307 USA
 //   
 // cant have precompiled header becuase of shared nature between projects
-#include "sa_comms.h"
+#include "comms.h"
 
 // ---------------------- Packets -----------------------------
 void SA::SendPacket(wxSocketBase* socket, Packet* packet)

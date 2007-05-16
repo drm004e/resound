@@ -22,7 +22,7 @@
 #define SA_MONITORFRAME_H
 
 #include <wx/wx.h> // inheriting class's header file
-#include "sa_monitorView.h"
+#include "monitorview.h"
 
 namespace SA
 {

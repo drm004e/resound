@@ -31,8 +31,8 @@ class PVarLockPreset
 public:
 	PVarLockPreset();
 	~PVarLockPreset();
-	void Save(wxDateOuputStream& stream);
-	void Load(wxDateInputStream& stream);
+	void Save(wxDataOutputStream& stream);
+	void Load(wxDataInputStream& stream);
 private:
 	PVarAddress addr;
 	int value;
@@ -44,8 +44,8 @@ class MasterFaderPreset
 public:
 	MasterFaderPreset();
 	~MasterFaderPreset();
-	void Save(wxDateOuputStream& stream);
-	void Load(wxDateInputStream& stream);
+	void Save(wxDataOutputStream& stream);
+	void Load(wxDataInputStream& stream);
 private:
 	int value;
 	Collective target;
@@ -60,8 +60,8 @@ public:
 	PerformancePreset();
 	// class destructor
 	~PerformancePreset();
-	void Save(wxDateOuputStream& stream);
-	void Load(wxDateInputStream& stream);
+	void Save(wxDataOutputStream& stream);
+	void Load(wxDataInputStream& stream);
 private:
 	std::vector<MasterFaderPreset> masterFaderPresetArray;
 	std::vector<PVarLockPreset> pVarLockPresetArray;
@@ -76,8 +76,8 @@ public:
 	Performance();
 	// class destructor
 	~Performance();
-	void Save(wxDateOuputStream& stream);
-	void Load(wxDateInputStream& stream);
+	void Save(wxDataOutputStream& stream);
+	void Load(wxDataInputStream& stream);
 private:
 	std::vector<PerformancePreset> presetArray;
 };

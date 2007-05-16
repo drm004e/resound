@@ -22,7 +22,7 @@
 #define SA_MASTERFADER_H
 
 #ifndef __MManager__
-    #include "sa_mmanager.h"
+    #include "mmanager.h"
 #endif
 
 namespace SA

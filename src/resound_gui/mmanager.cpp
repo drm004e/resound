@@ -18,27 +18,27 @@
  *   MA 02111-1307 USA
  *   
 */
-#include "sa_cpch.h"
+#include "pch.h"
 
 #ifdef __WIN32__
-    #include "sa_mmanagerwin32.h" // windows platform include
+    #include "mmanagerwin32.h" // windows platform include
 #endif
 
-#include "sa_exception.h"
+#include <resound_common/exception.h>
 
-#include "sa_mmanager.h"
+#include "mmanager.h"
 
 // ------------------------------------- MListener ---------------------------
 MListener::MListener()
 {
 	// Construct
-	MManager::GetSingleton().RegisterMListener(this);
+	//MManager::GetSingleton().RegisterMListener(this); // linux midi incomplete FIXME
 }
 
 MListener::~MListener()
 {
 	// Destruct
-	MManager::GetSingleton().UnregisterMListener(this);
+	//MManager::GetSingleton().UnregisterMListener(this); // linux midi incomplete FIXME
 }
 
 // ------------------------------------ Functions -----------------------------

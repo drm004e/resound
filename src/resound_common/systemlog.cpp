@@ -20,7 +20,7 @@
 
 #include <wx/wfstream.h>
 #include <wx/txtstrm.h>
-#include "sa_systemlog.h" // class's header file
+#include "systemlog.h" // class's header file
 
 namespace SA
 {

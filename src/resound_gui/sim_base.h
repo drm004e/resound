@@ -21,7 +21,7 @@
 #ifndef __BASE_H
 #define __BASE_H
 
-#include "sa_audiomatrix.h"
+#include "audiomatrix.h"
 
 class MainApp: public wxApp
 {

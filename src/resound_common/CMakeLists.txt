@@ -1,4 +1,3 @@
-
 #    Resound
 #    Copyright 2007 David Moore and James Mooney
 #
@@ -18,12 +17,20 @@
 #    along with Resound; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-
-project(RESOUND)
-
 # resound_common
-add_subdirectory(resound_common)
-# resound_server
-add_subdirectory(resound_server)
-# resound_gui
-add_subdirectory(resound_gui)
+# includes
+include_directories (
+${RESOUND_SOURCE_DIR}/
+/usr/include/wx-2.6/
+)
+SET(CMAKE_CXX_FLAGS -g)
+# now include the wx_script, must be done after setting cxx_flags because it adds to them
+INCLUDE(Use_wxWindows)
+
+# build the excecutable
+add_library (resound_common
+comms.cpp
+systemlog.cpp
+)
+#link with libs
+#target_link_libraries (jack)
