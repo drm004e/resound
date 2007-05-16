@@ -127,7 +127,7 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 
 	// create top sizer and fill with stuff
 	wxBoxSizer *topSizer = new wxBoxSizer( wxHORIZONTAL );
-	topSizer->Add(leftBook,wxSizerFlags(5).Center().Expand().Border(wxALL,1));
+	topSizer->Add(leftBook,wxSizerFlags(1).Center().Expand().Border(wxALL,1));
 	topSizer->Add(rightBook,wxSizerFlags(1).Center().Expand().Border(wxALL,1));
 
 	// neaten up sizer
