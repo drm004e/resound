@@ -30,6 +30,14 @@ enum ENUM_AM_SERVER_SOCKET_IDS{
 
 namespace Resound
 {
+
+
+/// audio matrix is a simple 2d array of audio buffers
+typedef Array2<AudioBuffer*> AudioMatrix;
+
+/// attenuation matrix is a simple 2d array of floating point attenuation factors
+typedef Array2<float> AttenuationMatrix;
+
 /// a class for handling signal processing in the resound_server
 class DSPManager
 {
@@ -37,19 +45,18 @@ public:
 	DSPManager();
 	~DSPManager();
 
-	// the dsp entry point from PAML DSPObject
 	bool DSP(AudioBufferArray& inputs, AudioBufferArray& outputs, long bufferSize);
 
 private:
 
 	// audio related
-	AudioMatrix* audioMatrix;
+	AudioMatrix* m_audioMatrix;
 
-	Array2<float> nAttMatrix; // non interpolated attenuations
-	Array2<float> iAttMatrix; // interpolated attenuations
+	AttenuationMatrix m_nAttMatrix; // non interpolated attenuations
+	AttenuationMatrix m_iAttMatrix; // interpolated attenuations
 
-	int numInputs;
-	int numOutputs;
+	int m_numInputs;
+	int m_numOutputs;
 };
 }
 

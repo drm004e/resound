@@ -53,9 +53,9 @@ SA::PerformanceView::PerformanceView(wxWindow* parent)
 		{
 			temp = new SA::MasterFader(this,fId++); // create new MasterFader
 			masterFaderArray.push_back(temp); // store in array
-			grp->Add(temp, wxSizerFlags(0).Align(0).Border(wxALL,1)); // add to GUI
+			grp->Add(temp, wxSizerFlags(1).Align(0).Border(wxALL,1)); // add to GUI
 		}
-		upperTierSizer->Add(grp, wxSizerFlags(1).Align(0).Expand().Border(wxALL,5));
+		upperTierSizer->Add(grp, wxSizerFlags(1).Align(0).Border(wxALL,5));
 	}
 	for(n = 0; n < 4; n++) // create bottom row of MasterFaders
 	{
@@ -64,15 +64,15 @@ SA::PerformanceView::PerformanceView(wxWindow* parent)
 		{
 			temp = new SA::MasterFader(this,fId++); // create new MasterFader
 			masterFaderArray.push_back(temp); // store in array
-			grp->Add(temp, wxSizerFlags(0).Align(0).Border(wxALL,1)); // add to GUI
+			grp->Add(temp, wxSizerFlags(1).Align(0).Border(wxALL,1)); // add to GUI
 		}
-		lowerTierSizer->Add(grp, wxSizerFlags(1).Align(0).Expand().Border(wxALL,5));
+		lowerTierSizer->Add(grp, wxSizerFlags(1).Align(0).Border(wxALL,5));
 	}
 	topSizer->Add(upperTierSizer);
 	topSizer->Add(lowerTierSizer);
 
 	SetSizer(topSizer);
-	topSizer->SetSizeHints(this);   // set size hints to honour minimum size
+	//topSizer->SetSizeHints(this);   // set size hints to honour minimum size
 	topSizer->Layout();
 }
 

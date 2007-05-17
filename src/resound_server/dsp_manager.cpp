@@ -21,31 +21,22 @@
 ************************************************************************************/
 
 #include "pch.h"
+#include "audio_buffer.h"
 #include "dsp.h"
-
 #include "dsp_manager.h"
 
 Resound::DSPManager::DSPManager() :
 m_numInputs(1),
 m_numOutputs(1)
 {
-	audioMatrix = new AudioMatrix(numInputs, numOutputs);
-	m_nAttMatrix.Create(numInputs+1, numOutputs+1);
-	m_iAttMatrix.Create(numInputs+1, numOutputs+1);
+	m_audioMatrix = new AudioMatrix(m_numInputs, m_numOutputs);
+	m_nAttMatrix.Create(m_numInputs+1, m_numOutputs+1);
+	m_iAttMatrix.Create(m_numInputs+1, m_numOutputs+1);
 }
+
 Resound::DSPManager::~DSPManager()
 {
 }
-void Resound::DSPManager::InitDSP()
-{
-	audioMatrix = new AudioMatrix(numInputs, numOutputs);
-	nAttMatrix.Create(numInputs+1, numOutputs+1);
-	iAttMatrix.Create(numInputs+1, numOutputs+1);
-}
-
-
-
-
 
 // ------- DSP MAIN ENTRY HERE ---------------
 bool Resound::DSPManager::DSP(AudioBufferArray& inputs, AudioBufferArray& outputs, long bufferSize)
@@ -58,21 +49,21 @@ bool Resound::DSPManager::DSP(AudioBufferArray& inputs, AudioBufferArray& output
 	AudioBuffer* outputBuffer; // cached output buffer pointer
 	AudioBuffer* inputBuffer; // cached input buffer pointer
 
-	globalAtt = DSPLogInterpolate(iAttMatrix.Index(0,0),nAttMatrix.Index(0,0));
+	globalAtt = DSPLogInterpolate(m_iAttMatrix.Index(0,0),m_nAttMatrix.Index(0,0));
 	if(globalAtt != 0.0f) {
 		for(iOut = 1; iOut < maxOuts; iOut++) {
-			outputBuffer = outputs[iOut-1].GetPtr(); // cache the buffer to eliminate indexing
+			outputBuffer = outputs[iOut-1]; // cache the buffer to eliminate indexing
 			// Clear output buffers ready for summing
 			MemsetBuffer(outputBuffer,0.0f,bufferSize);
 			// interpolate dsp factors
-			outAtt = DSPLogInterpolate(iAttMatrix.Index(0,iOut),nAttMatrix.Index(0,iOut));
+			outAtt = DSPLogInterpolate(m_iAttMatrix.Index(0,iOut),m_nAttMatrix.Index(0,iOut));
 			if(outAtt != 0.0f) {
 
 				for(iIn = 1; iIn < maxIns; iIn++) {
-					inAtt = DSPLogInterpolate(iAttMatrix.Index(iIn,0),nAttMatrix.Index(iIn,0));
+					inAtt = DSPLogInterpolate(m_iAttMatrix.Index(iIn,0),m_nAttMatrix.Index(iIn,0));
 					if(inAtt != 0.0f) {
-						inputBuffer = inputs[iIn-1].GetPtr(); // cache the buffer to eliminate indexing
-						matAtt = DSPLogInterpolate(iAttMatrix.Index(iIn,iOut),nAttMatrix.Index(iIn,iOut));
+						inputBuffer = inputs[iIn-1]; // cache the buffer to eliminate indexing
+						matAtt = DSPLogInterpolate(m_iAttMatrix.Index(iIn,iOut),m_nAttMatrix.Index(iIn,iOut));
 						if(matAtt != 0.0f) {
 							finalAtt = globalAtt * outAtt * inAtt * matAtt; // factor gains together
 							DSPSumToBuss(inputBuffer, outputBuffer, finalAtt ,bufferSize); // sum onto the buss

@@ -19,6 +19,7 @@
 #ifndef __SA_DSP__
 #define __SA_DSP__
 
+namespace Resound{
 // interpolation logarithmic and simple
 inline float DSPLogInterpolate(float &dest, const float &src, float factor = 0.95f)
 {
@@ -28,8 +29,8 @@ inline float DSPLogInterpolate(float &dest, const float &src, float factor = 0.9
 // Take an input buffer and sum it to and output buffer using the gain value specified
 inline void DSPSumToBuss(AudioBuffer* bufferIn, AudioBuffer* bufferOut, float factor, long bufferSize)
 {
-	float* in = bufferIn->GetBuffer();
-	float* out = bufferOut->GetBuffer();
+	float* in = bufferIn->get_data_ptr();
+	float* out = bufferOut->get_data_ptr();
 
 	if(factor == 1.0f) // gain factor of 1
 	{
@@ -63,11 +64,12 @@ inline void DSPSumToBuss(AudioBuffer* bufferIn, AudioBuffer* bufferOut, float fa
 // clear a buffer of its contents
 inline void MemsetBuffer(AudioBuffer* bufferIn, float value, long bufferSize)
 {
-	float* buffer = bufferIn->GetBuffer();
+	float* buffer = bufferIn->get_data_ptr();
 	while(--bufferSize >= 0) {
 		*buffer = value;
 		++buffer;
 	}
 }
 
+} // namespace resound
 #endif

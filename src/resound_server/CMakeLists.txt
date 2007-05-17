@@ -27,6 +27,8 @@ SET(CMAKE_CXX_FLAGS -g)
 # build the excecutable
 add_executable (resound_server
 resound_server.cpp
+dsp_manager.cpp
+audio_buffer.cpp
 )
 #link with libs
-target_link_libraries (jack)
+target_link_libraries (resound_server jack boost_program_options)

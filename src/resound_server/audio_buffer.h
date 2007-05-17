@@ -15,35 +15,24 @@
 //   along with this program; if not, write to the Free Software
 //   Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 //   MA 02111-1307 USA
-//   
-#ifndef __BASE_H
-#define __BASE_H
 
-class MainApp: public wxApp
-{
-public:
-	virtual bool OnInit();
-};
+namespace Resound{
 
-class MainFrame: public wxFrame
-{
-public:
-	MainFrame(const wxString &title, const wxPoint &pos, const wxSize &size);
-	void OnQuit(wxCommandEvent &event);
+/// our typedef for internal sample format, current as jack (float 32bit )
+typedef jack_default_audio_sample_t AudioSample;
+
+/// an audio data buffer container
+class AudioBuffer{
 private:
-
-	void InitDSP();
-	void CloseDSP();
-
-	wxTextCtrl *netlog; // loggin control
-
-	SA::AMServer* server;
-	DECLARE_EVENT_TABLE()
+	AudioSample* m_data;
+public:
+	AudioBuffer(){m_data = 0;};
+	AudioBuffer(long size){m_data = new AudioSample[size];}
+	~AudioBuffer(){if(m_data) delete m_data;};
+	AudioSample* get_data_ptr(){return m_data;};
 };
 
-enum
-{
-    ID_MAINWIN_QUIT = wxID_HIGHEST+1
-};
+/// AudioBufferArray is a vector of audio buffers
+typedef std::vector<AudioBuffer*> AudioBufferArray;
 
-#endif
+}
