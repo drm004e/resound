@@ -16,6 +16,8 @@
 //   Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 //   MA 02111-1307 USA
 
+#ifndef __AUDIO_BUFFER__
+#define __AUDIO_BUFFER__
 namespace Resound{
 
 /// our typedef for internal sample format, current as jack (float 32bit )
@@ -36,3 +38,4 @@ public:
 typedef std::vector<AudioBuffer*> AudioBufferArray;
 
 }
+#endif

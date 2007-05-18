@@ -23,6 +23,10 @@
 #ifndef DSP_MANAGER_H
 #define DSP_MANAGER_H
 
+#include <string>
+#include "dsp.h"
+
+
 enum ENUM_AM_SERVER_SOCKET_IDS{
     AM_SERVER_SOCKET_ID = 1,
     AM_SOCKET_ID
@@ -42,21 +46,25 @@ typedef Array2<float> AttenuationMatrix;
 class DSPManager
 {
 public:
-	DSPManager();
-	~DSPManager();
+	/// construct
+	DSPManager(const std::string& name, int inputs, int outputs);
+	/// detruct 
+	virtual ~DSPManager(); 
 
+	/// main dsp operation
 	bool DSP(AudioBufferArray& inputs, AudioBufferArray& outputs, long bufferSize);
 
 private:
 
-	// audio related
-	AudioMatrix* m_audioMatrix;
+	AudioMatrix* m_audioMatrix; ///< the matrix of buffers
+	AttenuationMatrix m_nAttMatrix; ///< non interpolated attenuations
+	AttenuationMatrix m_iAttMatrix; ///< interpolated attenuations
 
-	AttenuationMatrix m_nAttMatrix; // non interpolated attenuations
-	AttenuationMatrix m_iAttMatrix; // interpolated attenuations
+	int m_numInputs; ///< number of inputs created
+	int m_numOutputs; ///< number of outputs created
 
-	int m_numInputs;
-	int m_numOutputs;
+	std::string m_name; ///< the jack client name
+	jack_client_t* m_jc; ///< the jack client ptr
 };
 }
 

@@ -19,6 +19,8 @@
 #ifndef __SA_DSP__
 #define __SA_DSP__
 
+#include "audio_buffer.h"
+
 namespace Resound{
 // interpolation logarithmic and simple
 inline float DSPLogInterpolate(float &dest, const float &src, float factor = 0.95f)

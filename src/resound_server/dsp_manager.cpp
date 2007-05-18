@@ -25,17 +25,36 @@
 #include "dsp.h"
 #include "dsp_manager.h"
 
-Resound::DSPManager::DSPManager() :
-m_numInputs(1),
-m_numOutputs(1)
+#include <sstream>
+
+Resound::DSPManager::DSPManager(const std::string& name, int inputs, int outputs) :
+m_name(name),
+m_numInputs(inputs),
+m_numOutputs(outputs),
+m_audioMatrix(new AudioMatrix(m_numInputs, m_numOutputs))
 {
-	m_audioMatrix = new AudioMatrix(m_numInputs, m_numOutputs);
 	m_nAttMatrix.Create(m_numInputs+1, m_numOutputs+1);
 	m_iAttMatrix.Create(m_numInputs+1, m_numOutputs+1);
+
+	// jack initialisation
+	m_jc = jack_client_open(m_name.c_str(),JackNullOption,0);
+
+	for(int n = 0; n < m_numInputs; n++){
+		std::stringstream s;
+		s << "Input" << n;
+		jack_port_register(m_jc,s.str().c_str(),JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput,0);
+	}
+	for(int n = 0; n < m_numOutputs; n++){
+		std::stringstream s;
+		s << "Output" << n;
+		jack_port_register(m_jc,s.str().c_str(),JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput,0);
+	}
 }
 
 Resound::DSPManager::~DSPManager()
 {
+	if(m_jc) jack_client_close(m_jc);
+	m_jc=0;
 }
 
 // ------- DSP MAIN ENTRY HERE ---------------

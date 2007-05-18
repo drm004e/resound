@@ -23,6 +23,9 @@
 
 #include <iostream>
 #include <boost/program_options.hpp>
+#include "dsp_manager.h"
+
+Resound::DSPManager* s_dsp = 0;
 
 /// command line options
 bool parse(int argc, char** argv){
@@ -78,6 +81,8 @@ int main(int argc, char** argv){
 	// parse command line
 	// options
 	if(parse(argc,argv)) return 1;
+	std::cout << "Connecting to jack... \n";
+	s_dsp = new Resound::DSPManager("Resound",10,10);
 	std::cout << "Server running... \n";
 	return run();
 }
