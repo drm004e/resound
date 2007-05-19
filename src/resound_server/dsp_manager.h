@@ -42,6 +42,9 @@ typedef Array2<AudioBuffer*> AudioMatrix;
 /// attenuation matrix is a simple 2d array of floating point attenuation factors
 typedef Array2<float> AttenuationMatrix;
 
+/// a list of pointers to ports
+typedef std::vector<jack_port_t*> JackPortList;
+
 /// a class for handling signal processing in the resound_server
 class DSPManager
 {
@@ -52,8 +55,9 @@ public:
 	virtual ~DSPManager(); 
 
 	/// main dsp operation
-	bool DSP(AudioBufferArray& inputs, AudioBufferArray& outputs, long bufferSize);
-
+	int process(jack_nframes_t nframes);
+	/// static callback passed in
+	static int jack_process_callback(jack_nframes_t nframes, void *arg);
 private:
 
 	AudioMatrix* m_audioMatrix; ///< the matrix of buffers
@@ -63,8 +67,14 @@ private:
 	int m_numInputs; ///< number of inputs created
 	int m_numOutputs; ///< number of outputs created
 
+	JackPortList m_inputs; ///< the actual jack input ports
+	JackPortList m_outputs; ///< the actual jack output ports
+
 	std::string m_name; ///< the jack client name
 	jack_client_t* m_jc; ///< the jack client ptr
+
+	jack_nframes_t m_bufferSize; ///< the current bufferSize
+	jack_nframes_t m_sampleRate; ///< the current sample rate
 };
 }
 

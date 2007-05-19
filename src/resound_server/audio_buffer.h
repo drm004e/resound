@@ -26,11 +26,14 @@ typedef jack_default_audio_sample_t AudioSample;
 /// an audio data buffer container
 class AudioBuffer{
 private:
+	int m_size;
 	AudioSample* m_data;
+	bool m_isOwner;
 public:
-	AudioBuffer(){m_data = 0;};
-	AudioBuffer(long size){m_data = new AudioSample[size];}
-	~AudioBuffer(){if(m_data) delete m_data;};
+	AudioBuffer() : m_data(0), m_size(0), m_isOwner(true) {}
+	AudioBuffer(int size) : m_data(new AudioSample[size]), m_size(size), m_isOwner(true) {}
+	AudioBuffer(AudioSample* buffer, int size) : m_data(buffer), m_size(size), m_isOwner(false){}
+	~AudioBuffer(){if(m_data && m_isOwner) delete m_data;};
 	AudioSample* get_data_ptr(){return m_data;};
 };
 
