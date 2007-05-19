@@ -26,20 +26,27 @@
 #include "dsp_manager.h"
 
 #include <sstream>
+#include <iostream>
 
-Resound::DSPManager::DSPManager(const std::string& name, int inputs, int outputs) :
+Resound::DSPManager::DSPManager(const std::string& name, int inputs, int outputs, const char* port) :
 m_name(name),
 m_numInputs(inputs),
 m_numOutputs(outputs),
-m_audioMatrix(new AudioMatrix(m_numInputs, m_numOutputs))
+m_audioMatrix(new AudioMatrix(m_numInputs, m_numOutputs)),
+OSCManager(port)
 {
+
+
+	std::cout << "Initialising I/O matrix... \n";
 	m_nAttMatrix.Create(m_numInputs+1, m_numOutputs+1);
 	m_iAttMatrix.Create(m_numInputs+1, m_numOutputs+1);
 
 	// jack initialisation
+	std::cout << "Connecting to jackd... \n";
 	m_jc = jack_client_open(m_name.c_str(),JackNullOption,0);
 
 	// register ports
+	std::cout << "Registering I/O ports... \n";
 	for(int n = 0; n < m_numInputs; n++){
 		std::stringstream s;
 		s << "Input" << n;
@@ -52,6 +59,7 @@ m_audioMatrix(new AudioMatrix(m_numInputs, m_numOutputs))
 	}
 
 	// register callbacks
+	std::cout << "Registering callbacks... \n";
 	jack_set_process_callback(m_jc,Resound::DSPManager::jack_process_callback,this);
 
 	// get some info from jackd about current SR and bufferSize;
@@ -83,8 +91,14 @@ m_audioMatrix(new AudioMatrix(m_numInputs, m_numOutputs))
 	}
 
 	// now activate the callback
+	std::cout << "Activating DSP... \n";
 	jack_activate(m_jc);
 
+	std::cout << "\n---- Resound Server Running ----\n";
+	std::cout << "  Inputs  : " << inputs << "\n";
+	std::cout << "  Outputs : " << outputs << "\n";
+	std::cout << "  OSC Port: " << port << "\n";
+	std::cout << "--------------------------------\n\n";
 }
 
 Resound::DSPManager::~DSPManager()
@@ -149,4 +163,6 @@ int Resound::DSPManager::process(jack_nframes_t nframes)
 	}//*/
 	return 0;
 }
+
+
 

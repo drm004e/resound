@@ -24,8 +24,13 @@
 #include <iostream>
 #include <boost/program_options.hpp>
 #include "dsp_manager.h"
+#include <string>
 
 Resound::DSPManager* s_dsp = 0;
+
+int inputs = 2;
+int outputs = 2;
+std::string port("4567");
 
 /// command line options
 bool parse(int argc, char** argv){
@@ -36,6 +41,7 @@ bool parse(int argc, char** argv){
 		("help", "produce help message")
 		("inputs", po::value<int>(), "set number of audio inputs")
 		("outputs", po::value<int>(), "set number of audio outputs")
+		("port", po::value<std::string>(), "set number OSC server port")
 	;
 	
 	po::variables_map vm;
@@ -47,9 +53,6 @@ bool parse(int argc, char** argv){
 		return 1;
 	}
 
-	int inputs(2);
-	int outputs(2);
-
 	if (vm.count("inputs")) {
 		inputs = vm["inputs"].as<int>();
 	}
@@ -58,7 +61,11 @@ bool parse(int argc, char** argv){
 	}
 	if(inputs < 0 || inputs > 128) { std::cout << "Inputs should be in the range 1-128\n"; return 1;}
 	if(outputs < 0 || outputs > 128) { std::cout << "Outputs should be in the range 1-128\n"; return 1;}
-	std::cout << "Initialising mix matrix using " << inputs << " inputs and "<<outputs<<" outputs. \n";
+
+	if (vm.count("port")) {
+		port = vm["port"].as<std::string>();
+	}
+
 	return 0;
 }
 
@@ -68,7 +75,7 @@ int run(){
 	for(;;)
 	{
 		try{
-
+			usleep(1000);
 		}
 		catch(...){
 			return 1;
@@ -81,8 +88,6 @@ int main(int argc, char** argv){
 	// parse command line
 	// options
 	if(parse(argc,argv)) return 1;
-	std::cout << "Connecting to jack... \n";
-	s_dsp = new Resound::DSPManager("Resound",10,10);
-	std::cout << "Server running... \n";
+	s_dsp = new Resound::DSPManager("Resound",inputs,outputs,port.c_str());
 	return run();
 }

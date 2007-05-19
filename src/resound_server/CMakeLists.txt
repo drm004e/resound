@@ -31,4 +31,4 @@ dsp_manager.cpp
 audio_buffer.cpp
 )
 #link with libs
-target_link_libraries (resound_server jack boost_program_options)
+target_link_libraries (resound_server resound_common jack boost_program_options)

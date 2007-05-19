@@ -31,6 +31,7 @@ INCLUDE(Use_wxWindows)
 add_library (resound_common
 comms.cpp
 systemlog.cpp
+osc_manager.cpp
 )
 #link with libs
-#target_link_libraries (jack)
+target_link_libraries (resound_common lo)

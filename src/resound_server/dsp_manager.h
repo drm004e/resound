@@ -26,6 +26,7 @@
 #include <string>
 #include "dsp.h"
 
+#include <resound_common/osc_manager.h>
 
 enum ENUM_AM_SERVER_SOCKET_IDS{
     AM_SERVER_SOCKET_ID = 1,
@@ -46,18 +47,17 @@ typedef Array2<float> AttenuationMatrix;
 typedef std::vector<jack_port_t*> JackPortList;
 
 /// a class for handling signal processing in the resound_server
-class DSPManager
+class DSPManager : public OSCManager
 {
 public:
 	/// construct
-	DSPManager(const std::string& name, int inputs, int outputs);
+	DSPManager(const std::string& name, int inputs, int outputs, const char* port);
 	/// detruct 
 	virtual ~DSPManager(); 
 
 	/// main dsp operation
 	int process(jack_nframes_t nframes);
-	/// static callback passed in
-	static int jack_process_callback(jack_nframes_t nframes, void *arg);
+
 private:
 
 	AudioMatrix* m_audioMatrix; ///< the matrix of buffers
@@ -75,6 +75,13 @@ private:
 
 	jack_nframes_t m_bufferSize; ///< the current bufferSize
 	jack_nframes_t m_sampleRate; ///< the current sample rate
+
+
+
+public: // callbacks
+	/// static dsp process callback
+	static int jack_process_callback(jack_nframes_t nframes, void *arg);
+
 };
 }
 
