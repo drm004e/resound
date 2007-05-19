@@ -25,6 +25,7 @@
 #include <boost/program_options.hpp>
 #include "dsp_manager.h"
 #include <string>
+#include <resound_common/audio_math.h>
 
 Resound::DSPManager* s_dsp = 0;
 
@@ -74,20 +75,17 @@ int run(){
 	// enter the daemon loop
 	for(;;)
 	{
-		try{
-			usleep(1000);
-		}
-		catch(...){
-			return 1;
-		}	
+		usleep(1000000); // one second
+		s_dsp->update_clients(); // cause the client list to be updated
 	}
 	return 0;
 }
 /// entry point
 int main(int argc, char** argv){
 	// parse command line
-	// options
 	if(parse(argc,argv)) return 1;
+	// init the dsp manager
 	s_dsp = new Resound::DSPManager("Resound",inputs,outputs,port.c_str());
+	// run for ever
 	return run();
 }

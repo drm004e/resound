@@ -31,8 +31,8 @@ Resound::OSCManager::OSCManager(const char* port){
 
 	// add the generic handler
 	std::cout << "Adding OSC methods... \n";
-    lo_server_thread_add_method(m_loServerThread, NULL, NULL, lo_cb_generic, NULL);
-	lo_server_thread_add_method(m_loServerThread, "/ping", NULL, lo_cb_ping, NULL);
+    lo_server_thread_add_method(m_loServerThread, NULL, NULL, lo_cb_generic, this);
+	lo_server_thread_add_method(m_loServerThread, "/ping", NULL, lo_cb_ping, this);
 	// start
 	lo_server_thread_start(m_loServerThread);
 
@@ -54,7 +54,7 @@ void Resound::OSCManager::lo_cb_error(int num, const char *msg, const char *path
 int Resound::OSCManager::lo_cb_generic(const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data){
     int i;
 
-    std::printf("OSC recv <%s>(", path);
+    std::printf("OSC recvfrom %s%s(", lo_address_get_url(lo_message_get_source(data)),path);
     for (i=0; i<argc; i++) {
 	std::printf("[%d: %c ", i, types[i]);
 	lo_arg_pp((lo_type)types[i], argv[i]);
@@ -68,8 +68,8 @@ int Resound::OSCManager::lo_cb_generic(const char *path, const char *types, lo_a
 
 int Resound::OSCManager::lo_cb_ping(const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data){
     int i;
-
-    std::printf("OSC recv PING <%s>(", path);
+	std::string url(lo_address_get_url(lo_message_get_source(data)));
+    std::printf("OSC recvfrom %s%s(", url.c_str(),path);
     for (i=0; i<argc; i++) {
 	std::printf("[%d: %c ", i, types[i]);
 	lo_arg_pp((lo_type)types[i], argv[i]);
@@ -78,5 +78,34 @@ int Resound::OSCManager::lo_cb_ping(const char *path, const char *types, lo_arg 
     std::printf(")\n");
     std::fflush(stdout);
 
+	((OSCManager*)user_data)->recv_ping(url);
+
     return 1;
+}
+
+void Resound::OSCManager::recv_ping(const std::string& url){
+	ActiveClientMap::iterator it = m_clients.find(url);
+	if(it == m_clients.end()){
+		// this is a new client tel the world
+		std::cout << "OSC new client detected at " << url << "\n";
+	}
+	m_clients[url] = 3; // three strikes and your out!
+}
+void Resound::OSCManager::update_clients(){
+	std::cout << "OSC update_client\n";
+	ActiveClientMap::iterator it;
+	for(it=m_clients.begin(); it != m_clients.end(); /*no increment because of removal see later*/){
+		--it->second;
+		int f = it->second;
+		if(it->second <= 0){
+			std::cout << "OSC client " << it->first << " has disconnected. Removing from active client list.\n";
+			// remove him cause we havent heard from him for a while
+			ActiveClientMap::iterator prev = it;
+			++it; // increment iterator
+			m_clients.erase(prev); // remove from behind
+		} else {
+			++it;
+		}
+	}
+	
 }
