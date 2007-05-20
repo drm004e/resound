@@ -69,7 +69,7 @@ void SA::AMPVar::set_target(lo_address host, std::string path){
 // AM Client -------------------------------------------------------------------------------------
 
 SA::AMClient::AMClient(wxTextCtrl* _log) :
-Resound::OSCManager("5678")
+Resound::OSCManager("8765")
 {
 
 	SetName(_("Audio Matrix"));
