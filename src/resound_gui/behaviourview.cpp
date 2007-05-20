@@ -22,7 +22,7 @@
 
 #include "automation.h"
 #include "pvar.h" // class's header file
-#include <resound_common/comms.h>
+
 
 #include "behaviour.h"
 #include "amclient.h"

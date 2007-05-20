@@ -32,7 +32,6 @@
 #include "masterfader.h"
 #include "performanceview.h"
 
-#include <resound_common/comms.h>
 #include "amclient.h"
 #include "monitorview.h"
 #include "behaviourview.h"
@@ -74,21 +73,18 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 
 	// create the notebook pane left side
 	wxNotebook* leftBook = new wxNotebook(this,-1);
-	wxNotebook* rightBook = new wxNotebook(this,-1);
 
 
-	wxTextCtrl *netLog = new wxTextCtrl(rightBook, wxID_ANY,
+	wxTextCtrl *netLog = new wxTextCtrl(leftBook, wxID_ANY,
 	                                    _T("Netlog...\n"),
 	                                    wxPoint(0,0), wxSize(300,100),
 	                                    wxTE_MULTILINE | wxTE_READONLY);
 
-	rightBook->AddPage(netLog,_T("Network Console"),true);
 
+	//wxMessageBox(_T("ok"));
 
 	// make the network client
 	amClient = new SA::AMClient(netLog);
-	PushEventHandler(amClient);
-	amClient->Connect(_T("localhost"),12345);
 
 	// make the behaviour sub system
 	theBehaviourManager = new SA::BehaviourManager();
@@ -124,11 +120,10 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 	leftBook->AddPage(perfView,_T("Master"),true);
 	leftBook->AddPage(monitorView,_T("Matrix"),false);
 	leftBook->AddPage(behaviourView,_T("Behaviour"),false);
-
+	leftBook->AddPage(netLog,_T("Console"),false);
 	// create top sizer and fill with stuff
 	wxBoxSizer *topSizer = new wxBoxSizer( wxHORIZONTAL );
 	topSizer->Add(leftBook,wxSizerFlags(1).Center().Border(wxALL,1));
-	topSizer->Add(rightBook,wxSizerFlags(1).Center().Border(wxALL,1));
 
 	// neaten up sizer
 	SetSizer(topSizer);
@@ -177,7 +172,7 @@ void MainFrame::OnLoad(wxCommandEvent& event)
 
 void MainFrame::OnAbout(wxCommandEvent& event)
 {
-	wxMessageBox(_T("implement me properly"), _T("About Resound"));
+	wxMessageBox(_T("Resound\n Licensed under the terms of the GNU Public Licence Version 2.0\n"), _T("About Resound"));
 }
 
 void MainFrame::Save(wxDataOutputStream& stream)

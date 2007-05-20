@@ -29,7 +29,6 @@ INCLUDE(Use_wxWindows)
 
 # build the excecutable
 add_library (resound_common
-comms.cpp
 systemlog.cpp
 osc_manager.cpp
 )

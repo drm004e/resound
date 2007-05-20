@@ -21,7 +21,7 @@
 
 #include "automation.h"
 #include "pvar.h" // class's header file
-#include <resound_common/comms.h>
+
 #include "amclient.h" // possible circular dep here requires pvar and comms
 #include "vumeterwidget.h"
 // -------------------------------- PVar --------------------------------

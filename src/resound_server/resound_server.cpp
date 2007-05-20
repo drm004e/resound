@@ -77,6 +77,7 @@ int run(){
 	{
 		usleep(1000000); // one second
 		s_dsp->update_clients(); // cause the client list to be updated
+		std::cout.flush(); //flush the output stream so we get updated display in KDevelop
 	}
 	return 0;
 }

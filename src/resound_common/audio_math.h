@@ -47,7 +47,7 @@ inline double double_to_dB(const float& v){
 // infinity 8 on side = 165 ??
 
 /// return a string containing a formated dB value such as -60.00 dB dp specifies decimal places
-/// out of range errors return -infinity character char
+/// out of range errors return -inf dB
 inline std::string float_to_dB_string(const float& v, int dp){
 	std::stringstream s;
 	s << std::setprecision(dp)  << std::fixed << float_to_dB(v) << " dB";

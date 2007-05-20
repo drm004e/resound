@@ -35,7 +35,7 @@ END_EVENT_TABLE()
 SA::MasterFader::MasterFader(wxWindow* parent, int id)
 		: wxPanel(parent,id)
 {
-	SetWindowStyle(wxSIMPLE_BORDER | wxCLIP_CHILDREN);
+	SetWindowStyle(wxSIMPLE_BORDER );
 	// construct the sub objects and sizer
 	wxBoxSizer *topSizer = new wxBoxSizer( wxVERTICAL );
 	wxBoxSizer *topTierSizer = new wxBoxSizer( wxHORIZONTAL );

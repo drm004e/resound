@@ -20,7 +20,6 @@
 */
 #include "pch.h" // precompiler header
 
-#include <resound_common/comms.h>
 #include "automation.h"
 #include "pvar.h"
 #include "vumeterwidget.h"
@@ -30,21 +29,15 @@
 
 #include "app.h"
 #include "amclient.h" // classes header
-
+#include <sstream>
 // AMPVar -------------------------------------------------------------------------------------
 SA::AMPVar::AMPVar()
 {
-	node = 0;
 	needsUpdate = false;
 }
-SA::AMPVar::AMPVar(AMNode* _node)
-{
-	node = _node;
-	needsUpdate = false;
-}
+
 SA::AMPVar::~AMPVar()
 {
-	node = 0;
 }
 
 void SA::AMPVar::OnValueChanged()
@@ -53,156 +46,52 @@ void SA::AMPVar::OnValueChanged()
 	needsUpdate = true;
 }
 
-void SA::AMPVar::SetNode(AMNode* _node)
-{
-	node = _node;
-	needsUpdate = false;
-}
+
 bool SA::AMPVar::NodeNeedsUpdate()
 {
 	return needsUpdate;
 }
 
 // called by amclient when updates should be done
-void SA::AMPVar::UpdateTargetNode()
+void SA::AMPVar::UpdateTarget()
 {
 	// update the target value
-	if(node) {
-		node->value = CLAMPF((float)GetValue() * (1.0f/128.0f), 0.0f, 1.0f); // set the value of the node and clamp it
-	}
+	float v = CLAMPF((float)GetValue() * (1.0f/128.0f), 0.0f, 1.0f); // set the value of the node and clamp it
+	lo_send(m_hostAddress, m_oscAddress.c_str(), "f", v);
 	needsUpdate = false;
 }
 
-// AM Client -------------------------------------------------------------------------------------
-BEGIN_EVENT_TABLE(SA::AMClient, wxEvtHandler)
-EVT_SOCKET(AM_CLIENT_SOCKET_ID, SA::AMClient::OnSocketEvent)
-END_EVENT_TABLE()
+void SA::AMPVar::set_target(lo_address host, std::string path){
+	m_hostAddress = host;
+	m_oscAddress = path;
+}
 
-SA::AMClient::AMClient(wxTextCtrl* _log)
+// AM Client -------------------------------------------------------------------------------------
+
+SA::AMClient::AMClient(wxTextCtrl* _log) :
+Resound::OSCManager("5678")
 {
 
 	SetName(_("Audio Matrix"));
 	log = _log;
-	socket = new wxSocketClient();
-	// Setup the event handler and subscribe to events
-	socket->SetFlags(wxSOCKET_WAITALL);
-	socket->SetEventHandler(*this, AM_CLIENT_SOCKET_ID);
-	socket->SetNotify(wxSOCKET_CONNECTION_FLAG |
-	                  wxSOCKET_INPUT_FLAG |
-	                  wxSOCKET_LOST_FLAG);
-	socket->Notify(true);
-
-	// null the matrix
-	audioMatrix = 0;
 
 	BuildAudioMatrix(10,10); // fake matrix
 }
 SA::AMClient::~AMClient()
 {
-	if(socket)
-		delete socket;
-}
-// operations
 
-void SA::AMClient::Connect(wxString hostname, int port)
-{
-
-	if(address.Hostname(hostname) && address.Service(port)) {
-		socket->Connect(address,false);
-	} else {
-		wxMessageBox(_("Badly formatted host address!"));
-	}
-}
-void SA::AMClient::Disconnect()
-{}
-
-// socket events
-void SA::AMClient::OnSocketEvent(wxSocketEvent &event)
-{
-	SA::Packet t;
-
-	switch(event.GetSocketEvent()) {
-	case wxSOCKET_INPUT:
-
-		// see whats in the buffer
-		t = SA::PeekPacket(socket);
-		//log->AppendText(wxString::Format(_("PeekPacket() - Type: %d Size: %d\n"),t.type,t.size));
-
-		switch(t.type) {
-			// known types
-		case SA::PT_SERVER_HANDSHAKE:
-			RecvServerHandshake();
-			break;
-		case SA::PT_AMNODE:
-			RecvAMNode();
-			break;
-
-			// unknown or fault
-		default:
-			log->AppendText(_("Unknown packet type or malformed!\n"));
-			break;
-		}
-		// p should now contain a valid pointer or null;
-
-
-		break;
-	case wxSOCKET_LOST:
-		log->AppendText(_("Disconnect\n"));
-		break;
-	case wxSOCKET_CONNECTION:
-		log->AppendText(_("Connect\n"));
-		break;
-	default:
-		log->AppendText(_("Other message\n"));
-		break;
-	}
-
-}
-
-//called by event system for a server handshake event
-void SA::AMClient::RecvServerHandshake()
-{
-	// validate message
-	SA::AMServerHandshakePacket p;
-	SA::RecvPacket(socket,&p);
-	log->AppendText(wxString::Format(_("Server handshake... I/O: %d / %d \n"),p.numInputs,p.numOutputs));
-
-	BuildAudioMatrix(p.numInputs,p.numOutputs);
-
-	wxGetApp().RebuildGUI(); // cause the whole gui to be rebuilt - to reflect the change of server
-}
-
-//called by event system when data is available
-void SA::AMClient::RecvAMNode()
-{
-	// node data received
-	// decode and update matrix
-	SA::AMNodePacket p;
-	SA::RecvPacket(socket,&p);
-	log->AppendText(wxString::Format(_("AMNodePacket Address: (%d, %d) Type: &d \n"),p.addr.row,p.addr.col,p.addr.type));
-
-	//update matrix
-	if(audioMatrix) // check ptr
-	{
-		audioMatrix->GetNode(p.addr) = p.node; // ref so should update as left side of assign
-	}
 }
 
 // build the audio matrix and associated PVars
 void SA::AMClient::BuildAudioMatrix(int _numInputs, int _numOutputs)
 {
-	// clear old matrix
-	// construct new client side matrix
-	if(audioMatrix)
-		delete audioMatrix;
 
+	// make pvar matrix
+	pVarMatrix.Create(_numInputs+1,_numOutputs+1);
 	numInputs = _numInputs;
 	numOutputs = _numOutputs;
 
-	audioMatrix = new AudioMatrix(numInputs,numOutputs);
-
-	// make pvar matrix
-	pVarMatrix.Create(numInputs+1,numOutputs+1);
+	lo_address host = lo_address_new(NULL, "5678");
 
 	// fill in pvar details
 	int r,c;
@@ -222,9 +111,10 @@ void SA::AMClient::BuildAudioMatrix(int _numInputs, int _numOutputs)
 			{
 				name = wxString::Format(_("M %d/%d Lvl"),r,c);
 			}
-			pVarMatrix.Index(r,c).SetName(name);
-			AMNode* node = &audioMatrix->GetNode(AMNodeAddr(NAT_MATRIX_AMP,r,c));
-			pVarMatrix.Index(r,c).SetNode(node);
+			pVarMatrix.Index(r,c).SetName(name); 
+			std::stringstream s;
+			s << "/matrix/att/" << r << "/" << c;
+			pVarMatrix.Index(r,c).set_target(host, s.str());
 		}
 	}
 }
@@ -267,7 +157,6 @@ void SA::AMClient::Tick(float dT)
 {
 	// check pvars against matrix parameters transmit if required
 	// maintain server and client copies
-	if(socket->IsConnected()) {
 		int r,c;
 		for(r = 0; r < pVarMatrix.SizeX(); r++) {
 			for(c = 0; c < pVarMatrix.SizeY(); c++) {
@@ -275,18 +164,10 @@ void SA::AMClient::Tick(float dT)
 				if(t.NodeNeedsUpdate()) // updates the node if required
 				{
 					log->AppendText(wxString::Format(_("Node %d, %d\n"),r,c));
-					t.UpdateTargetNode();
-
-					// updated the node - now post it to server
-
-					AMNodePacket packet;
-					packet.addr = AMNodeAddr(NAT_MATRIX_AMP,r,c);
-					packet.node = audioMatrix->GetNode(packet.addr);
-					SendPacket(socket,&packet);
+					t.UpdateTarget(); // this will cause the OSC message to get sent
 				}
 			}
 		}
-	}
 
 }
 
