@@ -61,16 +61,18 @@ SA::CollectiveWidget::CollectiveWidget(wxWindow* parent, int id, wxString _name,
 
 
 	// add the build collective button
-	topSizer->Add(new wxButton(this,PVLW_ASSIGN,_T("Assign"), wxPoint(0,0),wxSize(50,20),wxBU_EXACTFIT),wxSizerFlags(0).Align(0).Border(wxALL,0));
+	topSizer->Add(new wxButton(this,PVLW_ASSIGN,_T("Assign"), wxPoint(0,0),wxSize(55,30),wxBU_EXACTFIT),wxSizerFlags(0).Align(0).Border(wxALL,0));
 
 	// add the meter bridge sizer
 	meterSizer = new wxBoxSizer(wxHORIZONTAL);
 	topSizer->Add(meterSizer);
 
+
+
 	// add the assigned collective name label // NOT USING THIS FOR NOW
 	//targetLabel = new wxStaticText(this,PVLW_TARGET,collective->GetName(), wxPoint(0,0),wxSize(50,20),wxALIGN_CENTRE);
 	//topSizer->Add(targetLabel,wxSizerFlags(0).Align(0).Border(wxALL,0));
-
+	
 	// layout
 	SetSizer(topSizer);
 	topSizer->SetSizeHints(this);   // set size hints to honour minimum size

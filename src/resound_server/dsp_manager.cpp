@@ -32,11 +32,10 @@ Resound::DSPManager::DSPManager(const std::string& name, int inputs, int outputs
 m_name(name),
 m_numInputs(inputs),
 m_numOutputs(outputs),
-m_audioMatrix(new AudioMatrix(m_numInputs, m_numOutputs)),
+m_audioMatrix(new AudioMatrix(inputs, outputs)),
+
 OSCManager(port)
 {
-
-
 	std::cout << "Initialising I/O matrix... \n";
 	m_nAttMatrix.Create(m_numInputs+1, m_numOutputs+1);
 	m_iAttMatrix.Create(m_numInputs+1, m_numOutputs+1);
@@ -61,33 +60,27 @@ OSCManager(port)
 	// register callbacks
 	std::cout << "Registering callbacks... \n";
 	jack_set_process_callback(m_jc,Resound::DSPManager::jack_process_callback,this);
+	for(int r = 0; r < m_numInputs+1; r++){
+		for(int c = 0; c < m_numOutputs+1; c++){
+			std::stringstream s;
+			s << "/matrix/att/" << r << "/" << c;
+			add_method(s.str(),"f",Resound::DSPManager::lo_cb_att, (void*)&m_nAttMatrix.Index(r,c));
+		}
+	}
+
+	
 
 	// get some info from jackd about current SR and bufferSize;
 	m_bufferSize =  jack_get_buffer_size(m_jc);
 	m_sampleRate =  jack_get_sample_rate(m_jc);
 
-	// set some default attenuations
+	// set some default attenuations, usefull for stress test
 
-
-	// G Node
-		m_nAttMatrix.Index(0,0) = 0.5f;
-		m_iAttMatrix.Index(0,0) = 0.5f;
-	// I nodes
-	for(int n=1; n<m_numInputs+1;n++){
-		m_nAttMatrix.Index(n,0) = 1.0f;
-		m_iAttMatrix.Index(n,0) = 1.0f;
-	}
-	// this is the I->O nodes
-	int minIO = m_numInputs;
-	if(minIO > m_numOutputs) minIO = m_numOutputs;
-	for(int n=1; n < minIO+1; n++){
-		m_nAttMatrix.Index(n,n) = 1.0f;
-		m_iAttMatrix.Index(n,n) = 1.0f;
-	}
-	// O nodes
-	for(int n=1; n<m_numOutputs+1;n++){
-		m_nAttMatrix.Index(0,n) = 1.0f;
-		m_iAttMatrix.Index(0,n) = 1.0f;
+	for(int r=0; r < m_numInputs;r++){
+		for(int c=0; c < m_numOutputs;c++){
+			m_nAttMatrix.Index(r,c) = 0.5f;
+			m_iAttMatrix.Index(r,c) = 0.5f;
+		}
 	}
 
 	// now activate the callback
@@ -154,14 +147,37 @@ int Resound::DSPManager::process(jack_nframes_t nframes)
 							finalAtt = globalAtt * outAtt * inAtt * matAtt; // factor gains together
 							DSPSumToBuss(inputBuffer, outputBuffer, finalAtt ,nframes); // sum onto the buss
 						} // nodes
+						delete inputBuffer;
 					}
-					delete inputBuffer;
 				}// inputs
 			}
+
 			delete outputBuffer;
+
 		} // outputs
 	}//*/
+
+	// compute vu's
+	float rms,peak;
+	AudioBuffer* b;
+	for(int n = 0; n < m_inputs.size(); n++){
+		b = new AudioBuffer((AudioSample*)jack_port_get_buffer(m_inputs[n],nframes),nframes); // we get this one encapsulating the jack port
+		compute_vu_meters(b,nframes,rms,peak);
+		delete b;
+	}
+	for(int n = 0; n < m_outputs.size(); n++){
+		AudioBuffer* b = new AudioBuffer((AudioSample*)jack_port_get_buffer(m_outputs[n],nframes),nframes); // we get this one encapsulating the jack port
+		compute_vu_meters(b,nframes,rms,peak);
+		delete b;
+	}
 	return 0;
+}
+
+
+int Resound::DSPManager::lo_cb_att(const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data){
+	float* f = (float*)user_data; // the user data should be a pointer to the newattmatrix element
+	*f = argv[0]->f; // the argument should be a float
+    return 1;
 }
 
 

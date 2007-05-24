@@ -109,3 +109,7 @@ void Resound::OSCManager::update_clients(){
 	}
 	
 }
+
+void Resound::OSCManager::add_method(std::string path, std::string typeSpec, lo_method_handler handler, void* userData){
+	lo_server_thread_add_method(m_loServerThread, path.c_str(), typeSpec.c_str(), handler, userData);
+}

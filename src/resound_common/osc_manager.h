@@ -49,6 +49,11 @@ public:
 	/// overriders should call the base class first
 	virtual void recv_syn(const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data);
 	virtual void recv_ack(const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data);
+
+	/// register a handler function for an osc address
+	/// simply a wrapper over the liblo version
+	/// lo_server_thread_add_method(...);
+	void add_method(std::string path, std::string typeSpec, lo_method_handler handler, void* userData);
 private:
 	// OSC
 	lo_server_thread m_loServerThread; ///< the liblo server thread

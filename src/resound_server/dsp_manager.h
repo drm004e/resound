@@ -76,11 +76,12 @@ private:
 	jack_nframes_t m_bufferSize; ///< the current bufferSize
 	jack_nframes_t m_sampleRate; ///< the current sample rate
 
-
-
 public: // callbacks
 	/// static dsp process callback
 	static int jack_process_callback(jack_nframes_t nframes, void *arg);
+
+	/// callback from osc att methods
+	static int lo_cb_att(const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data);
 
 };
 }

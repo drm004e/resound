@@ -29,9 +29,9 @@
 
 Resound::DSPManager* s_dsp = 0;
 
-int inputs = 2;
-int outputs = 2;
-std::string port("4567");
+int inputs = 5;
+int outputs = 5;
+std::string port("5678");
 
 /// command line options
 bool parse(int argc, char** argv){

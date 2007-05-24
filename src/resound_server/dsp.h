@@ -12,7 +12,7 @@
 //   GNU General Public License for more details.
 //   
 //   You should have received a copy of the GNU General Public License
-//   along with this program; if not, write to the Free Software
+//   aint with this program; if not, write to the Free Software
 //   Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 //   MA 02111-1307 USA
 //   
@@ -30,7 +30,7 @@ inline float DSPLogInterpolate(float &dest, const float &src, float factor = 0.9
 }
 
 // Take an input buffer and sum it to and output buffer using the gain value specified
-inline void DSPSumToBuss(AudioBuffer* bufferIn, AudioBuffer* bufferOut, float factor, long bufferSize)
+inline void DSPSumToBuss(AudioBuffer* bufferIn, AudioBuffer* bufferOut, float factor, int bufferSize)
 {
 	float* in = bufferIn->get_data_ptr();
 	float* out = bufferOut->get_data_ptr();
@@ -65,13 +65,26 @@ inline void DSPSumToBuss(AudioBuffer* bufferIn, AudioBuffer* bufferOut, float fa
 };
 
 // clear a buffer of its contents
-inline void MemsetBuffer(AudioBuffer* bufferIn, float value, long bufferSize)
+inline void MemsetBuffer(AudioBuffer* bufferIn, float value, int bufferSize)
 {
 	float* buffer = bufferIn->get_data_ptr();
 	while(--bufferSize >= 0) {
 		*buffer = value;
 		++buffer;
 	}
+}
+
+inline void compute_vu_meters(AudioBuffer* bufferIn, int bufferSize, float& rms, float& peak){
+	rms = peak = 0.0f;
+	float* buffer = bufferIn->get_data_ptr();
+	int b = bufferSize;
+	while(--b >= 0) {
+		float t = fabs(*buffer);
+		rms += t;
+		peak = (t > peak) ? t : peak;
+		++buffer;
+	}
+	rms = rms / (float)bufferSize;
 }
 
 } // namespace resound
