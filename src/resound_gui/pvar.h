@@ -21,205 +21,155 @@
 #ifndef SA_PVAR_H
 #define SA_PVAR_H
 
+#include <string>
+#include <vector>
+#include <list>
+#include <map>
+#include <boost/shared_ptr.hpp>
+
 namespace SA
 {
-// PVars are targets for automation and control
-// PVars use integer arithmetic to eliminate rounding errors
-class PVar
+// Parameters are targets for automation and control
+// Parameters use integer arithmetic to eliminate rounding errors
+class Parameter
 {
 public:
-	PVar();
-	virtual ~PVar();
+	Parameter();
+	virtual ~Parameter();
 
 	//values
-	virtual int GetValue(); // obtain the value
-	virtual void SetValue(int oldVal, int newVal); // set using previous value
-	virtual void SetValueDirect(int newVal); // set directly used to initialize
-	virtual void OnValueChanged(); //a virtual function called directly by SetValue and SetValue Direct
-	virtual void Lock(int _lockedValue); // locks the value - the real value will still be changed but GetValue will return the locked value
-	virtual void Unlock(); // get value will return the real value;
+	virtual int get_value(); ///< obtain the value
+	virtual void set_value(int oldVal, int newVal); ///< set using previous value
+	virtual void set_value_direct(int newVal); ///< set directly used to initialize
+	virtual void on_value_changed(); ///<a virtual function called directly by SetValue and SetValue Direct
+	virtual void lock(int lockedValue); ///< locks the value - the real value will still be changed but GetValue will return the locked value
+	virtual void unlock(); ///< get value will return the real value;
 
 	//names
-	void SetName(wxString _name); // name this Pvar
-	wxString GetName();
+	void set_name(std::string name); // name this Pvar
+	std::string get_name();
 
 private:
-	wxString name;
-	int value;
-	int lockedValue;
-	bool isLocked;
+	std::string m_name;
+	int m_value;
+	int m_lockedValue;
+	bool m_isLocked;
 };
 
-// PVars are stored in various locations - behaviours, sub systems etc
-// a PVar address is used to get hold of a PVar
-// the PVarManager deals with this
-class PVarAddress
-{
-public:
-	PVarAddress()
-	{
-		subSystem = type = row = col = -1;
-	}
-	; // null address
-	PVarAddress(int _subSystem, int _type, int _row, int _col)
-	{
-		subSystem = _subSystem;
-		type = _type;
-		row = _row;
-		col = _col;
-	}
-	; // null address
-	// type row and column are sub addresses - the
-	int subSystem; // refers to the subsyetm - ie audiomatrix, behaviour - lighting system etc
-	int type; // sub address A depends on sub system
-	int row; // sub address B row depends on subsystem
-	int col; // sub address C col depends on subsystem
+typedef boost::shared_ptr<Parameter> ParameterPtr;
 
-	void Save(wxDataOutputStream& stream);
-	void Load(wxDataInputStream& stream);
-
-	//usefull operations
-	wxString GetString()
-	{
-		return wxString::Format(_("%d:%d:%d:%d"),subSystem, type, row, col);
-	};
-
-};
-
-// PVarAddressWidgetBase is a base class for gui objects that are linked to a PVarAddresses
-// aimed at use in sub system guis
-class PVarAddressWidgetBase : public wxWindow
-{
-public:
-	PVarAddressWidgetBase(wxWindow* parent, int id, PVarAddress _addr);
-	virtual ~PVarAddressWidgetBase();
-
-	PVarAddress GetAddress();
-protected:
-	PVarAddress addr;
-};
-
-
-
-class PVarSubSystem; // pre define
-
-// panel classes for creating sub system interfaces
-// base classes act lik wxPanels but with extra defined functions
-class PVSSettingsPanel : public wxPanel
-{
-public:
-	PVSSettingsPanel(wxWindow* parent, PVarSubSystem* _subSystem, wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(300,200), long style = wxTAB_TRAVERSAL, const wxString& name = _("panel"));
-protected:
-	PVarSubSystem *subSystem;
-};
-class PVSSelectPanel : public wxPanel
-{
-public:
-	PVSSelectPanel(wxWindow* parent, PVarSubSystem* _subSystem, wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(300,200), long style = wxTAB_TRAVERSAL, const wxString& name = _("panel"));
-protected:
-	PVarSubSystem *subSystem;
-};
-
-// PVar subsystem - A system for mapping PVar addresses to real PVars
-// the subsystem also deals with PVar -> real world variable translation
-// typically this is inherited from
-// the audio matrix is a PVar sub system
-class PVarSubSystem
+// Parameters are stored in various locations - behaviours, sub systems etc
+// a Parameter address is used to get hold of a Parameter
+// the ParameterManager deals with this
+class ParameterAddress
 {
 private:
-	wxString name;
-protected:
-	void SetName(wxString _name)
-	{
-		name = _name;
-	};
-
+	std::string m_address; ///< the url/osc style address
 public:
-	wxString GetName()
-	{
-		return name;
-	};
-	virtual PVSSettingsPanel* SettingsPanel(wxWindow* parent) = 0; // create a sub system settings dialog
-	virtual PVSSelectPanel* SelectPanel(wxWindow* parent) = 0; // create an appropriate dialog for PVar selection return the address or null address
-	virtual PVar& GetPVar(const PVarAddress &addr) = 0; // get a pvar at an address - may return a fake pvar
+	///construct
+	ParameterAddress() : m_address("default"){};
+	/// construct from an address string
+	ParameterAddress(std::string address) : m_address(address){}
+	/// set the address
+	void set_address(std::string address) {m_address=address;}
+	/// return the address
+	std::string get_address() const {return m_address;}
+	/// get sub address
+	std::string get_address_part(int index) const{}; // incomplete
+	/// get number of address parts
+	int get_num_address_parts() const {return 0;}; // incomplete
 
-	int GetId()
-	{
-		return id;
-	};
-private:
-	int id;
-	void SetId(int _id)
-	{
-		id = _id;
-	};
-
-	// freind class
-	friend class PVarSubSystemManager;
+	bool operator < (const ParameterAddress& op) const { return m_address < op.m_address;}
+	bool operator == (const ParameterAddress& op) const { return m_address == op.m_address;}
 };
 
-// a manager class for PVar subsystems
+class ParameterAddressException : public std::exception{
+private:
+	std::string m_addr;
+public:
+	ParameterAddressException(const ParameterAddress& op) : m_addr(op.get_address()){}
+	virtual const char* what() const throw(){ return m_addr.c_str(); }
+	~ParameterAddressException() throw() {}
+};
+
+// Parameter subsystem - A system for mapping Parameter addresses to real Parameters
+// the subsystem also deals with Parameter -> real world variable translation
+// typically this is inherited from.
+// the audio matrix is a Parameter sub system
+class ParameterNamespace
+{
+private:
+	std::string m_name; ///< subsystem name forms the first part of any mapped addresses
+	// so in the address /behaviour/mexican1/freq. /behaviour is the subsystem 
+public:
+	ParameterNamespace(std::string name) : m_name(name) {}
+	/// get the name of this sub system
+	std::string get_name(){return m_name;}
+
+	/// register a parameter at the sub address specified,
+	/// the sub system address will be prepended to the address specified
+	/// and the parameter will be registered with the global system
+	void register_parameter(std::string address, ParameterPtr param);
+};
+
+
+typedef std::map<ParameterAddress, ParameterPtr> ParameterAddressMap;
+typedef std::vector<ParameterNamespace*> ParameterNamespaceList;
+// a manager class for Parameter subsystems
 // subsystems must be manually delete by the creator
 // manager will not deal with them
-class PVarSubSystemManager
+class ParameterNamespaceManager
 {
 private:
 	// singleton
-	PVarSubSystemManager();
-	~PVarSubSystemManager();
-	static PVarSubSystemManager* singleton;
-
+	ParameterNamespaceManager();
+	~ParameterNamespaceManager();
+	static ParameterNamespaceManager* singleton;///<the singleton object ptr
+	ParameterAddressMap m_parameterAddressMap; ///< the global address space
 public:
 
-	static PVarSubSystemManager& GetSingleton();
+	static ParameterNamespaceManager& GetSingleton();
 	static void Destroy();
 
-	void RegisterPVarSubSystem(PVarSubSystem* subSystem);
-	int GetNumSubSystems()
-	{
-		return subSystemList.size();
-	};
-	PVarSubSystem& GetSubSystem(int index)
-	{
-		return *subSystemList[index];
-	};
+	void RegisterParameterNamespace(ParameterNamespace* subSystem);
+	
+	int GetNumSubSystems(){return subSystemList.size();}
+	ParameterNamespace& GetSubSystem(int index){return *subSystemList[index];}
 
-	// pvar related
-	PVar& GetPVar(const PVarAddress &addr);
-	int PeekPVarValue(const PVarAddress &addr);
+	// parameter related
+	ParameterPtr GetParameter(const ParameterAddress &addr);
+	int PeekParameterValue(const ParameterAddress &addr);
+
+	/// register a given parameter at the global path specified
+	void register_parameter(std::string address, ParameterPtr param);
 private:
-	std::vector<PVarSubSystem*> subSystemList;
-	PVar nullPVar;
+	ParameterNamespaceList subSystemList;
 };
 
-// PVars are linked using a PVarlink
+// Parameters are linked using a Parameterlink
 // the link is indirect - ie not with a pointer -
 // this attempts to avoid possible bugs with invalid pointers due to object creation/deletion
-// the link also deals with PVar summing and takes care of previously sent values
-class PVarLink
+// the link also deals with Parameter summing and takes care of previously sent values
+class ParameterLink
 {
 public:
-	PVarLink();
-	PVarLink(const PVarAddress &t);
-	PVarLink(const PVarLink& p); // copy construct
-	PVarLink& operator=(const PVarLink& p); // assignment
-	~PVarLink();
+	ParameterLink();
+	ParameterLink(const ParameterAddress &t);
+	ParameterLink(const ParameterLink& p); // copy construct
+	ParameterLink& operator=(const ParameterLink& p); // assignment
+	virtual ~ParameterLink();
 
-	void SetTarget(const PVarAddress &addr); // set the target
-	PVarAddress GetTarget()
-	{
-		return target;
-	};
+	void SetTarget(const ParameterAddress &addr); // set the target
+	ParameterAddress GetTarget(){return m_targetAddress;}
 	void SetValue(int val); // uses the suming system to set a new value
 	int GetValue(); // get the current value involves a lookup
-	PVar& GetPVar(); // get the target pvar
+	ParameterPtr GetParameter(); // get the target pvar
 
-	void Save(wxDataOutputStream& stream);
-	void Load(wxDataInputStream& stream);
 
 private:
-	PVarAddress target; // NEEDS LOAD/SAVE FUNCTIONS!
-	int lastValue; // the last value sent to the target PVar
+	ParameterAddress m_targetAddress; /// the global address to the parameter
+	int m_lastValue; ///< the last value sent to the target Parameter
+	ParameterPtr m_targetPtr; ///< the actual targeted parameter
 };
 
 // elements are the sub groups of collectives
@@ -227,9 +177,9 @@ private:
 class Element
 {
 private:
-	wxString name;
-	typedef std::vector<PVarLink> PVarLinkArray;
-	PVarLinkArray pVarLinkArray;
+	std::string name;
+	typedef std::vector<ParameterLink> ParameterLinkArray;
+	ParameterLinkArray pVarLinkArray;
 
 public:
 	Element();
@@ -239,30 +189,28 @@ public:
 	void SetValue(int value);
 
 	// collective name
-	wxString GetName()
+	std::string GetName()
 	{
 		return name;
 	};
-	void SetName(wxString _name)
+	void SetName(std::string _name)
 	{
 		name = _name;
 	};
 
-	// save and load
-	void Save(wxDataOutputStream& stream);
-	void Load(wxDataInputStream& stream);
 
-	// PVarLink insert and add
-	void AddLink(const PVarLink& link = PVarLink());
-	void InsertLink(int index, const PVarLink& link = PVarLink());
-	void PrependLink(int index, const PVarLink& link = PVarLink());
+
+	// ParameterLink insert and add
+	void AddLink(const ParameterLink& link = ParameterLink());
+	void InsertLink(int index, const ParameterLink& link = ParameterLink());
+	void PrependLink(int index, const ParameterLink& link = ParameterLink());
 
 	int GetNumLinks()
 	{
 		return pVarLinkArray.size();
 	};
 	// overloaded indexing
-	PVarLink& operator[](int index)
+	ParameterLink& operator[](int index)
 	{
 		return pVarLinkArray[index];
 	};
@@ -274,7 +222,7 @@ public:
 class Collective
 {
 private:
-	wxString name;
+	std::string name;
 	// the array of elements
 	typedef std::vector<Element> ElementArray;
 	ElementArray elementArray;
@@ -287,18 +235,16 @@ public:
 	void SetValue(int value);
 
 	// collective name
-	wxString GetName()
+	std::string GetName()
 	{
 		return name;
 	};
-	void SetName(wxString _name)
+	void SetName(std::string _name)
 	{
 		name = _name;
 	};
 
-	// save and load
-	void Save(wxDataOutputStream& stream);
-	void Load(wxDataInputStream& stream);
+
 
 	// gui helpers
 	void Display();
@@ -334,8 +280,8 @@ public:
 	int GetCursorPosition(); // get the cursor position -1 is head element, 0 is first real element
 	void SetCursorPosition(int newCursorIndex); // set the cursor position
 
-	void AddLink(const PVarLink& link = PVarLink()); // adds a link at the current location
-	void ClearLinks(); // clear all of the PVarLinks at the current cursor location but keep the element itself
+	void AddLink(const ParameterLink& link = ParameterLink()); // adds a link at the current location
+	void ClearLinks(); // clear all of the ParameterLinks at the current cursor location but keep the element itself
 	void Next(); // moves to the next element
 	void Previous(); // moves to the previous element
 	void Insert(const Element& element = Element()); // insert element after current element // cursor is set to the new element
@@ -343,8 +289,8 @@ public:
 	void ShiftRight(); // not implemented yet
 	void Remove(); // removes the current element
 	/* TODO (James#1#): At present Remove() decrements cursor ; it would be better if it
-	                    didn't but this would mean checking if its pointing to 
-	                    an element beyond the end of the collective (i.e. 
+	                    didn't but this would mean checking if its pointing to
+	                    an element beyond the end of the collective (i.e.
 	                    if user deleted the last element) */
 
 	void SetHead(); // move to the head element // move to element -1

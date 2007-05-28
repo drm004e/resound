@@ -48,8 +48,6 @@ public:
 	void OnFaderChanged(wxCommandEvent &event);
 	void SetValue(int value);
 
-	void Save(wxDataOutputStream& stream);
-	void Load(wxDataInputStream& stream);
 
 private:
 

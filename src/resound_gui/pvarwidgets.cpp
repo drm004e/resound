@@ -27,6 +27,43 @@
 
 #include "pvarwidgets.h" // class's header file
 
+// -------------------------------- ParameterAddressWidgetBase --------------------
+SA::ParameterAddressWidgetBase::ParameterAddressWidgetBase(wxWindow* parent, int id, ParameterAddress _addr)
+		: wxWindow(parent,id)
+{
+	addr = _addr;
+}
+SA::ParameterAddressWidgetBase::~ParameterAddressWidgetBase()
+{}
+
+SA::ParameterAddress SA::ParameterAddressWidgetBase::ParameterAddressWidgetBase::GetAddress()
+{
+	return addr;
+};
+
+// -------------------------------- PVSSettingsPanel -------------------------
+
+SA::PVSSettingsPanel::PVSSettingsPanel(wxWindow* parent, ParameterNamespace* _subSystem, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name)
+		: wxPanel(parent, id, pos, size, style, name)
+{
+	subSystem = _subSystem; // store the related sub system
+
+	// construct the sub objects and sizer
+	wxBoxSizer *topSizer = new wxBoxSizer( wxVERTICAL );
+	topSizer->Add(new wxStaticText(this,-1,name));
+	// layout
+	SetSizer(topSizer);
+	topSizer->SetSizeHints(this);   // set size hints to honour minimum size
+	topSizer->Layout();
+}
+
+// -------------------------------- PVSSelectPanel -------------------------
+SA::PVSSelectPanel::PVSSelectPanel(wxWindow* parent, ParameterNamespace* _subSystem, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name)
+		: wxPanel(parent, id, pos, size, style, name)
+{
+	subSystem = _subSystem; // store the related subsystem
+}
+
 // -------------------------------- Collective widget --------------------------------
 // #include "vumeterwidget.h"
 // event table
@@ -113,9 +150,9 @@ void SA::CollectiveWidget::UpdateLink()
 			numMeters = numElements;
 		}
 
-		// Build the PVarVUMeterWidget array
+		// Build the ParameterVUMeterWidget array
 		for(int n = 0; n < numMeters; n++) {
-			PVarVUMeterWidget* widget = new PVarVUMeterWidget(this,-1,0,0,128,_T("image/tinyMeterOff.png"), _T("image/tinyMeterOn.png"));
+			ParameterVUMeterWidget* widget = new ParameterVUMeterWidget(this,-1,0,0,128,_T("image/tinyMeterOff.png"), _T("image/tinyMeterOn.png"));
 			widget->SetTarget((*collective)[n][0].GetTarget()); // assuming always one link per element
 			sizer->Add(widget,wxSizerFlags(0).Align(0).Border(wxRIGHT|wxTOP|wxBOTTOM,1));
 			pVarVUMeterWidgetArray.push_back(widget);
@@ -243,7 +280,7 @@ void SA::CollectiveEditor::UpdateFromCollective()
 			elementSizer->AddSpacer(10);
 			for (int c = 0; c < numLinks; c++) {
 				// get reference to each link in the element and pass to CollectiveLinkWidget
-				wxString linkName = col[r][c].GetPVar().GetName();
+				wxString linkName = _("null name"); //col[r][c].GetParameter().get_name(); // FIXME string conversion
 				CollectiveLinkWidget* linkW = new CollectiveLinkWidget(scWin, c, linkName); // notice ID is c !!
 				elementSizer->Add(linkW, wxSizerFlags(0).Centre());
 			}
@@ -441,12 +478,12 @@ SA::CollectiveBuilder::CollectiveBuilder(wxWindow* parent, Collective* _collecti
 
 	// add pages to notebooks
 	// each page comes from a sub system
-	int numSubSystems = PVarSubSystemManager::GetSingleton().GetNumSubSystems();
+	int numSubSystems = ParameterNamespaceManager::GetSingleton().GetNumSubSystems();
 	for(int n = 0; n < numSubSystems; n++) // for each sub-system
 	{
-		SA::PVarSubSystem &system = PVarSubSystemManager::GetSingleton().GetSubSystem(n);
-		SA::PVSSelectPanel* panel = system.SelectPanel(noteBook);
-		noteBook->AddPage(panel,system.GetName(),false); // add a notebook page (tab)
+		SA::ParameterNamespace &system = ParameterNamespaceManager::GetSingleton().GetSubSystem(n);
+//		SA::PVSSelectPanel* panel = (SA::PVSSelectPanel*)system.SelectPanel(noteBook);  // FIXME removed panel ownership by PNamespaces
+		//noteBook->AddPage(panel,system.get_name(),false); // add a notebook page (tab) // FIXME string conversion
 	}
 
 	// add notebook to topsizer
@@ -484,8 +521,8 @@ void SA::CollectiveBuilder::OnAddressSelected(wxCommandEvent &event)
 {
 	// get the originating object
 	SA::AddressSelectWidget* widget = (SA::AddressSelectWidget*)event.GetEventObject();
-	// add selected link to temporary PVarLink
-	PVarLink tempLink = PVarLink(widget->GetAddress());
+	// add selected link to temporary ParameterLink
+	ParameterLink tempLink = ParameterLink(widget->GetAddress());
 
 	int mouseAction = event.GetInt(); // get the mouse action (int) sent inside the saEVT_PVARADDRESS_SELECT event
 
@@ -541,14 +578,14 @@ void SA::CollectiveBuilder::OnElementSelected(wxCommandEvent &event)
 DEFINE_EVENT_TYPE(SA::saEVT_PVARADDRESS_SELECT)
 
 // event table
-BEGIN_EVENT_TABLE(SA::AddressSelectWidget, SA::PVarAddressWidgetBase)
+BEGIN_EVENT_TABLE(SA::AddressSelectWidget, SA::ParameterAddressWidgetBase)
 EVT_LEFT_UP(SA::AddressSelectWidget::OnLeftMouseUp)
 EVT_RIGHT_UP(SA::AddressSelectWidget::OnRightMouseUp)
 EVT_PAINT(SA::AddressSelectWidget::OnPaint)
 END_EVENT_TABLE()
 
-SA::AddressSelectWidget::AddressSelectWidget(wxWindow* parent, int id, PVarAddress _addr)
-		: PVarAddressWidgetBase(parent,id,_addr)
+SA::AddressSelectWidget::AddressSelectWidget(wxWindow* parent, int id, ParameterAddress _addr)
+		: ParameterAddressWidgetBase(parent,id,_addr)
 {
 
 	SetWindowStyle(wxNO_BORDER | wxCLIP_CHILDREN);
@@ -557,7 +594,7 @@ SA::AddressSelectWidget::AddressSelectWidget(wxWindow* parent, int id, PVarAddre
 	SetMinSize(size);
 	SetMaxSize(size);
 
-	name = PVarSubSystemManager::GetSingleton().GetPVar(addr).GetName();
+	//name = ParameterNamespaceManager::GetSingleton().GetParameter(addr).get_name(); // FIXME string conversion
 
 	SetBackgroundColour(wxColour(100,100,100)); // off white so you can see it // parent should set color
 	SetForegroundColour(wxColour(200,200,200)); // off white so you can see it // parent should set color

@@ -43,7 +43,7 @@ SA::MasterFader::MasterFader(wxWindow* parent, int id)
 
 	// faders meters
 	fader1 = new SA::FaderWidget(this,MFG_FADER1,0,0,128);
-	meter1 = new SA::PVarVUMeterWidget(this,MFG_METER1,rand() % 128,0,128);
+	meter1 = new SA::ParameterVUMeterWidget(this,MFG_METER1,rand() % 128,0,128);
 	meter2 = new SA::VUMeterWidget(this,MFG_METER2,rand() % 128,0,128);
 
 	topTierSizer->Add(fader1,wxSizerFlags(0).Align(0).Border(wxALL,0)); // fader
@@ -89,20 +89,6 @@ void SA::MasterFader::SetValue(int value)
 	fader1->SetValue(value);
 }
 
-void SA::MasterFader::Save(wxDataOutputStream& stream)
-{
-	stream << fader1->GetValue(); // save the current value of this fader
-	collective.Save(stream);
-}
-
-void SA::MasterFader::Load(wxDataInputStream& stream)
-{
-	int v;
-	stream >> v;
-	collective.Load(stream);
-	collectiveWidget->SetCollective(&collective);
-	fader1->SetValue(v); // load value of this fader
-}
 
 void SA::MasterFader::OnMidiMessage(MIDI_BYTE status, MIDI_BYTE dataA, MIDI_BYTE dataB, MIDI_TIME_STAMP timeStamp)
 {

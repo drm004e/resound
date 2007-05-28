@@ -21,6 +21,8 @@
 #ifndef MONITORNODEWIDGET_H
 #define MONITORNODEWIDGET_H
 
+#include "pvarwidgets.h"
+
 namespace SA
 {
 enum MNW_ID
@@ -31,16 +33,16 @@ enum MNW_ID
 };
 // A single node gui object contains various controls for editing
 // a single matrix parameter node
-class MonitorNodeWidget : public PVarAddressWidgetBase
+class MonitorNodeWidget : public ParameterAddressWidgetBase
 {
 public:
 	// class constructor
-	MonitorNodeWidget(wxWindow* parent, int id, PVarAddress _addr);
+	MonitorNodeWidget(wxWindow* parent, int id, ParameterAddress _addr);
 	// class destructor
 	~MonitorNodeWidget();
 private:
 	void OnLockToggle(wxCommandEvent& event);
-	SA::PVarVUMeterWidget *meter;
+	SA::ParameterVUMeterWidget *meter;
 	wxString label;
 	// event handling macro
 	DECLARE_EVENT_TABLE()

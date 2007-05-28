@@ -21,6 +21,8 @@
 #ifndef SA_BEHAVIOUR_H
 #define SA_BEHAVIOUR_H
 
+#include "pvarwidgets.h"
+
 namespace SA
 {
 // data type for class id codes
@@ -69,16 +71,6 @@ struct FourCharId
 		return id < op.id;
 	};
 
-	void Save(wxDataOutputStream& stream)
-	{
-		stream << id;
-	};
-	void Load(wxDataInputStream& stream)
-	{
-		stream >> id;
-	};
-
-	// needs load and save functions!
 };
 
 class BehaviourEditor; // predefinition
@@ -96,13 +88,9 @@ public:
 	Behaviour();
 	virtual ~Behaviour();
 
-	// get PVars
-	int GetNumPVars(); // returns the number of PVars
-	PVar& GetPVar(int index); // obtains a PVar by index
-
 	// set get name
-	void SetName(wxString _name);
-	wxString GetName();
+	void SetName(std::string _name);
+	std::string GetName();
 
 	// get associated ids
 	int GetId()
@@ -114,20 +102,16 @@ public:
 		return classId;
 	};
 
-	// saving and loading
-	virtual void Save(wxDataOutputStream& stream);
-	virtual void Load(wxDataInputStream& stream);
-
 	// setting and getting the collective for this behaviour
 	void SetCollective(const Collective& _coll);
 	Collective& GetCollective();
 
 protected:
 	// operations used in construction
-	void AddPVar(wxString name); // add a new PVar
+	void register_parameter(std::string address, ParameterPtr param); // add a new Parameter, auto register it with the global namespace
 
 private:
-	wxString name;
+	std::string name;
 
 	Collective collective; // this behaviours collective // added 19 july // SAVE THIS
 
@@ -137,13 +121,7 @@ private:
 	// the behaviours editor ptr
 	BehaviourEditor* editor;
 
-	// PVars
-	std::vector<PVar> pVarList;
-
-	// null pvar
-	PVar nullPVar;
-
-	friend class BehaviourManager; // this can set the id
+	friend class BehaviourManager; // this can set the id FIXME friend is probably yoink consider removal
 };
 
 // base class for behaviour editors
@@ -162,14 +140,14 @@ public:
 		factory = 0;
 	}
 	; // default constructor for std::container
-	BehaviourClass(FourCharId _classId, wxString _className, Behaviour::BehaviourFactory _factory);
+	BehaviourClass(FourCharId _classId, std::string _className, Behaviour::BehaviourFactory _factory);
 	FourCharId GetClassId();
-	wxString GetName();
+	std::string GetName();
 	Behaviour* Create(); // create one of these class of behaviour
 
 private:
 	FourCharId classId; // a unique identifier for a behaviour class // see similar to vst plugin 4 char id
-	wxString className;
+	std::string className;
 	Behaviour::BehaviourFactory factory;
 };
 
@@ -199,7 +177,7 @@ public:
 
 /// BehaviourManager : A pvar subsystem for managing behaviours.
 /// it manages all behaviours created and deals with routing of parameters
-class BehaviourManager : public PVarSubSystem
+class BehaviourManager : public ParameterNamespace
 {
 public:
 	BehaviourManager();
@@ -210,20 +188,17 @@ public:
 	Behaviour* CreateBehaviour(FourCharId classId = FourCharId()); // create a behviour and add it to the manager // pops a selector dialog if classId not set
 	void Destroy(); // destroy all behaviours called to clean up
 
-	void Save(wxDataOutputStream& stream);
-	void Load(wxDataInputStream& stream);
 
-	// implement the PVarSubSystem interface
-	virtual PVSSettingsPanel* SettingsPanel(wxWindow* parent); // create a sub system settings dialog
-	virtual PVSSelectPanel* SelectPanel(wxWindow* parent); // create an appropriate dialog for PVar selection return the address or null address
-	virtual PVar& GetPVar(const PVarAddress &addr); // get a pvar at an address - may return a fake pvar
+	// implement the ParameterNamespace interface
+	virtual void* SettingsPanel(wxWindow* parent); // create a sub system settings dialog
+	virtual void* SelectPanel(wxWindow* parent); // create an appropriate dialog for Parameter selection return the address or null address
 
 	BehaviourMap& GetBehaviourMap()
 	{
 		return behaviourMap;
 	};
 private:
-	PVar nullPVar;
+	Parameter nullParameter;
 	int nextId; // id specified to the map as its created
 	BehaviourClassMap classMap; // a list of all registered creatable types
 	BehaviourMap behaviourMap; // maps behaiours to int id's // id's used to look up
@@ -241,7 +216,7 @@ enum BSID
 class BehaviourSelectPanel : public PVSSelectPanel
 {
 public:
-	BehaviourSelectPanel(wxWindow* parent, PVarSubSystem* _subSystem);
+	BehaviourSelectPanel(wxWindow* parent, ParameterNamespace* _subSystem);
 	void BuildPanel();
 private:
 	wxBoxSizer *topSizer;

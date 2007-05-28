@@ -84,18 +84,18 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 	//wxMessageBox(_T("ok"));
 
 	// make the network client
-	amClient = new SA::AMClient(netLog);
+	amClient = new SA::AMClient();
 
 	// make the behaviour sub system
 	theBehaviourManager = new SA::BehaviourManager();
 
 	// register sub systems
 
-	SA::PVarSubSystemManager::GetSingleton().RegisterPVarSubSystem(amClient);
-	SA::PVarSubSystemManager::GetSingleton().RegisterPVarSubSystem(theBehaviourManager);
+	SA::ParameterNamespaceManager::GetSingleton().RegisterParameterNamespace(amClient);
+	SA::ParameterNamespaceManager::GetSingleton().RegisterParameterNamespace(theBehaviourManager);
 
 	// setup midi system
-	/* this system is undefined in linux!! FIXME
+	/* this system is undefined in linux!! FIXME linux midi
 
 	MIDIDeviceNameArray& inNames = MManager::GetSingleton().GetInputDeviceNames();
 	MIDIDeviceNameArray& outNames = MManager::GetSingleton().GetOutputDeviceNames();
@@ -133,7 +133,7 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 
 void MainFrame::OnQuit(wxCommandEvent & WXUNUSED(event)) // THIS SEEMS TO CAUSE AN EXCEPTION!
 {
-	SA::PVarSubSystemManager::Destroy();
+	SA::ParameterNamespaceManager::Destroy();
 	MManager::Destroy();
 
 	delete theBehaviourManager;
@@ -152,7 +152,7 @@ void MainFrame::OnSave(wxCommandEvent& event)
 
 		// create X-platform data output stream from file stream
 		wxDataOutputStream stream(fileStream);
-		Save(stream);
+
 	}
 
 }
@@ -166,7 +166,6 @@ void MainFrame::OnLoad(wxCommandEvent& event)
 
 		// create X-platform data output stream from file stream
 		wxDataInputStream stream(fileStream);
-		Load(stream);
 	}
 }
 
@@ -175,33 +174,6 @@ void MainFrame::OnAbout(wxCommandEvent& event)
 	wxMessageBox(_T("Resound\n Licensed under the terms of the GNU Public Licence Version 2.0\n"), _T("About Resound"));
 }
 
-void MainFrame::Save(wxDataOutputStream& stream)
-{
-	//wxMessageBox(_T("Top-level Save() called"));
-
-	// nothing direct to save here...
-
-	// tell member classes to save to the stream.
-	theBehaviourManager->Save(stream);
-	perfView->Save(stream);
-
-	// write data to the stream
-	//stream << wxString(_T("Test Data"));
-}
-
-void MainFrame::Load(wxDataInputStream& stream)
-{
-	//wxMessageBox(_T("Top-level Load() called"));
-
-	// Reset current data view
-	perfView->Init();
-
-	// nothing to read directly into here...
-
-	// tell member classes to load themselves
-	theBehaviourManager->Load(stream);
-	perfView->Load(stream);
-}
 
 void MainFrame::RebuildGUI()
 {

@@ -59,14 +59,14 @@ void SA::MonitorView::Rebuild()
 	}
 	// construct the sub objects and sizer
 	wxBoxSizer *topSizer = new wxBoxSizer( wxVERTICAL );
-	wxGridSizer* gridSizer = new wxGridSizer(0,amClient->GetNumOutputs()+1,1,1);
+	wxGridSizer* gridSizer = new wxGridSizer(0,amClient->get_num_outputs()+1,1,1);
 
 	scroll = new wxScrolledWindow(this,-1);
 
 	int pId = 0;
-	for(int r = 0; r <= amClient->GetNumInputs(); r++) {
-		for(int c = 0; c <= amClient->GetNumOutputs(); c++) {
-			SA::MonitorNodeWidget *widget = new SA::MonitorNodeWidget(scroll,pId++,PVarAddress(amClient->GetId(),0,r,c));
+	for(int r = 0; r <= amClient->get_num_inputs(); r++) {
+		for(int c = 0; c <= amClient->get_num_outputs(); c++) {
+			SA::MonitorNodeWidget *widget = new SA::MonitorNodeWidget(scroll,pId++,ParameterAddress("null osc address")); // FIXME pvar address
 
 			wxColour bkColour;
 

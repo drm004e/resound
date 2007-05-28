@@ -25,62 +25,63 @@
 
 #include <resound_common/osc_manager.h>
 
+#include "pvarwidgets.h"
+
 namespace SA
 {
 /// An audio matrix specialized pvar.
 /// This class links real float attenuation values in the
-/// audio matrix to the controlable PVars.
-class AMPVar : public PVar
+/// audio matrix to the controlable Parameters.
+class AMParameter : public Parameter
 {
 private:
-	bool needsUpdate; // resound_server needs update
+	bool m_needsUpdate; // resound_server needs update
 	lo_address m_hostAddress; ///< the host address for this server
 	std::string m_oscAddress; ///< the osc path for this node
 public:
 	/// Default constructor
-	AMPVar();
+	AMParameter();
 
 	/// Destructor
-	virtual ~AMPVar();
+	virtual ~AMParameter();
 
-	/// Called automatically by PVar on actual change of value.
-	virtual void OnValueChanged();
+	/// Called automatically by Parameter on actual change of value.
+	virtual void on_value_changed();
 
 	/// Check if the node needs update
-	bool NodeNeedsUpdate();
+	bool node_needs_update();
 
 	/// Update the targeted node.
 	/// Applies CLAMPF and converts from 0..128i to 0..1f
-	void UpdateTarget();
+	void update_osc_target();
 
 	/// set the OSC target of this node
-	void set_target(lo_address host, std::string path);
+	void set_osc_target(lo_address host, std::string path);
 	
 };
 
 /// The client side Audio Matrix Server.
 /// This class deals with the socket event handling for network communication
-class AMClient : public Resound::OSCManager, public PVarSubSystem, public AutomatedObject
+class AMClient : public Resound::OSCManager, public ParameterNamespace, public AutomatedObject
 {
 public:
 	/// Constructor
 	/// @param _log : a pointer to a wxTextCtrl that can be used to log events
-	AMClient(wxTextCtrl* _log);
+	AMClient();
 	~AMClient(); ///< Destructor
 
-	// implement the PVarSubSystem interface
-	virtual PVSSettingsPanel* SettingsPanel(wxWindow* parent); ///< Creates a sub system settings dialog
-	virtual PVSSelectPanel* SelectPanel(wxWindow* parent); ///< create an appropriate dialog for PVar selection return the address or null address
-	virtual PVar& GetPVar(const PVarAddress &addr); ///< get a pvar at an address - may return a fake pvar
+	// implement the ParameterNamespace interface
+	virtual void* SettingsPanel(wxWindow* parent); ///< Creates a sub system settings dialog
+	virtual void* SelectPanel(wxWindow* parent); ///< create an appropriate dialog for Parameter selection return the address or null address
 
-	int GetNumInputs()
+	int get_num_inputs()
 	{
-		return numInputs;
+		return m_numInputs;
 	}
 	; ///< Gets the number of inputs on the current server connection
-	int GetNumOutputs()
+	int get_num_outputs()
 	{
-		return numOutputs;
+		return m_numOutputs;
 	}
 	; ///< Gets the number of outputs on the current server connection
 
@@ -92,23 +93,16 @@ public:
 private:
 
 	// AudioMatrix
-	int numInputs; ///< Number of inputs on the server.
-	int numOutputs; ///< Number of outputs on the server.
+	int m_numInputs; ///< Number of inputs on the server.
+	int m_numOutputs; ///< Number of outputs on the server.
 
 	/// Rebuilds the audio matrix.
 	/// Any previous audio matrix is destroyed.
 	/// @param _numInputs : the number of inputs to build.
 	/// @param _numOutputs : the number of outputs to build.
-	void BuildAudioMatrix(int _numInputs, int _numOutputs);
+	void build_parameter_matrix(int numInputs, int numOutputs);
 
-	Array2<AMPVar> pVarMatrix; ///< AMPVars controlled by user
-
-	wxTextCtrl* log; ///< text control for login purposes passed in constructor
-
-
-	/// Null pVar for use when an invalid address is specified
-	PVar nullPVar;
-
+	Array2<AMParameter> m_parameterMatrix; ///< AMParameters controlled by user
 };
 
 /// An interface panel visible in the collective builder dialog.
@@ -117,7 +111,7 @@ class AudioMatrixSelectPanel : public PVSSelectPanel
 public:
 	/// Constructor
 	/// @param _subsystem : will be cast to AMClient*
-	AudioMatrixSelectPanel(wxWindow* parent, PVarSubSystem* _subSystem);
+	AudioMatrixSelectPanel(wxWindow* parent, ParameterNamespace* _subSystem);
 };
 
 

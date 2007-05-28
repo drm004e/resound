@@ -74,18 +74,18 @@ public:
 	void Tick(float dT); // time elapsed function for decay
 };
 
-// automated vu type meter that background peeks at values in a PVarLink
-class PVarVUMeterWidget  : public StaticVUMeterWidget, public AutomatedObject
+// automated vu type meter that background peeks at values in a ParameterLink
+class ParameterVUMeterWidget  : public StaticVUMeterWidget, public AutomatedObject
 {
 public:
 	// class constructor
-	PVarVUMeterWidget(wxWindow *parent,int id,int _val, int _min, int _max,
+	ParameterVUMeterWidget(wxWindow *parent,int id,int _val, int _min, int _max,
 	                  wxString offFilename = _("image/meterOff.png"),
 	                  wxString onFilename = _("image/meterOn.png"));
 	void Tick(float dT); // time elapsed function for decay
-	void SetTarget(PVarAddress addr);
+	void SetTarget(ParameterAddress addr);
 private:
-	PVarLink target;
+	ParameterLink target;
 };
 
 }

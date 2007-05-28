@@ -30,11 +30,6 @@ public:
 	void OnSave(wxCommandEvent& event);
 	void OnLoad(wxCommandEvent& event);
 
-	// The actual save and load functions for the main frame
-	// Return TRUE (successful) or FALSE (unsuccessful)
-	void Save(wxDataOutputStream& stream);
-	void Load(wxDataInputStream& stream);
-
 	// Tom trying to get to grips with using widgets events
 	void MainFrame::OnAbout(wxCommandEvent& event);
 

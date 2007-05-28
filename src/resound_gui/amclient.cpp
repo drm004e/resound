@@ -30,127 +30,93 @@
 #include "app.h"
 #include "amclient.h" // classes header
 #include <sstream>
-// AMPVar -------------------------------------------------------------------------------------
-SA::AMPVar::AMPVar()
-{
-	needsUpdate = false;
-}
+// AMParameter -------------------------------------------------------------------------------------
+SA::AMParameter::AMParameter() :
+m_needsUpdate(false)
+{}
 
-SA::AMPVar::~AMPVar()
-{
-}
+SA::AMParameter::~AMParameter()
+{}
 
-void SA::AMPVar::OnValueChanged()
+void SA::AMParameter::on_value_changed()
 {
 	// gets called on actual change of value
-	needsUpdate = true;
+	m_needsUpdate = true;
 }
 
 
-bool SA::AMPVar::NodeNeedsUpdate()
+bool SA::AMParameter::node_needs_update()
 {
-	return needsUpdate;
+	return m_needsUpdate;
 }
 
 // called by amclient when updates should be done
-void SA::AMPVar::UpdateTarget()
+void SA::AMParameter::update_osc_target()
 {
 	// update the target value
-	float v = CLAMPF((float)GetValue() * (1.0f/128.0f), 0.0f, 1.0f); // set the value of the node and clamp it
+	float v = CLAMPF((float)get_value() * (1.0f/128.0f), 0.0f, 1.0f); // set the value of the node and clamp it
 	lo_send(m_hostAddress, m_oscAddress.c_str(), "f", v);
-	needsUpdate = false;
+	m_needsUpdate = false;
 }
 
-void SA::AMPVar::set_target(lo_address host, std::string path){
+void SA::AMParameter::set_osc_target(lo_address host, std::string path){
 	m_hostAddress = host;
 	m_oscAddress = path;
 }
 
 // AM Client -------------------------------------------------------------------------------------
 
-SA::AMClient::AMClient(wxTextCtrl* _log) :
-Resound::OSCManager("8765")
+SA::AMClient::AMClient() :
+Resound::OSCManager("8765"),
+SA::ParameterNamespace("audio_matrix")
 {
-
-	SetName(_("Audio Matrix"));
-	log = _log;
-
-	BuildAudioMatrix(10,10); // fake matrix
+	build_parameter_matrix(10,10); // fake matrix
 }
 SA::AMClient::~AMClient()
-{
+{}
 
-}
-
-// build the audio matrix and associated PVars
-void SA::AMClient::BuildAudioMatrix(int _numInputs, int _numOutputs)
+// build the audio matrix and associated Parameters
+void SA::AMClient::build_parameter_matrix(int numInputs, int numOutputs)
 {
 
 	// make pvar matrix
-	pVarMatrix.Create(_numInputs+1,_numOutputs+1);
-	numInputs = _numInputs;
-	numOutputs = _numOutputs;
+	m_parameterMatrix.Create(numInputs+1,numOutputs+1);
+	m_numInputs = numInputs;
+	m_numOutputs = numOutputs;
 
 	lo_address host = lo_address_new(NULL, "5678");
 
 	// fill in pvar details
 	int r,c;
-	for(r = 0; r < pVarMatrix.SizeX(); r++) {
-		for(c = 0; c < pVarMatrix.SizeY(); c++) {
-			wxString name;
-			if(r == 0 && c == 0) // global
-			{
-				name = _("Global : Attenuate");
-			} else if(r > 0 && c ==0) // input
-			{
-				name = wxString::Format(_("In %d Lvl"),r);
-			} else if(r == 0 && c > 0) // output
-			{
-				name = wxString::Format(_("Out %d Lvl"),c);
-			} else // matrix node
-			{
-				name = wxString::Format(_("M %d/%d Lvl"),r,c);
-			}
-			pVarMatrix.Index(r,c).SetName(name); 
+	for(r = 0; r < m_parameterMatrix.SizeX(); r++) {
+		for(c = 0; c < m_parameterMatrix.SizeY(); c++) {
+
+			//create the local parameter and point it at its osc target
 			std::stringstream s;
-			s << "/matrix/att/" << r << "/" << c;
-			pVarMatrix.Index(r,c).set_target(host, s.str());
+			s << "/matrix/att/" << r << "/" << c; // generate the name
+			AMParameter* node = new AMParameter; // make the node
+			node->set_osc_target(host, s.str()); // set the external osc method address
+			register_parameter(s.str(), ParameterPtr(node));
 		}
 	}
 }
 
 
-// implement the PVarSubSystem interface
-SA::PVSSettingsPanel* SA::AMClient::SettingsPanel(wxWindow* parent)
+// implement the ParameterNamespace interface
+void* SA::AMClient::SettingsPanel(wxWindow* parent)
 {
 	// open a sub system settings dialog
 
 	return 0;
 }
 
-SA::PVSSelectPanel* SA::AMClient::SelectPanel(wxWindow* parent)
+void* SA::AMClient::SelectPanel(wxWindow* parent)
 {
-	// open an appropriate dialog for PVar selection return the address or null address
+	// open an appropriate dialog for Parameter selection return the address or null address
 	return new SA::AudioMatrixSelectPanel(parent,this);
 }
 
-SA::PVar& SA::AMClient::GetPVar(const PVarAddress &addr)
-{
-	// get a pvar at an address - may return a fake pvar
-	// validate
-	if(addr.type != 0)
-		return nullPVar; // oooh i donty like this much
 
-	int r = addr.row;
-	int c = addr.col;
-	int rows = pVarMatrix.SizeX();
-	int cols = pVarMatrix.SizeY();
-	if(r >= 0 && r < rows && c >= 0 && c < cols) {
-		return pVarMatrix.Index(r,c);
-	} else {
-		return nullPVar; // oooh i donty like this much
-	}
-}
 
 // tick
 void SA::AMClient::Tick(float dT)
@@ -158,13 +124,12 @@ void SA::AMClient::Tick(float dT)
 	// check pvars against matrix parameters transmit if required
 	// maintain server and client copies
 		int r,c;
-		for(r = 0; r < pVarMatrix.SizeX(); r++) {
-			for(c = 0; c < pVarMatrix.SizeY(); c++) {
-				AMPVar& t = pVarMatrix.Index(r,c);
-				if(t.NodeNeedsUpdate()) // updates the node if required
+		for(r = 0; r < m_parameterMatrix.SizeX(); r++) {
+			for(c = 0; c < m_parameterMatrix.SizeY(); c++) {
+				AMParameter& t = m_parameterMatrix.Index(r,c);
+				if(t.node_needs_update()) // updates the node if required
 				{
-					log->AppendText(wxString::Format(_("Node %d, %d\n"),r,c));
-					t.UpdateTarget(); // this will cause the OSC message to get sent
+					t.update_osc_target(); // this will cause the OSC message to get sent
 				}
 			}
 		}
@@ -172,7 +137,7 @@ void SA::AMClient::Tick(float dT)
 }
 
 // ----------------------------------------- AudioMatrixSelectPanel -----------------
-SA::AudioMatrixSelectPanel::AudioMatrixSelectPanel(wxWindow* parent, PVarSubSystem* _subSystem)
+SA::AudioMatrixSelectPanel::AudioMatrixSelectPanel(wxWindow* parent, ParameterNamespace* _subSystem)
 		: PVSSelectPanel(parent,_subSystem)
 {
 	// cast subsystem to amClient - theoretically it can only be one of these
@@ -180,16 +145,16 @@ SA::AudioMatrixSelectPanel::AudioMatrixSelectPanel(wxWindow* parent, PVarSubSyst
 
 	// construct the sub objects and sizer
 	wxBoxSizer *topSizer = new wxBoxSizer( wxVERTICAL );
-	wxGridSizer* gridSizer = new wxGridSizer(0,amClient->GetNumOutputs()+1,1,1);
+	wxGridSizer* gridSizer = new wxGridSizer(0,amClient->get_num_outputs()+1,1,1);
 
 	wxScrolledWindow *scroll = new wxScrolledWindow(this,-1);
 
 
 
 	topSizer->Add(new wxStaticText(this,-1,_("Select panel")));
-	for(int r = 0; r <= amClient->GetNumInputs(); r++) {
-		for(int c = 0; c <= amClient->GetNumOutputs(); c++) {
-			SA::AddressSelectWidget *panel = new SA::AddressSelectWidget(scroll,-1,PVarAddress(subSystem->GetId(),0,r,c));
+	for(int r = 0; r <= amClient->get_num_inputs(); r++) {
+		for(int c = 0; c <= amClient->get_num_outputs(); c++) {
+			SA::AddressSelectWidget *panel = new SA::AddressSelectWidget(scroll,-1,ParameterAddress("null osc address")); // FIXME: drastic pvar addressing changes 
 
 			wxColour bkColour;
 

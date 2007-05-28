@@ -37,8 +37,6 @@ public:
 	void OnFaderMove(wxCommandEvent& event);
 	void Init(); // set all MasterFader values to zero
 
-	void Save(wxDataOutputStream& stream);
-	void Load(wxDataInputStream& stream);
 
 
 private:

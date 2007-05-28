@@ -21,8 +21,42 @@
 #ifndef SA_PVARWIDGETS_H
 #define SA_PVARWIDGETS_H
 
+#include "vumeterwidget.h"
+#include "faderwidget.h"
+
 namespace SA
 {
+
+
+// ParameterAddressWidgetBase is a base class for gui objects that are linked to a ParameterAddresses
+// aimed at use in sub system guis
+class ParameterAddressWidgetBase : public wxWindow
+{
+public:
+	ParameterAddressWidgetBase(wxWindow* parent, int id, ParameterAddress _addr);
+	virtual ~ParameterAddressWidgetBase();
+
+	ParameterAddress GetAddress();
+protected:
+	ParameterAddress addr;
+};
+
+// panel classes for creating sub system interfaces
+// base classes act lik wxPanels but with extra defined functions
+class PVSSettingsPanel : public wxPanel
+{
+public:
+	PVSSettingsPanel(wxWindow* parent, ParameterNamespace* _subSystem, wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(300,200), long style = wxTAB_TRAVERSAL, const wxString& name = _("panel"));
+protected:
+	ParameterNamespace *subSystem;
+};
+class PVSSelectPanel : public wxPanel
+{
+public:
+	PVSSelectPanel(wxWindow* parent, ParameterNamespace* _subSystem, wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(300,200), long style = wxTAB_TRAVERSAL, const wxString& name = _("panel"));
+protected:
+	ParameterNamespace *subSystem;
+};
 
 // -------------------------------------- Collective Widget --------------------------------------------------
 enum CollectiveWidget_ID
@@ -43,7 +77,7 @@ public:
 	void SetCollective(Collective* _coll);
 	void UpdateLink(); // update the link
 private:
-	std::vector<PVarVUMeterWidget*> pVarVUMeterWidgetArray;
+	std::vector<ParameterVUMeterWidget*> pVarVUMeterWidgetArray;
 	wxBoxSizer *topSizer;
 	wxBoxSizer *meterSizer;
 
@@ -101,8 +135,8 @@ public:
 	    CEW_CM_LEFT_CLICK, // left click moves the cursor to that element
 	    CEW_CM_SHIFT_LEFT, // shift left (context menu) shifts the element to the left in the collective
 	    CEW_CM_SHIFT_RIGHT, // shift right (context menu) shifts the element to the right in the collective
-	    CEW_CM_UNASSIGN, // unassign removes all of the PVarLinks from that element but keeps the element
-	    CEW_CM_REMOVE // remove gets rid of the element and all its nested PVarLinks
+	    CEW_CM_UNASSIGN, // unassign removes all of the ParameterLinks from that element but keeps the element
+	    CEW_CM_REMOVE // remove gets rid of the element and all its nested ParameterLinks
 	};
 	CollectiveElementWidget(wxWindow* parent, int id, bool highlight = false);
 	~CollectiveElementWidget();
@@ -154,7 +188,7 @@ class CollectiveBuilder : public wxPanel
 {
 public:
 	CollectiveBuilder(wxWindow* parent, Collective* _collective);
-	std::vector<PVarAddress> selection;
+	std::vector<ParameterAddress> selection;
 
 private:
 	// event handlers
@@ -176,7 +210,7 @@ DECLARE_EVENT_TYPE(saEVT_PVARADDRESS_SELECT, -1) // this class can trigger a cus
 // respond macro - EVT_COMMAND  (ID_MY_WINDOW, saEVT_PVARADDRESS_SELECT, MyFrame::OnMyEvent)
 // respond range macro - EVT_COMMAND_RANGE  (ID_Lower, ID_Upper, saEVT_PVARADDRESS_SELECT, MyFrame::OnMyEvent)
 // address selection widget
-class AddressSelectWidget : public PVarAddressWidgetBase
+class AddressSelectWidget : public ParameterAddressWidgetBase
 {
 
 public:
@@ -185,7 +219,7 @@ public:
 	    AS_LEFT_CLICK,
 	    AS_RIGHT_CLICK
 	};
-	AddressSelectWidget(wxWindow* parent, int id, PVarAddress _addr);
+	AddressSelectWidget(wxWindow* parent, int id, ParameterAddress _addr);
 	void SendAddressSelectEvent(AS_MOUSE_ACTION mouseAction);
 	void SetSelected(bool b);
 private:

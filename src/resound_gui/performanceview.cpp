@@ -99,18 +99,4 @@ void SA::PerformanceView::Init()
 	}
 }
 
-void SA::PerformanceView::Save(wxDataOutputStream& stream)
-{
-	// call save function on each MasterFader
-	for (int n = 0; n < masterFaderArray.size(); n++) {
-		masterFaderArray[n]->Save(stream);
-	}
-}
 
-void SA::PerformanceView::Load(wxDataInputStream& stream)
-{
-	// call load function on each MasterFader in for loop
-	for (int n = 0; n < masterFaderArray.size(); n++) {
-		masterFaderArray[n]->Load(stream);
-	}
-}

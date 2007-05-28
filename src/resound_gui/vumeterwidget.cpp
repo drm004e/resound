@@ -109,23 +109,27 @@ void SA::VUMeterWidget::Tick(float dT)
 		Refresh(false);
 	}
 }
-// --------------------------------- PVar  vu meter ----------------------
+// --------------------------------- Parameter  vu meter ----------------------
 // class constructor
-SA::PVarVUMeterWidget::PVarVUMeterWidget(wxWindow *parent,int id,int _val, int _min, int _max, wxString offFilename, wxString onFilename)
+SA::ParameterVUMeterWidget::ParameterVUMeterWidget(wxWindow *parent,int id,int _val, int _min, int _max, wxString offFilename, wxString onFilename)
 		: StaticVUMeterWidget(parent, id,_val,_min,_max,offFilename,onFilename)
 {
 }
 // time elapsed function for decay and peak hold extension
-void SA::PVarVUMeterWidget::Tick(float dT)
+void SA::ParameterVUMeterWidget::Tick(float dT)
 {
-	int v = target.GetValue();
-	if(val != v) {
-		val = v;
-		Refresh(false);
+	try{
+		int v = target.GetValue();
+		if(val != v) {
+			val = v;
+			Refresh(false);
+		}
+	} catch (ParameterAddressException& e) {
+		// the target us invalid
 	}
 }
 
-void SA::PVarVUMeterWidget::SetTarget(PVarAddress addr)
+void SA::ParameterVUMeterWidget::SetTarget(ParameterAddress addr)
 {
 	target.SetTarget(addr);
 }

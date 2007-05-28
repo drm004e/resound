@@ -27,11 +27,11 @@
 // ----------------------------------------- Registration function -----------
 void SA::RegisterBaseBehaviours(BehaviourManager* theManager)
 {
-	theManager->RegisterBehaviourClass(BehaviourClass(FourCharId('bpgr'),_T("Proportional Group"), BPGroup::Factory));
-	theManager->RegisterBehaviourClass(BehaviourClass(FourCharId('mpcr'),_T("Multipoint Crossfade"), BMultiCrossfade::Factory));
-	theManager->RegisterBehaviourClass(BehaviourClass(FourCharId('wave'),_T("Sinusoidal Wave"), BWave::Factory));
-	theManager->RegisterBehaviourClass(BehaviourClass(FourCharId('mwve'),_T("Mexican Wave"), BMexicanWave::Factory));
-	theManager->RegisterBehaviourClass(BehaviourClass(FourCharId('rand'),_T("Random"), BRandom::Factory));
+	theManager->RegisterBehaviourClass(BehaviourClass(FourCharId('bpgr'),"Proportional Group", BPGroup::Factory));
+	theManager->RegisterBehaviourClass(BehaviourClass(FourCharId('mpcr'),"Multipoint Crossfade", BMultiCrossfade::Factory));
+	theManager->RegisterBehaviourClass(BehaviourClass(FourCharId('wave'),"Sinusoidal Wave", BWave::Factory));
+	theManager->RegisterBehaviourClass(BehaviourClass(FourCharId('mwve'),"Mexican Wave", BMexicanWave::Factory));
+	theManager->RegisterBehaviourClass(BehaviourClass(FourCharId('rand'),"Random", BRandom::Factory));
 }
 
 // ----------------------------------------- Proportinal group ---------------
@@ -39,9 +39,9 @@ void SA::RegisterBaseBehaviours(BehaviourManager* theManager)
 // class constructor
 SA::BPGroup::BPGroup()
 {
-	AddPVar(_T("Level"));
-	AddPVar(_T("Min"));
-	AddPVar(_T("Max"));
+	register_parameter("level", ParameterPtr(new Parameter));
+	register_parameter("min", ParameterPtr(new Parameter));
+	register_parameter("max", ParameterPtr(new Parameter));
 }
 
 // class destructor
@@ -55,7 +55,7 @@ SA::BPGroup::~BPGroup()
 // class constructor
 SA::BMultiCrossfade::BMultiCrossfade()
 {
-	AddPVar(_T("Position"));
+	register_parameter("position", ParameterPtr(new Parameter));
 }
 
 // class destructor
@@ -66,10 +66,12 @@ SA::BMultiCrossfade::~BMultiCrossfade()
 
 // ---------------------------------------- Wave ----------------------------
 // class constructor
-SA::BWave::BWave()
+SA::BWave::BWave() :
+m_amp(new Parameter),
+m_freq(new Parameter)
 {
-	AddPVar(_T("Amp"));
-	AddPVar(_T("Freq"));
+	register_parameter("amp", m_amp);
+	register_parameter("freq", m_freq);
 
 	// init
 	angle = 0;
@@ -87,8 +89,8 @@ SA::BWave::~BWave()
 void SA::BWave::Tick(float dT)
 {
 	// get pvars and range adjust
-	float amp = (float)GetPVar(0).GetValue() * (1.0f/128.0f);
-	float freq = (float)GetPVar(1).GetValue() * (1.0f/128.0f) * 50.0f;
+	float amp = (float)m_amp->get_value() * (1.0f/128.0f);
+	float freq = (float)m_freq->get_value() * (1.0f/128.0f) * 50.0f;
 
 	// get the target collective
 	Collective& rCol = GetCollective();
@@ -104,10 +106,12 @@ void SA::BWave::Tick(float dT)
 }
 // ---------------------------------------- Mexican Wave ----------------------------
 // class constructor
-SA::BMexicanWave::BMexicanWave()
+SA::BMexicanWave::BMexicanWave() :
+m_amp(new Parameter),
+m_freq(new Parameter)
 {
-	AddPVar(_T("Amp"));
-	AddPVar(_T("Freq"));
+	register_parameter("amp", m_amp);
+	register_parameter("freq", m_freq);
 
 	// init
 	angle = 0;
@@ -120,8 +124,8 @@ SA::BMexicanWave::~BMexicanWave()
 void SA::BMexicanWave::Tick(float dT)
 {
 	// get pvars and range adjust
-	float amp = (float)GetPVar(0).GetValue() * (1.0f/128.0f);
-	float freq = (float)GetPVar(1).GetValue() * (1.0f/128.0f) * 100.0f - 50.0f;
+	float amp = (float)m_amp->get_value() * (1.0f/128.0f);
+	float freq = (float)m_freq->get_value() * (1.0f/128.0f) * 100.0f - 50.0f;
 
 	// get the target collective
 	Collective& rCol = GetCollective();
@@ -141,10 +145,12 @@ void SA::BMexicanWave::Tick(float dT)
 
 // ---------------------------------------- Random ----------------------------
 // class constructor
-SA::BRandom::BRandom()
+SA::BRandom::BRandom() :
+m_amp(new Parameter),
+m_freq(new Parameter)
 {
-	AddPVar(_T("Amp"));
-	AddPVar(_T("Freq"));
+	register_parameter("amp", m_amp);
+	register_parameter("freq", m_freq);
 }
 
 // class destructor
@@ -155,8 +161,8 @@ SA::BRandom::~BRandom()
 void SA::BRandom::Tick(float dT)
 {
 	// get pvars and range adjust
-	float amp = (float)GetPVar(0).GetValue() * (1.0f/128.0f);
-	float freq = (float)GetPVar(1).GetValue() * (1.0f/128.0f) * 100.0f - 50.0f;
+	float amp = (float)m_amp->get_value() * (1.0f/128.0f);
+	float freq = (float)m_freq->get_value() * (1.0f/128.0f) * 100.0f - 50.0f;
 
 	// get the target collective
 	Collective& rCol = GetCollective();

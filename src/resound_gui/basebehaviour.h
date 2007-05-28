@@ -76,6 +76,8 @@ public:
 
 private:
 	float angle;
+	ParameterPtr m_amp;
+	ParameterPtr m_freq;
 
 };
 
@@ -97,12 +99,16 @@ public:
 
 private:
 	float angle;
+	ParameterPtr m_amp;
+	ParameterPtr m_freq;
 
 };
 
 // wave behaviour
 class BRandom : public Behaviour, public AutomatedObject
 {
+	ParameterPtr m_amp;
+	ParameterPtr m_freq;
 public:
 	static Behaviour* Factory()
 	{

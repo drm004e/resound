@@ -24,17 +24,17 @@
 namespace SA
 {
 
-/// Stores preset information for a single PVars Lock status
+/// Stores preset information for a single Parameters Lock status
 /// some extra detail here
-class PVarLockPreset
+class ParameterLockPreset
 {
 public:
-	PVarLockPreset();
-	~PVarLockPreset();
+	ParameterLockPreset();
+	~ParameterLockPreset();
 	void Save(wxDataOutputStream& stream);
 	void Load(wxDataInputStream& stream);
 private:
-	PVarAddress addr;
+	ParameterAddress addr;
 	int value;
 };
 
@@ -52,7 +52,7 @@ private:
 };
 
 /// A single preset contained in a given performance
-/// It will store: Fader Positions, Assignments, Lock status for all subsystem PVars.
+/// It will store: Fader Positions, Assignments, Lock status for all subsystem Parameters.
 class PerformancePreset
 {
 public:
@@ -64,7 +64,7 @@ public:
 	void Load(wxDataInputStream& stream);
 private:
 	std::vector<MasterFaderPreset> masterFaderPresetArray;
-	std::vector<PVarLockPreset> pVarLockPresetArray;
+	std::vector<ParameterLockPreset> pVarLockPresetArray;
 };
 
 /// The bottom level of a saved performance file.

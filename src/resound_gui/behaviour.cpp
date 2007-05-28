@@ -32,35 +32,21 @@ SA::Behaviour::Behaviour()
 // class destructor
 SA::Behaviour::~Behaviour()
 {}
-int SA::Behaviour::GetNumPVars()
-{
-	// returns the number of PVars
-	return pVarList.size();
-}
-SA::PVar& SA::Behaviour::GetPVar(int index)
-{
-	// obtains a PVar by index
-	if(index >= 0 && index < pVarList.size()) {
-		return pVarList[index];
-	} else {
-		return nullPVar;
-	}
-}
+
 
 // operations used in construction
-void SA::Behaviour::AddPVar(wxString name)
+void SA::Behaviour::register_parameter(std::string address, ParameterPtr param)
 {
-	// add a new PVar
-	PVar p;
-	p.SetName(name);
-	pVarList.push_back(p);
+	// add a new Parameter
+	Parameter p;
+	p.set_name(name);
 }
-void SA::Behaviour::SetName(wxString _name)
+void SA::Behaviour::SetName(std::string _name)
 {
 	name = _name;
-	// rename all PVars !
+	// rename all Parameters !
 }
-wxString SA::Behaviour::GetName()
+std::string SA::Behaviour::GetName()
 {
 	return name;
 }
@@ -75,24 +61,11 @@ SA::Collective& SA::Behaviour::GetCollective()
 	return collective;
 }
 
-// saving and loading
-void SA::Behaviour::Save(wxDataOutputStream& stream)
-{
-	stream << id; // save the id for this behaviour instance
-	stream << name; // save the user name for that instance of the behaviour
-	collective.Save(stream); // save the behaviour's collective
-}
 
-void SA::Behaviour::Load(wxDataInputStream& stream)
-{
-	stream >> id; // load the id for this behaviour instance
-	stream >> name; // load the user name for that instance of the behaviour
-	collective.Load(stream); // load the behaviour's collective.
-}
 
 // --------------------------------Behaviour Class--------------------------------
 
-SA::BehaviourClass::BehaviourClass(FourCharId _classId, wxString _className, Behaviour::BehaviourFactory _factory)
+SA::BehaviourClass::BehaviourClass(FourCharId _classId, std::string _className, Behaviour::BehaviourFactory _factory)
 {
 	classId = _classId;
 	className = _className;
@@ -102,7 +75,7 @@ SA::FourCharId SA::BehaviourClass::GetClassId()
 {
 	return classId;
 }
-wxString SA::BehaviourClass::GetName()
+std::string SA::BehaviourClass::GetName()
 {
 	return className;
 }
@@ -114,9 +87,9 @@ SA::Behaviour* SA::BehaviourClass::Create()
 
 // -------------------------------- Behaviour manager ----------------------------
 
-SA::BehaviourManager::BehaviourManager()
+SA::BehaviourManager::BehaviourManager() :
+ParameterNamespace("Behaviour")
 {
-	SetName(_T("Behaviour"));
 	nextId = 0;
 }
 SA::BehaviourManager::~BehaviourManager()
@@ -169,7 +142,7 @@ SA::Behaviour* SA::BehaviourManager::CreateBehaviour(FourCharId classId)
 		for(BehaviourClassMap::iterator i = classMap.begin(); i != classMap.end(); i++)
 		{
 			idLookup.push_back((*i).first); // store the associated FourCharId by index
-			aStr.Add((*i).second.GetName()); // add the string for the dialog
+			//aStr.Add((*i).second.GetName().c_str()); // add the string for the dialog // FIXME wxString conversion problem
 		}
 		int classIndex = wxGetSingleChoiceIndex(_T("Please select a behaviour class"),_T("Select BClass"),aStr);
 
@@ -186,7 +159,7 @@ SA::Behaviour* SA::BehaviourManager::CreateBehaviour(FourCharId classId)
 
 		if(temp) // if its ok
 		{
-			temp->SetName(wxString(_T("new "))+ (*i).second.GetName() + wxString::Format(_T(" Id:%d"),nextId)); // set a temp name
+		//	temp->SetName(std::string("new ")+ (*i).second.GetName() + std::string::Format(_T(" Id:%d"),nextId)); // set a temp name//FIXME string conversion
 			temp->id = nextId; // set an id for the behaviour
 			temp->classId = classId; // set the class id
 			behaviourMap[nextId] = temp; // add to the map
@@ -212,63 +185,21 @@ void SA::BehaviourManager::Destroy()
 }
 
 
-// implement the PVarSubSystem interface
-SA::PVSSettingsPanel* SA::BehaviourManager::SettingsPanel(wxWindow* parent)
+// implement the ParameterNamespace interface
+void* SA::BehaviourManager::SettingsPanel(wxWindow* parent)
 {
 	// open a sub system settings dialog
 
 	return 0;
 }
 
-SA::PVSSelectPanel* SA::BehaviourManager::SelectPanel(wxWindow* parent)
+void* SA::BehaviourManager::SelectPanel(wxWindow* parent)
 {
-	// open an appropriate dialog for PVar selection return the address or null address
+	// open an appropriate dialog for Parameter selection return the address or null address
 	return new SA::BehaviourSelectPanel(parent,this);
 }
 
-SA::PVar& SA::BehaviourManager::GetPVar(const PVarAddress &addr)
-{
-	// get a pvar at an address - may return a fake pvar
-	int id = addr.row;
-	BehaviourMap::iterator i = behaviourMap.find(id);
-	if(i != behaviourMap.end()) {
-		Behaviour* b = (*i).second;
-		return b->GetPVar(addr.col); // may return nullPVar // sort this // exception would be better i think
-	} else {
-		return nullPVar; // sort this out
-	}
-}
 
-void SA::BehaviourManager::Save(wxDataOutputStream& stream)
-{
-	stream << behaviourMap.size();// 1. save the number of behaviour instances
-	stream << nextId; // 2. save the next available behaviour instance ID
-	for (BehaviourMap::iterator i = behaviourMap.begin(); i != behaviourMap.end(); i++) {
-		Behaviour* tempBp = (*i).second; // get pointer to existing behaviour instance
-		FourCharId tempClassId = tempBp->GetClassId(); // get id for that behaviour's class...
-		tempClassId.Save(stream); // 3. ...and save it
-		tempBp->Save(stream); // 4. get that behaviour to save itself
-	}
-}
-
-void SA::BehaviourManager::Load(wxDataInputStream& stream)
-{
-	Destroy();
-	int numOfBehaviourInstances;
-
-	stream >> numOfBehaviourInstances; // 1.
-	stream >> nextId; // 2.
-
-	FourCharId tempClassId;
-	Behaviour* tempBehaviour;
-
-	for (int n = 0; n < numOfBehaviourInstances; n++) {
-		tempClassId.Load(stream); // 3. Get class id for behaviour class
-		tempBehaviour = CreateBehaviourDirect(tempClassId);
-		tempBehaviour->Load(stream); // get the behaviour to load itself
-		behaviourMap[tempBehaviour->GetId()] = tempBehaviour; // add to the map
-	}
-}
 
 
 // ------------------------------------ Behaviour Select Panel -----------------------
@@ -276,7 +207,7 @@ BEGIN_EVENT_TABLE(SA::BehaviourSelectPanel, PVSSelectPanel)
 EVT_BUTTON( BSID_CREATE, SA::BehaviourSelectPanel::OnCreateBehaviour)
 END_EVENT_TABLE()
 
-SA::BehaviourSelectPanel::BehaviourSelectPanel(wxWindow* parent, PVarSubSystem* _subSystem)
+SA::BehaviourSelectPanel::BehaviourSelectPanel(wxWindow* parent, ParameterNamespace* _subSystem)
 		: PVSSelectPanel(parent,_subSystem)
 {
 	// construct the sub objects and sizer
@@ -311,10 +242,12 @@ void SA::BehaviourSelectPanel::BuildPanel()
 		int id = (*i).first;
 		Behaviour* b = (*i).second;
 		wxGridSizer* gridSizer = new wxGridSizer(1,0,1,1);
-		for(int n = 0; n < b->GetNumPVars(); n++) {
-			gridSizer->Add(new SA::AddressSelectWidget(this,-1,PVarAddress(behaviourManager->GetId(),0,id,n)));
+		/* // FIXME Parameter mod
+		for(int n = 0; n < b->GetNumParameters(); n++) {
+			gridSizer->Add(new SA::AddressSelectWidget(this,-1,ParameterAddress("null osc address"))); //FIXME drastic changes to pvar address
 		}
-		sizer->Add(new wxStaticText(this,-1,b->GetName()));
+		//sizer->Add(new wxStaticText(this,-1,b->GetName())); //FIXME wxString conversion
+		*/
 		sizer->Add(gridSizer);
 	}
 

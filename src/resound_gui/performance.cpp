@@ -25,15 +25,15 @@
 namespace SA
 {
 
-//---------------------- PVarLockPreset -------------------------------
+//---------------------- ParameterLockPreset -------------------------------
 
-PVarLockPreset::PVarLockPreset()
+ParameterLockPreset::ParameterLockPreset()
 {}
-PVarLockPreset::~PVarLockPreset()
+ParameterLockPreset::~ParameterLockPreset()
 {}
-void PVarLockPreset::Save(wxDataOutputStream& stream)
+void ParameterLockPreset::Save(wxDataOutputStream& stream)
 {}
-void PVarLockPreset::Load(wxDataInputStream& stream)
+void ParameterLockPreset::Load(wxDataInputStream& stream)
 {}
 
 //-------------------- MasterFaderPreset ------------------------------
