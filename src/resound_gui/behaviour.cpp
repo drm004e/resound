@@ -25,6 +25,7 @@
 #include "pvarwidgets.h"
 #include "behaviour.h" // class's header file
 
+#include <sstream>
 // -------------------------------- Behaviour --------------------------------
 // class constructor
 SA::Behaviour::Behaviour()
@@ -142,9 +143,9 @@ SA::Behaviour* SA::BehaviourManager::CreateBehaviour(FourCharId classId)
 		for(BehaviourClassMap::iterator i = classMap.begin(); i != classMap.end(); i++)
 		{
 			idLookup.push_back((*i).first); // store the associated FourCharId by index
-			//aStr.Add((*i).second.GetName().c_str()); // add the string for the dialog // FIXME wxString conversion problem
+			aStr.Add(wxConvertMB2WX((*i).second.GetName().c_str())); // add the string for the dialog // FIXME wxString conversion problem FIXED
 		}
-		int classIndex = wxGetSingleChoiceIndex(_T("Please select a behaviour class"),_T("Select BClass"),aStr);
+		int classIndex = wxGetSingleChoiceIndex(_T("Please select a behaviour class"),_T("Select Behaviour"),aStr);
 
 		// lookup the index
 		classId = idLookup[classIndex]; // set the class id
@@ -159,7 +160,9 @@ SA::Behaviour* SA::BehaviourManager::CreateBehaviour(FourCharId classId)
 
 		if(temp) // if its ok
 		{
-		//	temp->SetName(std::string("new ")+ (*i).second.GetName() + std::string::Format(_T(" Id:%d"),nextId)); // set a temp name//FIXME string conversion
+			std::stringstream s;
+			s << "new " << (*i).second.GetName() << " Id:" << nextId;
+			temp->SetName(s.str()); // set a temp name//FIXME string conversion FIXED
 			temp->id = nextId; // set an id for the behaviour
 			temp->classId = classId; // set the class id
 			behaviourMap[nextId] = temp; // add to the map

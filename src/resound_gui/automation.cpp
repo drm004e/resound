@@ -23,21 +23,21 @@
 // ----------------------------------------- Automation manager --------------
 
 // null songleton
-SA::AutomationManager* SA::AutomationManager::singleton = 0;
+SA::AutomationManager* SA::AutomationManager::s_singleton = 0;
 
-SA::AutomationManager& SA::AutomationManager::GetSingleton()
+SA::AutomationManager& SA::AutomationManager::get_instance()
 {
-	if(singleton == 0) {
-		singleton = new SA::AutomationManager();
+	if(s_singleton == 0) {
+		s_singleton = new SA::AutomationManager();
 	}
-	return *singleton;
+	return *s_singleton;
 }
 
-void SA::AutomationManager::Destroy()
+void SA::AutomationManager::destroy_instance()
 {
-	if(singleton) {
-		delete singleton;
-		singleton = 0;
+	if(s_singleton) {
+		delete s_singleton;
+		s_singleton = 0;
 	}
 }
 
@@ -46,58 +46,41 @@ void SA::AutomationManager::Destroy()
 // class constructor
 SA::AutomationManager::AutomationManager()
 {
-	Start(1000/25); // start the timer // 5 miliseconds interval
+	// start the timer // 5 miliseconds interval
 	// sort out stopwatch
 	// get accurate timing
-	clock.Start(0);
 }
 
 // class destructor
 SA::AutomationManager::~AutomationManager()
 {
-	Stop();
-
 }
 
-void SA::AutomationManager::AddAutomatedObject(AutomatedObject* object)
+void SA::AutomationManager::add_automated_object(AutomatedObject* object)
 {
-	// add object
-	if(object) {
-		automatedList.push_back(object);
-	}
+	m_automatedList.push_back(object);
 }
-void SA::AutomationManager::RemoveAutomatedObject(AutomatedObject* object)
+void SA::AutomationManager::remove_automated_object(AutomatedObject* object)
 {
 	// remove object
-	automatedList.remove(object);
+	m_automatedList.remove(object);
 }
 
-// used this for notification of timer triggers may change in future
-// due to timing issues on other platforms
-// therefore kept in
-void SA::AutomationManager::Notify()
-{
-	Tick();
-}
 
-void SA::AutomationManager::Tick()
+void SA::AutomationManager::tick(float dT)
 {
-	long t = clock.Time();
-	clock.Start(0);
-
-	float dT = (float)t * 0.001f;
-	for(std::list<AutomatedObject*>::iterator i = automatedList.begin(); i != automatedList.end(); i++) {
-		(*i)->Tick(dT);
+	for(std::list<AutomatedObject*>::iterator i = m_automatedList.begin(); i != m_automatedList.end(); i++) {
+		(*i)->tick(dT);
 	}
 }
 
 // --------------------------------------- Automated Object ----------------------
 SA::AutomatedObject::AutomatedObject()
 {
-	SA::AutomationManager::GetSingleton().AddAutomatedObject(this);
+	SA::AutomationManager::get_instance().add_automated_object(this);
 }
 
 SA::AutomatedObject::~AutomatedObject()
 {
-	SA::AutomationManager::GetSingleton().RemoveAutomatedObject(this);
+	SA::AutomationManager::get_instance().remove_automated_object(this);
 }

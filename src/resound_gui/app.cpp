@@ -79,7 +79,7 @@ int ResoundClientApp::OnRun()
 
 int ResoundClientApp::OnExit()
 {
-	SA::AutomationManager::Destroy();
+	SA::AutomationManager::destroy_instance();
 	SA::SystemLog::Destroy();
 	return wxApp::OnExit();
 }

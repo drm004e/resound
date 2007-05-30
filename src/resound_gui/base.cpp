@@ -84,39 +84,39 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 	//wxMessageBox(_T("ok"));
 
 	// make the network client
-	amClient = new SA::AMClient();
+	m_audioMatrix = new SA::AMClient();
 
 	// make the behaviour sub system
-	theBehaviourManager = new SA::BehaviourManager();
+	m_behaviourManager = new SA::BehaviourManager();
 
 	// register sub systems
 
-	SA::ParameterNamespaceManager::GetSingleton().RegisterParameterNamespace(amClient);
-	SA::ParameterNamespaceManager::GetSingleton().RegisterParameterNamespace(theBehaviourManager);
+	SA::ParameterNamespaceManager::get_instance().register_parameter_namespace(SA::ParameterNamespacePtr(m_audioMatrix));
+	SA::ParameterNamespaceManager::get_instance().register_parameter_namespace(SA::ParameterNamespacePtr(m_behaviourManager));
 
 	// setup midi system
 	/* this system is undefined in linux!! FIXME linux midi
 
-	MIDIDeviceNameArray& inNames = MManager::GetSingleton().GetInputDeviceNames();
-	MIDIDeviceNameArray& outNames = MManager::GetSingleton().GetOutputDeviceNames();
+	MIDIDeviceNameArray& inNames = MManager::get_instance().GetInputDeviceNames();
+	MIDIDeviceNameArray& outNames = MManager::get_instance().GetOutputDeviceNames();
 
 	for(int n = 0; n < inNames.size(); n++) {
 		netLog->AppendText(wxString(_T(" MIDI input device found: ")) + wxString(inNames[n].c_str())+ wxString(_T("\n")));
-		MManager::GetSingleton().OpenInputDevice(n);
+		MManager::get_instance().OpenInputDevice(n);
 	}
 	for(int n = 0; n < outNames.size(); n++) {
 		netLog->AppendText(wxString(_T(" MIDI output device found: ")) + wxString(outNames[n].c_str())+ wxString(_T("\n")));
-		MManager::GetSingleton().OpenOutputDevice(n);
+		MManager::get_instance().OpenOutputDevice(n);
 	}
 	*/
 
 	// add any behaviours
 	// eventually load plugins!
-	RegisterBaseBehaviours(theBehaviourManager);
+	RegisterBaseBehaviours(m_behaviourManager);
 
 	perfView = new SA::PerformanceView(leftBook);
-	monitorView = new SA::MonitorView(leftBook,-1,amClient);
-	behaviourView = new SA::BehaviourView(leftBook,-1,theBehaviourManager);
+	monitorView = new SA::MonitorView(leftBook,-1,m_audioMatrix);
+	behaviourView = new SA::BehaviourView(leftBook,-1,m_behaviourManager);
 	leftBook->AddPage(perfView,_T("Master"),true);
 	leftBook->AddPage(monitorView,_T("Matrix"),false);
 	leftBook->AddPage(behaviourView,_T("Behaviour"),false);
@@ -133,13 +133,9 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 
 void MainFrame::OnQuit(wxCommandEvent & WXUNUSED(event)) // THIS SEEMS TO CAUSE AN EXCEPTION!
 {
-	SA::ParameterNamespaceManager::Destroy();
+	SA::ParameterNamespaceManager::destroy_instance();
 	MManager::Destroy();
-
-	delete theBehaviourManager;
 	PopEventHandler();
-	delete amClient;
-
 	Close(TRUE);
 }
 

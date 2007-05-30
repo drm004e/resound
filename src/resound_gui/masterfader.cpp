@@ -78,7 +78,7 @@ SA::MasterFader::~MasterFader()
 void SA::MasterFader::OnFaderChanged(wxCommandEvent &event)
 {
 	int val = event.GetInt();
-	collective.SetValue(val);
+	collective.set_value(val);
 
 	// send midi message
 	//MManager::GetSingleton().SendMidiMessage(1,MakeStatusByte(MIDI_CONTROL_CHANGE,GetId()),7,val); // FIXME midi fix for linux

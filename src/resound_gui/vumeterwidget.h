@@ -71,7 +71,7 @@ public:
 	VUMeterWidget(wxWindow *parent,int id,int _val, int _min, int _max,
 	              wxString offFilename = _("image/meterOff.png"),
 	              wxString onFilename = _("image/meterOn.png"));
-	void Tick(float dT); // time elapsed function for decay
+	void tick(float dT); // time elapsed function for decay
 };
 
 // automated vu type meter that background peeks at values in a ParameterLink
@@ -82,7 +82,7 @@ public:
 	ParameterVUMeterWidget(wxWindow *parent,int id,int _val, int _min, int _max,
 	                  wxString offFilename = _("image/meterOff.png"),
 	                  wxString onFilename = _("image/meterOn.png"));
-	void Tick(float dT); // time elapsed function for decay
+	void tick(float dT); // time elapsed function for decay
 	void SetTarget(ParameterAddress addr);
 private:
 	ParameterLink target;

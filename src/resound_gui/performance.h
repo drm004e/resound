@@ -30,12 +30,11 @@ class ParameterLockPreset
 {
 public:
 	ParameterLockPreset();
-	~ParameterLockPreset();
-	void Save(wxDataOutputStream& stream);
-	void Load(wxDataInputStream& stream);
+	virtual ~ParameterLockPreset();
+
 private:
-	ParameterAddress addr;
-	int value;
+	ParameterAddress m_addr;
+	int m_value;
 };
 
 /// Stores the preset information for a single Master Fader
@@ -43,12 +42,11 @@ class MasterFaderPreset
 {
 public:
 	MasterFaderPreset();
-	~MasterFaderPreset();
-	void Save(wxDataOutputStream& stream);
-	void Load(wxDataInputStream& stream);
+	virtual ~MasterFaderPreset();
+
 private:
-	int value;
-	Collective target;
+	int m_value;
+	Collective m_target;
 };
 
 /// A single preset contained in a given performance
@@ -59,12 +57,11 @@ public:
 	// class constructor
 	PerformancePreset();
 	// class destructor
-	~PerformancePreset();
-	void Save(wxDataOutputStream& stream);
-	void Load(wxDataInputStream& stream);
+	virtual ~PerformancePreset();
+
 private:
-	std::vector<MasterFaderPreset> masterFaderPresetArray;
-	std::vector<ParameterLockPreset> pVarLockPresetArray;
+	std::vector<MasterFaderPreset> m_masterFaderPresetArray;
+	std::vector<ParameterLockPreset> m_parameterLockPresetArray;
 };
 
 /// The bottom level of a saved performance file.
@@ -75,11 +72,10 @@ public:
 	// class constructor
 	Performance();
 	// class destructor
-	~Performance();
-	void Save(wxDataOutputStream& stream);
-	void Load(wxDataInputStream& stream);
+	virtual ~Performance();
+
 private:
-	std::vector<PerformancePreset> presetArray;
+	std::vector<PerformancePreset> m_presetArray;
 };
 
 } // namespace SA

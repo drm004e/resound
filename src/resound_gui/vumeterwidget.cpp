@@ -100,11 +100,11 @@ SA::VUMeterWidget::VUMeterWidget(wxWindow *parent,int id,int _val, int _min, int
 		: StaticVUMeterWidget(parent, id,_val,_min,_max,offFilename,onFilename)
 {}
 // time elapsed function for decay and peak hold extension
-void SA::VUMeterWidget::Tick(float dT)
+void SA::VUMeterWidget::tick(float dT)
 {
 	if(val > 0) {
 		float v = val;
-		v *= 0.95f;
+		v *= 0.95f; // TODO consider program option for meter falloff
 		val = (int)v;
 		Refresh(false);
 	}
@@ -116,10 +116,10 @@ SA::ParameterVUMeterWidget::ParameterVUMeterWidget(wxWindow *parent,int id,int _
 {
 }
 // time elapsed function for decay and peak hold extension
-void SA::ParameterVUMeterWidget::Tick(float dT)
+void SA::ParameterVUMeterWidget::tick(float dT)
 {
 	try{
-		int v = target.GetValue();
+		int v = target.get_value();
 		if(val != v) {
 			val = v;
 			Refresh(false);
@@ -131,5 +131,5 @@ void SA::ParameterVUMeterWidget::Tick(float dT)
 
 void SA::ParameterVUMeterWidget::SetTarget(ParameterAddress addr)
 {
-	target.SetTarget(addr);
+	target.set_target(addr);
 }

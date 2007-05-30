@@ -50,7 +50,7 @@ SA::BehaviourViewItem::BehaviourViewItem(wxWindow* parent, int id, Behaviour* b)
 
 	// construct the sub objects and sizer
 	wxSizer* topSizer = new wxBoxSizer( wxVERTICAL );
-//	label = new wxStaticText(this,-1,behaviour->GetName());//FIXME string conversion
+	label = new wxStaticText(this,-1,wxString(wxConvertMB2WX(behaviour->GetName().c_str())));//FIXME string conversion FIXED
 	topSizer->Add(label);
 
 	wxSizer* sizer = new wxBoxSizer( wxHORIZONTAL );
@@ -60,9 +60,11 @@ SA::BehaviourViewItem::BehaviourViewItem(wxWindow* parent, int id, Behaviour* b)
 	collectiveWidget = new SA::CollectiveWidget(this,-1,_T("Assign"), &behaviour->GetCollective(), true);
 	sizer->Add(collectiveWidget);
 
-/* FIXME drastic changes to addressing
-	for(int n = 0; n < behaviour->GetNumParameters(); n++) {
-		sizer->Add(new SA::MonitorNodeWidget(this,-1,ParameterAddress("null osc address"))); // FIXME pvar address
+/* FIXME drastic changes to the way behaviours register parameters
+	for(int n = 0; n < behaviour->get_num_parameters(); n++) { 
+		stringstream s;
+		s << "/behaviour/" << behaviour->GetName() << "/" << n;
+		sizer->Add(new SA::MonitorNodeWidget(this,-1,ParameterAddress(s.str()))); // FIXME behaviour parameter addressing
 	}
 */
 	topSizer->Add(sizer);
@@ -81,8 +83,9 @@ SA::BehaviourViewItem::~BehaviourViewItem()
 }
 void SA::BehaviourViewItem::OnRename(wxCommandEvent &event)
 {
-	//behaviour->SetName(wxGetTextFromUser(_("Enter a new name for this behaviour"),_("Name Behaviour"),behaviour->GetName())); // FIXME string conversion
-//	label->SetLabel(behaviour->GetName()); // FIXME string conversion
+	wxString nm(wxConvertMB2WX(behaviour->GetName().c_str()));
+	behaviour->SetName((const char*)wxConvertWX2MB(wxGetTextFromUser(_("Enter a new name for this behaviour"),_("Name Behaviour"),nm))); // FIXME string conversion FIXED
+	label->SetLabel(nm); // FIXME string conversion FIXED
 }
 //----------------------------------------- BehaviourView ---------------------------------
 //events

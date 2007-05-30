@@ -30,6 +30,8 @@
 
 #include "monitorview.h" // class's header file
 
+#include <sstream>
+
 BEGIN_EVENT_TABLE(SA::MonitorView, wxScrolledWindow)
 
 END_EVENT_TABLE()
@@ -66,13 +68,15 @@ void SA::MonitorView::Rebuild()
 	int pId = 0;
 	for(int r = 0; r <= amClient->get_num_inputs(); r++) {
 		for(int c = 0; c <= amClient->get_num_outputs(); c++) {
-			SA::MonitorNodeWidget *widget = new SA::MonitorNodeWidget(scroll,pId++,ParameterAddress("null osc address")); // FIXME pvar address
+			std::stringstream s;
+			s << "/" << amClient->get_name() <<"/matrix/att/" << r << "/" << c; // generate the name
+			SA::MonitorNodeWidget *widget = new SA::MonitorNodeWidget(scroll,pId++,ParameterAddress(s.str())); // FIXME pvar address // FIXED, pending testing
 
 			wxColour bkColour;
 
 			if(r == 0 && c == 0) // global
 			{
-				bkColour = wxColour(50,50,50);
+				bkColour = wxColour(50,50,50); // TODO consider constants or setings for these colors
 			} else if(r > 0 && c ==0) // input
 			{
 				bkColour = wxColour(50,150,50);

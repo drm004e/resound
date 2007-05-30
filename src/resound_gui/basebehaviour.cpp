@@ -86,7 +86,7 @@ SA::BWave::~BWave()
 {}
 
 // overloaded
-void SA::BWave::Tick(float dT)
+void SA::BWave::tick(float dT)
 {
 	// get pvars and range adjust
 	float amp = (float)m_amp->get_value() * (1.0f/128.0f);
@@ -102,7 +102,7 @@ void SA::BWave::Tick(float dT)
 
 	// apply to collective
 	// this will apply to all elements and links
-	rCol.SetValue(val);
+	rCol.set_value(val);
 }
 // ---------------------------------------- Mexican Wave ----------------------------
 // class constructor
@@ -121,7 +121,7 @@ SA::BMexicanWave::~BMexicanWave()
 {}
 
 // overloaded
-void SA::BMexicanWave::Tick(float dT)
+void SA::BMexicanWave::tick(float dT)
 {
 	// get pvars and range adjust
 	float amp = (float)m_amp->get_value() * (1.0f/128.0f);
@@ -130,16 +130,16 @@ void SA::BMexicanWave::Tick(float dT)
 	// get the target collective
 	Collective& rCol = GetCollective();
 
-	float offset = TWOPI / (float)rCol.GetNumElements();
+	float offset = TWOPI / (float)rCol.get_num_elements();
 
 	// calculate wave function
 	angle += dT * freq;
 
 	// apply to collective.Set(n)
-	for(int n = 0; n < rCol.GetNumElements(); n++) {
+	for(int n = 0; n < rCol.get_num_elements(); n++) {
 		float s = sinf(angle + (offset*n)) * amp;
 		int val = (int)(s * 128.0f);
-		rCol[n].SetValue(val);
+		rCol[n].set_value(val);
 	}
 }
 
@@ -158,7 +158,7 @@ SA::BRandom::~BRandom()
 {}
 
 // overloaded
-void SA::BRandom::Tick(float dT)
+void SA::BRandom::tick(float dT)
 {
 	// get pvars and range adjust
 	float amp = (float)m_amp->get_value() * (1.0f/128.0f);
@@ -168,10 +168,10 @@ void SA::BRandom::Tick(float dT)
 	Collective& rCol = GetCollective();
 
 	// apply to collective
-	for(int r = 0; r < rCol.GetNumElements(); r++) {
-		for(int c = 0; c < rCol[r].GetNumLinks(); c++) {
+	for(int r = 0; r < rCol.get_num_elements(); r++) {
+		for(int c = 0; c < rCol[r].get_num_links(); c++) {
 			int val = (int)((float)((rand() % 256) - 128) * amp);
-			rCol[r][c].SetValue(val);
+			rCol[r][c].set_value(val);
 		}
 	}
 

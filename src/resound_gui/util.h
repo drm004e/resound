@@ -21,9 +21,7 @@
 
 // usefull utils globaly defined
 
-// safety with pointers
-
-#define SAFE_DELETE_PTR(p) if(p){ delete p; p = 0; }
+namespace SA{
 
 inline float RANGEMAPF(float v, float iMin, float iMax, float oMin, float oMax)
 {
@@ -42,21 +40,22 @@ inline int RANGEMAP(int v, int iMin, int iMax, int oMin, int oMax)
 
 inline int CLAMP(int v, int min, int max)
 {
-	if(v <= min)
+	if(v < min)
 		return min;
-	if(v >= max)
+	if(v > max)
 		return max;
 	return v;
 }
 
 inline float CLAMPF(float v, float min, float max)
 {
-	if(v <= min)
+	if(v < min)
 		return min;
-	if(v >= max)
+	if(v > max)
 		return max;
 	return v;
 }
 
+}
 
 #endif

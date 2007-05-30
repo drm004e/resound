@@ -26,7 +26,7 @@
 #include "vumeterwidget.h"
 
 #include "pvarwidgets.h" // class's header file
-
+#include <cstring>
 // -------------------------------- ParameterAddressWidgetBase --------------------
 SA::ParameterAddressWidgetBase::ParameterAddressWidgetBase(wxWindow* parent, int id, ParameterAddress _addr)
 		: wxWindow(parent,id)
@@ -140,7 +140,7 @@ void SA::CollectiveWidget::UpdateLink()
 		// instantiated...
 		int numMeters;
 		// this could possibly be done more elegantly
-		int numElements = collective->GetNumElements();
+		int numElements = collective->get_num_elements();
 		if (maxMeters == 0) // ie if we are specifying display as many as possible
 		{
 			numMeters = numElements;
@@ -153,7 +153,7 @@ void SA::CollectiveWidget::UpdateLink()
 		// Build the ParameterVUMeterWidget array
 		for(int n = 0; n < numMeters; n++) {
 			ParameterVUMeterWidget* widget = new ParameterVUMeterWidget(this,-1,0,0,128,_T("image/tinyMeterOff.png"), _T("image/tinyMeterOn.png"));
-			widget->SetTarget((*collective)[n][0].GetTarget()); // assuming always one link per element
+			widget->SetTarget((*collective)[n][0].get_target_address()); // assuming always one link per element
 			sizer->Add(widget,wxSizerFlags(0).Align(0).Border(wxRIGHT|wxTOP|wxBOTTOM,1));
 			pVarVUMeterWidgetArray.push_back(widget);
 		}
@@ -203,7 +203,7 @@ void SA::CollectiveWidget::OnContextEdit(wxCommandEvent &event)
 
 void SA::CollectiveWidget::OnContextDisplay(wxCommandEvent &event)
 {
-	collective->Display();
+	collective->display();
 }
 
 void SA::CollectiveWidget::OnContextUnassign(wxCommandEvent &event)
@@ -249,9 +249,9 @@ void SA::CollectiveEditor::UpdateFromCollective()
 
 	scWin = new wxScrolledWindow(this, -1); // create scrolling window for collective editor
 
-	Collective& col = *collectiveWrapper->GetCollective(); // get reference to the collective via wrapper
-	int numElements = col.GetNumElements(); // find out how many elements are in that collective.
-	int cursorPos = collectiveWrapper->GetCursorPosition(); // get the current cursor position within the collective
+	Collective& col = *collectiveWrapper->get_collective(); // get reference to the collective via wrapper
+	int numElements = col.get_num_elements(); // find out how many elements are in that collective.
+	int cursorPos = collectiveWrapper->get_cursor_position(); // get the current cursor position within the collective
 
 
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxHORIZONTAL); // sizer for whole collective visualisation
@@ -274,13 +274,13 @@ void SA::CollectiveEditor::UpdateFromCollective()
 	} else {
 		for (int r = 0; r < numElements; r++) {
 			wxBoxSizer* elementSizer = new wxBoxSizer(wxVERTICAL); // sizer for each element + links
-			int numLinks = col[r].GetNumLinks();
+			int numLinks = col[r].get_num_links();
 			CollectiveElementWidget* eW = new CollectiveElementWidget(scWin, r, cursorPos==r); // notice ID is r !!
 			elementSizer->Add(eW);
 			elementSizer->AddSpacer(10);
 			for (int c = 0; c < numLinks; c++) {
 				// get reference to each link in the element and pass to CollectiveLinkWidget
-				wxString linkName = _("null name"); //col[r][c].GetParameter().get_name(); // FIXME string conversion
+				wxString linkName(wxConvertMB2WX(col[r][c].get_target_address().get_address().c_str())); // FIXME string conversion
 				CollectiveLinkWidget* linkW = new CollectiveLinkWidget(scWin, c, linkName); // notice ID is c !!
 				elementSizer->Add(linkW, wxSizerFlags(0).Centre());
 			}
@@ -476,15 +476,25 @@ SA::CollectiveBuilder::CollectiveBuilder(wxWindow* parent, Collective* _collecti
 	// add the notebook
 	wxNotebook* noteBook = new wxNotebook(this,-1);
 
+/* //REMOVED DAVE 29/05/07 this is redundant until the redesign of subsystems/namespaces is complete
+   // for now I will add the two namespace guis manually
 	// add pages to notebooks
 	// each page comes from a sub system
-	int numSubSystems = ParameterNamespaceManager::GetSingleton().GetNumSubSystems();
+	int numSubSystems = ParameterNamespaceManager::get_instance().get_num_parameter_namespaces();
 	for(int n = 0; n < numSubSystems; n++) // for each sub-system
 	{
-		SA::ParameterNamespace &system = ParameterNamespaceManager::GetSingleton().GetSubSystem(n);
-//		SA::PVSSelectPanel* panel = (SA::PVSSelectPanel*)system.SelectPanel(noteBook);  // FIXME removed panel ownership by PNamespaces
-		//noteBook->AddPage(panel,system.get_name(),false); // add a notebook page (tab) // FIXME string conversion
+		SA::ParameterNamespace &system = ParameterNamespaceManager::get_instance().get_parameter_namespace(n);
+//		SA::PVSSelectPanel* panel = (SA::PVSSelectPanel*)system.SelectPanel(noteBook);  // FIXME removed panel ownership by PNamespaces FIXED pending testing
+		//noteBook->AddPage(panel,system.get_name(),false); // add a notebook page (tab) // FIXME string conversion FIXED pending testing
 	}
+ END REMOVED DAVE 29/05/07*/
+
+	// adding audio matrix manually see above REMOVED DAVE 29/05/07
+	SA::ParameterNamespace& system = ParameterNamespaceManager::get_instance().get_parameter_namespace(0);
+	SA::PVSSelectPanel* panel = new SA::AudioMatrixSelectPanel(noteBook,&system);
+	noteBook->AddPage(panel,_T("Audio Matrix"),false);
+	// adding behaviour manually see above REMOVED DAVE 29/05/07
+
 
 	// add notebook to topsizer
 	wxStaticBox* noteBookBox = new wxStaticBox(this,-1,_T("Add Parameters to Collective"));
@@ -501,7 +511,7 @@ SA::CollectiveBuilder::CollectiveBuilder(wxWindow* parent, Collective* _collecti
 
 void SA::CollectiveBuilder::OnAddToPalette(wxCommandEvent &event)
 {
-	wxMessageBox(_T("Implement this"));
+	wxMessageBox(_T("Implement this")); //TODO on add to palette
 }
 
 
@@ -530,11 +540,11 @@ void SA::CollectiveBuilder::OnAddressSelected(wxCommandEvent &event)
 
 	switch (mouseAction) {
 	case AddressSelectWidget::AS_LEFT_CLICK:
-		collectiveWrapper->Insert(); // whop a new element in
-		collectiveWrapper->AddLink(tempLink);
+		collectiveWrapper->insert(); // whop a new element in
+		collectiveWrapper->add_link(tempLink);
 		break;
 	case AddressSelectWidget::AS_RIGHT_CLICK:
-		collectiveWrapper->AddLink(tempLink);
+		collectiveWrapper->add_link(tempLink);
 		break;
 	}
 
@@ -544,7 +554,7 @@ void SA::CollectiveBuilder::OnAddressSelected(wxCommandEvent &event)
 
 void SA::CollectiveBuilder::OnElementSelected(wxCommandEvent &event)
 {
-	collectiveWrapper->SetCursorPosition(event.GetId()); // just set cursor position
+	collectiveWrapper->set_cursor_position(event.GetId()); // just set cursor position
 	int action = event.GetInt(); // get the action to be performed on the collective from the event
 	// -- see CollectiveElementWidget::SendElementSelectedEvent(CEW_CM action)
 
@@ -554,17 +564,17 @@ void SA::CollectiveBuilder::OnElementSelected(wxCommandEvent &event)
 		// Nothing else to do here; cursor position has already been set
 		break;
 	case CollectiveElementWidget::CEW_CM_SHIFT_LEFT:
-		collectiveWrapper->ShiftLeft();
+		collectiveWrapper->shift_left();
 		break;
 	case CollectiveElementWidget::CEW_CM_SHIFT_RIGHT:
-		collectiveWrapper->ShiftRight();
+		collectiveWrapper->shift_right();
 		break;
 	case CollectiveElementWidget::CEW_CM_UNASSIGN:
 		// collectiveWrapper->ClearLinks(); // I HAVEN'T PUT THIS IN CollectiveCursorEdit CLASS YET!!!
 		break;
 	case CollectiveElementWidget::CEW_CM_REMOVE:
-		collectiveWrapper->Remove();
-		collectiveWrapper->Next(); // increment the cursor
+		collectiveWrapper->remove();
+		collectiveWrapper->next(); // increment the cursor
 		break;
 	}
 	collectiveEditor->UpdateFromCollective(); // update the editor to reflect changes to the collective

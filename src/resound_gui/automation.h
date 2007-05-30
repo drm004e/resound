@@ -23,34 +23,28 @@
 
 // Automation manager singleton class
 
+
 namespace SA
 {
 
 class AutomatedObject; // pre declare
+typedef std::list<AutomatedObject*> AutomatedObjectList; ///< not using smart pointers here because, we are expecting multiple inheretance
 
-class AutomationManager : public wxTimer
+class AutomationManager 
 {
 public:
-	static AutomationManager& GetSingleton();
-	static void Destroy();
+	static AutomationManager& get_instance();
+	static void destroy_instance();
 
-	void AddAutomatedObject(AutomatedObject* object); // add object
-	void RemoveAutomatedObject(AutomatedObject* object); // remove object
-	void Tick(); // master tick function
+	void add_automated_object(AutomatedObject* object); // add object
+	void remove_automated_object(AutomatedObject* object); // remove object
+	void tick(float dT); // master tick function
 
 private:
-	static AutomationManager* singleton;
+	static AutomationManager* s_singleton;
 	AutomationManager(); // private constructor/destuctor because its a singleton
 	~AutomationManager();
-
-	// timer callback may operate in own thread - CAREFULL
-	// timer accuracy is not garanteed to anything usefull so use stopwatch - attached to proc
-	// may need to do this platform dependent
-	virtual void Notify();
-
-	wxStopWatch clock;
-
-	std::list<AutomatedObject*> automatedList;
+	AutomatedObjectList m_automatedList;
 };
 
 // workhorse automation object should be inherited to register automotive effects
@@ -59,9 +53,7 @@ class AutomatedObject
 public:
 	AutomatedObject();
 	virtual ~AutomatedObject();
-
-	virtual void Tick(float dT) = 0; // pure abstract function for automation events
-
+	virtual void tick(float dT) = 0; // pure abstract function for automation events
 };
 
 }

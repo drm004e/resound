@@ -119,7 +119,7 @@ void* SA::AMClient::SelectPanel(wxWindow* parent)
 
 
 // tick
-void SA::AMClient::Tick(float dT)
+void SA::AMClient::tick(float dT)
 {
 	// check pvars against matrix parameters transmit if required
 	// maintain server and client copies
@@ -154,7 +154,9 @@ SA::AudioMatrixSelectPanel::AudioMatrixSelectPanel(wxWindow* parent, ParameterNa
 	topSizer->Add(new wxStaticText(this,-1,_("Select panel")));
 	for(int r = 0; r <= amClient->get_num_inputs(); r++) {
 		for(int c = 0; c <= amClient->get_num_outputs(); c++) {
-			SA::AddressSelectWidget *panel = new SA::AddressSelectWidget(scroll,-1,ParameterAddress("null osc address")); // FIXME: drastic pvar addressing changes 
+			std::stringstream s;
+			s << "/" << amClient->get_name() <<"/matrix/att/" << r << "/" << c; // generate the name
+			SA::AddressSelectWidget *panel = new SA::AddressSelectWidget(scroll,-1,ParameterAddress(s.str())); // FIXME drastic pvar addressing changes // FIXED, pending testing
 
 			wxColour bkColour;
 

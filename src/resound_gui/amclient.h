@@ -88,7 +88,7 @@ public:
 	/// Automated update.
 	/// Overriden from AutomatedObject,
 	/// Causes the audiomatrix to be scanned, any changed matrix nodes are transmitted to the server.
-	virtual void Tick(float dT);
+	virtual void tick(float dT);
 
 private:
 

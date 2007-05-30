@@ -40,8 +40,8 @@ private:
 	SA::MonitorView* monitorView; // VIEWER - NOTHING TO SAVE/LOAD
 	SA::BehaviourView* behaviourView; // VIEWER - NOTHING TO SAVE/LOAD
 
-	SA::AMClient *amClient; // NETWORK SUB-SYSTEM - NOTHING TO SAVE/LOAD
-	SA::BehaviourManager *theBehaviourManager; // REQUIRES SAVING
+	SA::AMClient *m_audioMatrix; // NETWORK SUB-SYSTEM - NOTHING TO SAVE/LOAD
+	SA::BehaviourManager *m_behaviourManager; // REQUIRES SAVING
 
 	DECLARE_EVENT_TABLE()
 };

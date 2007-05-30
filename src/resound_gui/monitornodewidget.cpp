@@ -45,7 +45,7 @@ SA::MonitorNodeWidget::MonitorNodeWidget(wxWindow* parent, int id, ParameterAddr
 	// construct the sub objects and sizer
 	wxBoxSizer *topSizer = new wxBoxSizer( wxHORIZONTAL );
 	wxBoxSizer *leftSizer = new wxBoxSizer( wxVERTICAL );
-	//label = (const char*)ParameterNamespaceManager::GetSingleton().GetParameter(addr).get_name().c_str(); FIXME std::string->wxString conversion
+	//label = (const char*)ParameterNamespaceManager::get_instance().GetParameter(addr).get_name().c_str(); FIXME std::string->wxString conversion
 	leftSizer->Add(new wxStaticText(this,MNW_LABEL,label, wxPoint(0,0),wxSize(40,18),wxALIGN_CENTRE),wxSizerFlags(0).Align(0).Border(wxALL,0));
 	leftSizer->Add(new wxToggleButton(this,MNW_LOCKBUTTON,_("L"), wxPoint(0,0),wxSize(20,20)),wxSizerFlags(0).Center().Border(wxALL,0));
 	topSizer->Add(leftSizer);
@@ -68,8 +68,8 @@ void SA::MonitorNodeWidget::OnLockToggle(wxCommandEvent& event)
 
 	bool isSelected = event.IsChecked();
 	if(isSelected) {
-		ParameterNamespaceManager::GetSingleton().GetParameter(GetAddress())->lock(128); //FIXME note use of 128 constant here?
+		ParameterNamespaceManager::get_instance().get_parameter(GetAddress())->lock(128); //FIXME note use of 128 constant here?
 	} else {
-		ParameterNamespaceManager::GetSingleton().GetParameter(GetAddress())->unlock();
+		ParameterNamespaceManager::get_instance().get_parameter(GetAddress())->unlock();
 	}
 }

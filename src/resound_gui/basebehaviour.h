@@ -72,7 +72,7 @@ public:
 	~BWave();
 
 	// overloaded
-	virtual void Tick(float dT);
+	virtual void tick(float dT);
 
 private:
 	float angle;
@@ -95,7 +95,7 @@ public:
 	~BMexicanWave();
 
 	// overloaded
-	virtual void Tick(float dT);
+	virtual void tick(float dT);
 
 private:
 	float angle;
@@ -120,7 +120,7 @@ public:
 	~BRandom();
 
 	// overloaded
-	virtual void Tick(float dT);
+	virtual void tick(float dT);
 };
 
 }

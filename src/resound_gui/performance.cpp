@@ -31,10 +31,7 @@ ParameterLockPreset::ParameterLockPreset()
 {}
 ParameterLockPreset::~ParameterLockPreset()
 {}
-void ParameterLockPreset::Save(wxDataOutputStream& stream)
-{}
-void ParameterLockPreset::Load(wxDataInputStream& stream)
-{}
+
 
 //-------------------- MasterFaderPreset ------------------------------
 
@@ -42,10 +39,7 @@ MasterFaderPreset::MasterFaderPreset()
 {}
 MasterFaderPreset::~MasterFaderPreset()
 {}
-void MasterFaderPreset::Save(wxDataOutputStream& stream)
-{}
-void MasterFaderPreset::Load(wxDataInputStream& stream)
-{}
+
 
 //------------------------- PreformancePreset --------------------------
 
@@ -53,10 +47,7 @@ PerformancePreset::PerformancePreset()
 {}
 PerformancePreset::~PerformancePreset()
 {}
-void PerformancePreset::Save(wxDataOutputStream& stream)
-{}
-void PerformancePreset::Load(wxDataInputStream& stream)
-{}
+
 
 //------------------------- Performance ------------------------------------
 
@@ -64,9 +55,6 @@ Performance::Performance()
 {}
 Performance::~Performance()
 {}
-void Performance::Save(wxDataOutputStream& stream)
-{}
-void Performance::Load(wxDataInputStream& stream)
-{}
+
 
 } // namespace SA
