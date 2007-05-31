@@ -21,7 +21,7 @@
 #ifndef VUMETER_H
 #define VUMETER_H
 
-namespace SA
+namespace Resound
 {
 
 // A Vu meter class for use with audio programs

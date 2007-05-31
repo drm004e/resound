@@ -36,26 +36,47 @@ INCLUDE(Use_wxWindows)
 
 # build the excecutable
 add_executable (resound_gui
-	amclient.cpp       
-	app.cpp            
-	automation.cpp     
-	basebehaviour.cpp  
-	base.cpp           
-	behaviour.cpp      
-	behaviourview.cpp  
-	faderwidget.cpp 
-	masterfader.cpp        
-	mmanager.cpp           
-	#mmanagerwin32.cpp      
-	monitorframe.cpp       
-	monitornodewidget.cpp  
+	amclient.cpp
+	amclient.h
+	app.cpp
+	app.h
+	automation.cpp
+	automation.h
+	basebehaviour.cpp
+	basebehaviour.h
+	base.cpp
+	base.h
+	behaviour.cpp
+	behaviour.h
+	behaviourview.cpp
+	behaviourview.h
+	coherency.cpp
+	coherency.h
+	faderwidget.cpp
+	faderwidget.h
+	masterfader.cpp
+	masterfader.h
+	mmanager.cpp
+	mmanager.h
+	mmanagerwin32.cpp #win32
+	mmanagerwin32.h #win32
+	monitorframe.cpp
+	monitorframe.h
+	monitornodewidget.cpp
+	monitornodewidget.h
 	monitorview.cpp
+	monitorview.h
 	performance.cpp
+	performance.h
 	performanceview.cpp
+	performanceview.h
 	pvar.cpp
+	pvar.h
 	pvarwidgets.cpp
-	#sim_base.cpp
+	pvarwidgets.h
 	vumeterwidget.cpp
+	vumeterwidget.h
+	util.h
 )
 #link with libs
 target_link_libraries (resound_gui resound_common)

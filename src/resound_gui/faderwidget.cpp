@@ -23,18 +23,18 @@
 #include "faderwidget.h" // class's header file
 
 // implement custom events
-DEFINE_EVENT_TYPE(SA::saEVT_FADER_CHANGED)
+DEFINE_EVENT_TYPE(Resound::saEVT_FADER_CHANGED)
 
 // event table
-BEGIN_EVENT_TABLE(SA::FaderWidget, wxControl)
-EVT_PAINT(SA::FaderWidget::OnPaint)
-EVT_LEFT_DOWN(SA::FaderWidget::OnLeftMouseDown)
-EVT_LEFT_UP(SA::FaderWidget::OnLeftMouseUp)
-EVT_MOTION(SA::FaderWidget::OnMouseMotion)
+BEGIN_EVENT_TABLE(Resound::FaderWidget, wxControl)
+EVT_PAINT(Resound::FaderWidget::OnPaint)
+EVT_LEFT_DOWN(Resound::FaderWidget::OnLeftMouseDown)
+EVT_LEFT_UP(Resound::FaderWidget::OnLeftMouseUp)
+EVT_MOTION(Resound::FaderWidget::OnMouseMotion)
 END_EVENT_TABLE()
 
 // class constructor
-SA::FaderWidget::FaderWidget(wxWindow *parent, int id, int _val, int _min, int _max)
+Resound::FaderWidget::FaderWidget(wxWindow *parent, int id, int _val, int _min, int _max)
 		: wxControl(parent, id,wxPoint(0,0), wxSize(0,0))
 {
 	// insert your code here
@@ -66,14 +66,14 @@ SA::FaderWidget::FaderWidget(wxWindow *parent, int id, int _val, int _min, int _
 }
 
 // class destructor
-SA::FaderWidget::~FaderWidget()
+Resound::FaderWidget::~FaderWidget()
 {
 	// insert your code here
 }
 
 
 // paint handling
-void SA::FaderWidget::OnPaint(wxPaintEvent& event)
+void Resound::FaderWidget::OnPaint(wxPaintEvent& event)
 {
 	wxBufferedPaintDC dc(this);
 
@@ -85,7 +85,7 @@ void SA::FaderWidget::OnPaint(wxPaintEvent& event)
 }
 // mouse handling
 
-void SA::FaderWidget::OnLeftMouseDown(wxMouseEvent& event)
+void Resound::FaderWidget::OnLeftMouseDown(wxMouseEvent& event)
 {
 	int y = event.GetY();
 	int newVal = RANGEMAP(y,0,sizeY,max,min); // inverse map
@@ -94,11 +94,11 @@ void SA::FaderWidget::OnLeftMouseDown(wxMouseEvent& event)
 	event.Skip();
 	CaptureMouse();
 }
-void SA::FaderWidget::OnLeftMouseUp(wxMouseEvent& event)
+void Resound::FaderWidget::OnLeftMouseUp(wxMouseEvent& event)
 {
 	ReleaseMouse();
 }
-void SA::FaderWidget::OnMouseMotion(wxMouseEvent& event)
+void Resound::FaderWidget::OnMouseMotion(wxMouseEvent& event)
 {
 	if(event.Dragging()) {
 		int y = event.GetY();
@@ -111,7 +111,7 @@ void SA::FaderWidget::OnMouseMotion(wxMouseEvent& event)
 
 
 // settings
-void SA::FaderWidget::SetValue(int _val)
+void Resound::FaderWidget::SetValue(int _val)
 {
 	if(val != _val) {
 		// value has changed so update the value
@@ -134,12 +134,12 @@ void SA::FaderWidget::SetValue(int _val)
 	}
 };
 
-int SA::FaderWidget::GetValue()
+int Resound::FaderWidget::GetValue()
 {
 	return val;
 }
 
-void SA::FaderWidget::SetRange(int _min, int _max)
+void Resound::FaderWidget::SetRange(int _min, int _max)
 {
 	if(_min < _max) {
 		min = _min;
@@ -149,6 +149,6 @@ void SA::FaderWidget::SetRange(int _min, int _max)
 };
 
 // time elapsed function for decay and peak hold extension
-void SA::FaderWidget::Tick(float dT)
+void Resound::FaderWidget::Tick(float dT)
 {}
 

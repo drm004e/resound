@@ -25,19 +25,19 @@
 #include "basebehaviour.h" // class's header file
 
 // ----------------------------------------- Registration function -----------
-void SA::RegisterBaseBehaviours(BehaviourManager* theManager)
+void Resound::register_base_behaviours(BehaviourManager* theManager)
 {
-	theManager->RegisterBehaviourClass(BehaviourClass(FourCharId('bpgr'),"Proportional Group", BPGroup::Factory));
-	theManager->RegisterBehaviourClass(BehaviourClass(FourCharId('mpcr'),"Multipoint Crossfade", BMultiCrossfade::Factory));
-	theManager->RegisterBehaviourClass(BehaviourClass(FourCharId('wave'),"Sinusoidal Wave", BWave::Factory));
-	theManager->RegisterBehaviourClass(BehaviourClass(FourCharId('mwve'),"Mexican Wave", BMexicanWave::Factory));
-	theManager->RegisterBehaviourClass(BehaviourClass(FourCharId('rand'),"Random", BRandom::Factory));
+	theManager->register_behaviour_class_factory(BehaviourClassFactory("bpgr", "Proportional Group", BPGroup::Factory));
+	theManager->register_behaviour_class_factory(BehaviourClassFactory("mpcr", "Multipoint Crossfade", BMultiCrossfade::Factory));
+	theManager->register_behaviour_class_factory(BehaviourClassFactory("wave", "Sinusoidal Wave", BWave::Factory));
+	theManager->register_behaviour_class_factory(BehaviourClassFactory("mwve", "Mexican Wave", BMexicanWave::Factory));
+	theManager->register_behaviour_class_factory(BehaviourClassFactory("rand", "Random", BRandom::Factory));
 }
 
 // ----------------------------------------- Proportinal group ---------------
 
 // class constructor
-SA::BPGroup::BPGroup()
+Resound::BPGroup::BPGroup()
 {
 	register_parameter("level", ParameterPtr(new Parameter));
 	register_parameter("min", ParameterPtr(new Parameter));
@@ -45,7 +45,7 @@ SA::BPGroup::BPGroup()
 }
 
 // class destructor
-SA::BPGroup::~BPGroup()
+Resound::BPGroup::~BPGroup()
 {
 	// insert your code here
 }
@@ -53,20 +53,20 @@ SA::BPGroup::~BPGroup()
 // ---------------------------------------- Multicrossfade ------------------
 
 // class constructor
-SA::BMultiCrossfade::BMultiCrossfade()
+Resound::BMultiCrossfade::BMultiCrossfade()
 {
 	register_parameter("position", ParameterPtr(new Parameter));
 }
 
 // class destructor
-SA::BMultiCrossfade::~BMultiCrossfade()
+Resound::BMultiCrossfade::~BMultiCrossfade()
 {
 	// insert your code here
 }
 
 // ---------------------------------------- Wave ----------------------------
 // class constructor
-SA::BWave::BWave() :
+Resound::BWave::BWave() :
 m_amp(new Parameter),
 m_freq(new Parameter)
 {
@@ -82,18 +82,18 @@ m_freq(new Parameter)
 	personnaly I would prefer the table lookup*/
 }
 // class destructor
-SA::BWave::~BWave()
+Resound::BWave::~BWave()
 {}
 
 // overloaded
-void SA::BWave::tick(float dT)
+void Resound::BWave::tick(float dT)
 {
 	// get pvars and range adjust
 	float amp = (float)m_amp->get_value() * (1.0f/128.0f);
 	float freq = (float)m_freq->get_value() * (1.0f/128.0f) * 50.0f;
 
 	// get the target collective
-	Collective& rCol = GetCollective();
+	Collective& rCol = get_collective();
 
 	// calculate wave function
 	angle += dT * freq;
@@ -106,7 +106,7 @@ void SA::BWave::tick(float dT)
 }
 // ---------------------------------------- Mexican Wave ----------------------------
 // class constructor
-SA::BMexicanWave::BMexicanWave() :
+Resound::BMexicanWave::BMexicanWave() :
 m_amp(new Parameter),
 m_freq(new Parameter)
 {
@@ -117,18 +117,18 @@ m_freq(new Parameter)
 	angle = 0;
 }
 // class destructor
-SA::BMexicanWave::~BMexicanWave()
+Resound::BMexicanWave::~BMexicanWave()
 {}
 
 // overloaded
-void SA::BMexicanWave::tick(float dT)
+void Resound::BMexicanWave::tick(float dT)
 {
 	// get pvars and range adjust
 	float amp = (float)m_amp->get_value() * (1.0f/128.0f);
 	float freq = (float)m_freq->get_value() * (1.0f/128.0f) * 100.0f - 50.0f;
 
 	// get the target collective
-	Collective& rCol = GetCollective();
+	Collective& rCol = get_collective();
 
 	float offset = TWOPI / (float)rCol.get_num_elements();
 
@@ -145,7 +145,7 @@ void SA::BMexicanWave::tick(float dT)
 
 // ---------------------------------------- Random ----------------------------
 // class constructor
-SA::BRandom::BRandom() :
+Resound::BRandom::BRandom() :
 m_amp(new Parameter),
 m_freq(new Parameter)
 {
@@ -154,18 +154,18 @@ m_freq(new Parameter)
 }
 
 // class destructor
-SA::BRandom::~BRandom()
+Resound::BRandom::~BRandom()
 {}
 
 // overloaded
-void SA::BRandom::tick(float dT)
+void Resound::BRandom::tick(float dT)
 {
 	// get pvars and range adjust
 	float amp = (float)m_amp->get_value() * (1.0f/128.0f);
 	float freq = (float)m_freq->get_value() * (1.0f/128.0f) * 100.0f - 50.0f;
 
 	// get the target collective
-	Collective& rCol = GetCollective();
+	Collective& rCol = get_collective();
 
 	// apply to collective
 	for(int r = 0; r < rCol.get_num_elements(); r++) {

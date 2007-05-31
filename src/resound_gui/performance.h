@@ -21,7 +21,7 @@
 #ifndef SA_PERFORMANCE_H
 #define SA_PERFORMANCE_H
 
-namespace SA
+namespace Resound
 {
 
 /// Stores preset information for a single Parameters Lock status
@@ -78,5 +78,5 @@ private:
 	std::vector<PerformancePreset> m_presetArray;
 };
 
-} // namespace SA
+} // namespace Resound
 #endif // SA_PERFORMANCE_H

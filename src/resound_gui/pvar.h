@@ -26,7 +26,7 @@
 #include <map>
 #include <boost/shared_ptr.hpp>
 
-namespace SA
+namespace Resound
 {
 /// Parameters are targets for automation and control
 /// Parameters use integer arithmetic to eliminate rounding errors

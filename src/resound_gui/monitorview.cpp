@@ -32,12 +32,12 @@
 
 #include <sstream>
 
-BEGIN_EVENT_TABLE(SA::MonitorView, wxScrolledWindow)
+BEGIN_EVENT_TABLE(Resound::MonitorView, wxScrolledWindow)
 
 END_EVENT_TABLE()
 
 // class constructor
-SA::MonitorView::MonitorView(wxWindow* parent, int id, AMClient* _amClient)
+Resound::MonitorView::MonitorView(wxWindow* parent, int id, AMClient* _amClient)
 		: wxScrolledWindow(parent, id, wxPoint(0,0), wxSize(320,240))/* TODO (dave#1#): not sure this should be a scrolled window */
 {
 	amClient = _amClient;
@@ -47,13 +47,13 @@ SA::MonitorView::MonitorView(wxWindow* parent, int id, AMClient* _amClient)
 }
 
 // class destructor
-SA::MonitorView::~MonitorView()
+Resound::MonitorView::~MonitorView()
 {
 	// insert your code here
 
 }
 
-void SA::MonitorView::Rebuild()
+void Resound::MonitorView::Rebuild()
 {
 	wxSizer* oldSizer = GetSizer();
 	if(scroll) {
@@ -70,7 +70,7 @@ void SA::MonitorView::Rebuild()
 		for(int c = 0; c <= amClient->get_num_outputs(); c++) {
 			std::stringstream s;
 			s << "/" << amClient->get_name() <<"/matrix/att/" << r << "/" << c; // generate the name
-			SA::MonitorNodeWidget *widget = new SA::MonitorNodeWidget(scroll,pId++,ParameterAddress(s.str())); // FIXME pvar address // FIXED, pending testing
+			Resound::MonitorNodeWidget *widget = new Resound::MonitorNodeWidget(scroll,pId++,ParameterAddress(s.str())); // FIXME pvar address // FIXED, pending testing
 
 			wxColour bkColour;
 

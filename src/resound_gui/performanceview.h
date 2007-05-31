@@ -21,7 +21,7 @@
 #ifndef PERFORMANCEVIEW_H
 #define PERFORMANCEVIEW_H
 
-namespace SA
+namespace Resound
 {
 // Main performance area sub window
 //  - contains main faders and preset selection

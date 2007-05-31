@@ -21,20 +21,20 @@
 #ifndef BEHAVIOURVIEW_H
 #define BEHAVIOURVIEW_H
 
-namespace SA
+namespace Resound
 {
 // item class used in behaviour view
 class BehaviourViewItem : public wxPanel
 {
 public:
 	// class constructor
-	BehaviourViewItem(wxWindow* parent, int id, Behaviour* b);
+	BehaviourViewItem(wxWindow* parent, int id, BehaviourPtr b);
 	// class destructor
 	~BehaviourViewItem();
 private:
 
 	CollectiveWidget* collectiveWidget; // a collective widget for this behaviour view
-	Behaviour* behaviour;
+	BehaviourPtr behaviour;
 	wxStaticText* label;
 	void OnRename(wxCommandEvent &event);
 	DECLARE_EVENT_TABLE()

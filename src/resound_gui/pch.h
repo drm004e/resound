@@ -46,7 +46,6 @@
 // library headers
 #include <resound_common/array2.h>
 #include <resound_common/exception.h>
-#include <resound_common/systemlog.h>
 
 // constants
 const float PI = 3.141592f;

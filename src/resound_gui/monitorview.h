@@ -23,7 +23,7 @@
 
 
 
-namespace SA
+namespace Resound
 {
 
 // monitor viewing and control class

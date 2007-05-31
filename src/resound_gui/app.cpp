@@ -47,7 +47,6 @@ bool ResoundClientApp::OnInit()
 {
 	wxInitAllImageHandlers();
 	try {
-		DEBUG_TRACE(_T("ResoundClientApp::OnInit"));
 		MainFrame *win = new MainFrame(_T("Resound Client"), wxPoint (100, 100),wxSize(0, 0));
 		
 		win->Show(TRUE);
@@ -56,10 +55,8 @@ bool ResoundClientApp::OnInit()
 		return true;
 	} catch(std::exception& e) {
 		wxMessageBox(wxString(e.what(), *wxConvCurrent),_T("Unhandled Exception"));
-		SA::SYSTEM_LOG_STREAM() << _T("! Unhandled std::exception: ") << wxString(e.what(), *wxConvCurrent) << _T("\n");
 	} catch(...) {
 		wxMessageBox(_T("Resound has encountered an unexpected exception\nand has been forced to shutdown."),_T("Unhandled Exception"));
-		SA::SYSTEM_LOG_STREAM() << _T("! Unhandled unknown exception\n");
 	}
 	return false;
 }
@@ -70,17 +67,14 @@ int ResoundClientApp::OnRun()
 		wxApp::OnRun();
 	} catch(std::exception& e) {
 		wxMessageBox(wxString(e.what(), *wxConvCurrent),_T("Unhandled Exception"));
-		SA::SYSTEM_LOG_STREAM() << _T("! Unhandled std::exception: ") << wxString(e.what(), *wxConvCurrent) << _T("\n");
 	} catch(...) {
 		wxMessageBox(_T("Resound has encountered an unexpected exception\nand has been forced to shutdown."),_T("Unhandled Exception"));
-		SA::SYSTEM_LOG_STREAM() << _T("! Unhandled unknown exception\n");
 	}
 }
 
 int ResoundClientApp::OnExit()
 {
-	SA::AutomationManager::destroy_instance();
-	SA::SystemLog::Destroy();
+	Resound::AutomationManager::destroy_instance();
 	return wxApp::OnExit();
 }
 

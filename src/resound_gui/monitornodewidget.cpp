@@ -25,13 +25,13 @@
 #include "monitornodewidget.h" // class's header file
 
 // event table
-BEGIN_EVENT_TABLE(SA::MonitorNodeWidget, SA::ParameterAddressWidgetBase)
-EVT_TOGGLEBUTTON(MNW_LOCKBUTTON, SA::MonitorNodeWidget::OnLockToggle)
+BEGIN_EVENT_TABLE(Resound::MonitorNodeWidget, Resound::ParameterAddressWidgetBase)
+EVT_TOGGLEBUTTON(MNW_LOCKBUTTON, Resound::MonitorNodeWidget::OnLockToggle)
 END_EVENT_TABLE()
 
 // class constructor
-SA::MonitorNodeWidget::MonitorNodeWidget(wxWindow* parent, int id, ParameterAddress _addr)
-		: SA::ParameterAddressWidgetBase(parent,id,_addr)
+Resound::MonitorNodeWidget::MonitorNodeWidget(wxWindow* parent, int id, ParameterAddress _addr)
+		: Resound::ParameterAddressWidgetBase(parent,id,_addr)
 {
 	SetWindowStyle(wxSIMPLE_BORDER | wxCLIP_CHILDREN);
 	SetBackgroundColour(wxColour(30,100,150));
@@ -49,7 +49,7 @@ SA::MonitorNodeWidget::MonitorNodeWidget(wxWindow* parent, int id, ParameterAddr
 	leftSizer->Add(new wxStaticText(this,MNW_LABEL,label, wxPoint(0,0),wxSize(40,18),wxALIGN_CENTRE),wxSizerFlags(0).Align(0).Border(wxALL,0));
 	leftSizer->Add(new wxToggleButton(this,MNW_LOCKBUTTON,_("L"), wxPoint(0,0),wxSize(20,20)),wxSizerFlags(0).Center().Border(wxALL,0));
 	topSizer->Add(leftSizer);
-	meter = new SA::ParameterVUMeterWidget(this,MNW_METER,rand() % 128,0,128,_("image/smMeterOff.png"),_("image/smMeterOn.png"));
+	meter = new Resound::ParameterVUMeterWidget(this,MNW_METER,rand() % 128,0,128,_("image/smMeterOff.png"),_("image/smMeterOn.png"));
 	meter->SetTarget(addr);
 	topSizer->Add(meter,wxSizerFlags(0).Align(0).Border(wxALL,0)); //meter1
 	SetSizer(topSizer);
@@ -58,12 +58,12 @@ SA::MonitorNodeWidget::MonitorNodeWidget(wxWindow* parent, int id, ParameterAddr
 }
 
 // class destructor
-SA::MonitorNodeWidget::~MonitorNodeWidget()
+Resound::MonitorNodeWidget::~MonitorNodeWidget()
 {
 	// insert your code here
 }
 
-void SA::MonitorNodeWidget::OnLockToggle(wxCommandEvent& event)
+void Resound::MonitorNodeWidget::OnLockToggle(wxCommandEvent& event)
 {
 
 	bool isSelected = event.IsChecked();

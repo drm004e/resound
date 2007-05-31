@@ -28,15 +28,15 @@
 #include "amclient.h"
 #include "monitorframe.h" // class's header file
 
-BEGIN_EVENT_TABLE(SA::MonitorFrame, wxFrame)
+BEGIN_EVENT_TABLE(Resound::MonitorFrame, wxFrame)
 
 END_EVENT_TABLE()
 
 // class constructor
-SA::MonitorFrame::MonitorFrame(wxWindow* parent, int id, const wxPoint &pos, const wxSize &size)
+Resound::MonitorFrame::MonitorFrame(wxWindow* parent, int id, const wxPoint &pos, const wxSize &size)
 		: wxFrame(parent, id, _("Monitor"), pos, size)
 {
-	monitorView = new SA::MonitorView(this,-1,0); ///FIXME passing a null pointer her to make it compile
+	monitorView = new Resound::MonitorView(this,-1,0); ///FIXME passing a null pointer her to make it compile
 	// create top sizer and fill with stuff
 	wxBoxSizer *topSizer = new wxBoxSizer( wxVERTICAL );
 	topSizer->Add(monitorView,wxSizerFlags(0).Center().Border(wxALL,0));
@@ -46,7 +46,7 @@ SA::MonitorFrame::MonitorFrame(wxWindow* parent, int id, const wxPoint &pos, con
 }
 
 // class destructor
-SA::MonitorFrame::~MonitorFrame()
+Resound::MonitorFrame::~MonitorFrame()
 {
 	// insert your code here
 }

@@ -34,12 +34,12 @@
 
 //------------------------------------------ BehaviourViewItem ----------------------------
 //events
-BEGIN_EVENT_TABLE(SA::BehaviourViewItem, wxPanel)
-EVT_BUTTON(BSID_RENAME, SA::BehaviourViewItem::OnRename)
+BEGIN_EVENT_TABLE(Resound::BehaviourViewItem, wxPanel)
+EVT_BUTTON(BSID_RENAME, Resound::BehaviourViewItem::OnRename)
 END_EVENT_TABLE()
 
 // class constructor
-SA::BehaviourViewItem::BehaviourViewItem(wxWindow* parent, int id, Behaviour* b)
+Resound::BehaviourViewItem::BehaviourViewItem(wxWindow* parent, int id, BehaviourPtr b)
 		: wxPanel(parent, id)
 {
 	behaviour = b;
@@ -50,21 +50,21 @@ SA::BehaviourViewItem::BehaviourViewItem(wxWindow* parent, int id, Behaviour* b)
 
 	// construct the sub objects and sizer
 	wxSizer* topSizer = new wxBoxSizer( wxVERTICAL );
-	label = new wxStaticText(this,-1,wxString(wxConvertMB2WX(behaviour->GetName().c_str())));//FIXME string conversion FIXED
+	label = new wxStaticText(this,-1,wxString(wxConvertMB2WX(behaviour->get_name().c_str())));//FIXME string conversion FIXED
 	topSizer->Add(label);
 
 	wxSizer* sizer = new wxBoxSizer( wxHORIZONTAL );
 
 	sizer->Add(new wxButton(this,BSID_EDITOR,_("Editor")));
 	sizer->Add(new wxButton(this,BSID_RENAME,_("Rename")));
-	collectiveWidget = new SA::CollectiveWidget(this,-1,_T("Assign"), &behaviour->GetCollective(), true);
+	collectiveWidget = new Resound::CollectiveWidget(this,-1,_T("Assign"), &behaviour->get_collective(), true);
 	sizer->Add(collectiveWidget);
 
 /* FIXME drastic changes to the way behaviours register parameters
 	for(int n = 0; n < behaviour->get_num_parameters(); n++) { 
 		stringstream s;
 		s << "/behaviour/" << behaviour->GetName() << "/" << n;
-		sizer->Add(new SA::MonitorNodeWidget(this,-1,ParameterAddress(s.str()))); // FIXME behaviour parameter addressing
+		sizer->Add(new Resound::MonitorNodeWidget(this,-1,ParameterAddress(s.str()))); // FIXME behaviour parameter addressing
 	}
 */
 	topSizer->Add(sizer);
@@ -77,24 +77,24 @@ SA::BehaviourViewItem::BehaviourViewItem(wxWindow* parent, int id, Behaviour* b)
 
 
 // class destructor
-SA::BehaviourViewItem::~BehaviourViewItem()
+Resound::BehaviourViewItem::~BehaviourViewItem()
 {
 	// insert your code here
 }
-void SA::BehaviourViewItem::OnRename(wxCommandEvent &event)
+void Resound::BehaviourViewItem::OnRename(wxCommandEvent &event)
 {
-	wxString nm(wxConvertMB2WX(behaviour->GetName().c_str()));
-	behaviour->SetName((const char*)wxConvertWX2MB(wxGetTextFromUser(_("Enter a new name for this behaviour"),_("Name Behaviour"),nm))); // FIXME string conversion FIXED
+	wxString nm(wxConvertMB2WX(behaviour->get_name().c_str()));
+	behaviour->set_name((const char*)wxConvertWX2MB(wxGetTextFromUser(_("Enter a new name for this behaviour"),_("Name Behaviour"),nm))); // FIXME string conversion FIXED
 	label->SetLabel(nm); // FIXME string conversion FIXED
 }
 //----------------------------------------- BehaviourView ---------------------------------
 //events
-BEGIN_EVENT_TABLE(SA::BehaviourView, wxScrolledWindow)
-EVT_BUTTON( BSID_CREATE, SA::BehaviourView::OnCreateBehaviour)
+BEGIN_EVENT_TABLE(Resound::BehaviourView, wxScrolledWindow)
+EVT_BUTTON( BSID_CREATE, Resound::BehaviourView::OnCreateBehaviour)
 END_EVENT_TABLE()
 
 // class constructor
-SA::BehaviourView::BehaviourView(wxWindow* parent, int id, BehaviourManager* manager)
+Resound::BehaviourView::BehaviourView(wxWindow* parent, int id, BehaviourManager* manager)
 		: wxScrolledWindow(parent, id, wxPoint(0,0), wxSize(320,240))
 {
 	behaviourManager = manager;
@@ -117,31 +117,31 @@ SA::BehaviourView::BehaviourView(wxWindow* parent, int id, BehaviourManager* man
 
 
 // class destructor
-SA::BehaviourView::~BehaviourView()
+Resound::BehaviourView::~BehaviourView()
 {
 	// insert your code here
 }
 
-void SA::BehaviourView::BuildPanel()
+void Resound::BehaviourView::BuildPanel()
 {
 	// build of the panel
 	behaviourSizer->Remove(0); // remove old sizer
 	wxBoxSizer* sizer = new wxBoxSizer( wxVERTICAL );
 	behaviourSizer->Add(sizer);
-	for(BehaviourMap::iterator i = behaviourManager->GetBehaviourMap().begin(); i !=  behaviourManager->GetBehaviourMap().end(); i++) {
+	for(BehaviourMap::iterator i = behaviourManager->get_behaviour_map().begin(); i !=  behaviourManager->get_behaviour_map().end(); i++) {
 		int id = (*i).first;
-		Behaviour* b = (*i).second;
+		BehaviourPtr b = (*i).second;
 		sizer->Add(new BehaviourViewItem(this,-1,b));
 	}
 	topSizer->SetSizeHints(this);   // set size hints to honour minimum size
 	topSizer->Layout();
 }
 
-void SA::BehaviourView::OnCreateBehaviour(wxCommandEvent &event)
+void Resound::BehaviourView::OnCreateBehaviour(wxCommandEvent &event)
 {
 	try {
-		behaviourManager->CreateBehaviour();
-	} catch(SA::CreateBehaviourException& e) {
+		behaviourManager->create_behaviour();
+	} catch(Resound::CreateBehaviourException& e) {
 		//Cancel was pressed so ignore this exception here.
 	}
 	BuildPanel();

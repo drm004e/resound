@@ -23,7 +23,7 @@
 
 #include "pvarwidgets.h"
 
-namespace SA
+namespace Resound
 {
 enum MNW_ID
 {
@@ -42,7 +42,7 @@ public:
 	~MonitorNodeWidget();
 private:
 	void OnLockToggle(wxCommandEvent& event);
-	SA::ParameterVUMeterWidget *meter;
+	Resound::ParameterVUMeterWidget *meter;
 	wxString label;
 	// event handling macro
 	DECLARE_EVENT_TABLE()

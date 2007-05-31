@@ -23,17 +23,17 @@
 // ----------------------------------------- Automation manager --------------
 
 // null songleton
-SA::AutomationManager* SA::AutomationManager::s_singleton = 0;
+Resound::AutomationManager* Resound::AutomationManager::s_singleton = 0;
 
-SA::AutomationManager& SA::AutomationManager::get_instance()
+Resound::AutomationManager& Resound::AutomationManager::get_instance()
 {
 	if(s_singleton == 0) {
-		s_singleton = new SA::AutomationManager();
+		s_singleton = new Resound::AutomationManager();
 	}
 	return *s_singleton;
 }
 
-void SA::AutomationManager::destroy_instance()
+void Resound::AutomationManager::destroy_instance()
 {
 	if(s_singleton) {
 		delete s_singleton;
@@ -44,7 +44,7 @@ void SA::AutomationManager::destroy_instance()
 // -------------
 
 // class constructor
-SA::AutomationManager::AutomationManager()
+Resound::AutomationManager::AutomationManager()
 {
 	// start the timer // 5 miliseconds interval
 	// sort out stopwatch
@@ -52,22 +52,22 @@ SA::AutomationManager::AutomationManager()
 }
 
 // class destructor
-SA::AutomationManager::~AutomationManager()
+Resound::AutomationManager::~AutomationManager()
 {
 }
 
-void SA::AutomationManager::add_automated_object(AutomatedObject* object)
+void Resound::AutomationManager::add_automated_object(AutomatedObject* object)
 {
 	m_automatedList.push_back(object);
 }
-void SA::AutomationManager::remove_automated_object(AutomatedObject* object)
+void Resound::AutomationManager::remove_automated_object(AutomatedObject* object)
 {
 	// remove object
 	m_automatedList.remove(object);
 }
 
 
-void SA::AutomationManager::tick(float dT)
+void Resound::AutomationManager::tick(float dT)
 {
 	for(std::list<AutomatedObject*>::iterator i = m_automatedList.begin(); i != m_automatedList.end(); i++) {
 		(*i)->tick(dT);
@@ -75,12 +75,12 @@ void SA::AutomationManager::tick(float dT)
 }
 
 // --------------------------------------- Automated Object ----------------------
-SA::AutomatedObject::AutomatedObject()
+Resound::AutomatedObject::AutomatedObject()
 {
-	SA::AutomationManager::get_instance().add_automated_object(this);
+	Resound::AutomationManager::get_instance().add_automated_object(this);
 }
 
-SA::AutomatedObject::~AutomatedObject()
+Resound::AutomatedObject::~AutomatedObject()
 {
-	SA::AutomationManager::get_instance().remove_automated_object(this);
+	Resound::AutomationManager::get_instance().remove_automated_object(this);
 }

@@ -28,12 +28,12 @@
 #include "performanceview.h" // class's header file
 
 // event table
-BEGIN_EVENT_TABLE(SA::PerformanceView, wxScrolledWindow)
-EVT_COMMAND_RANGE(0,127,saEVT_FADER_CHANGED, SA::PerformanceView::OnFaderMove)
+BEGIN_EVENT_TABLE(Resound::PerformanceView, wxScrolledWindow)
+EVT_COMMAND_RANGE(0,127,saEVT_FADER_CHANGED, Resound::PerformanceView::OnFaderMove)
 END_EVENT_TABLE()
 
 // class constructor
-SA::PerformanceView::PerformanceView(wxWindow* parent)
+Resound::PerformanceView::PerformanceView(wxWindow* parent)
 		: wxScrolledWindow(parent, wxID_ANY, wxPoint(0,0), wxSize(320,240))
 {
 	// insert your code here
@@ -42,7 +42,7 @@ SA::PerformanceView::PerformanceView(wxWindow* parent)
 	wxBoxSizer *upperTierSizer = new wxBoxSizer( wxHORIZONTAL );
 	wxBoxSizer *lowerTierSizer = new wxBoxSizer( wxHORIZONTAL );
 
-	SA::MasterFader* temp; // temporary, for storing MasterFaders in fader array.
+	Resound::MasterFader* temp; // temporary, for storing MasterFaders in fader array.
 
 	int fId = 0;
 	int n, g;
@@ -51,7 +51,7 @@ SA::PerformanceView::PerformanceView(wxWindow* parent)
 		wxBoxSizer* grp = new wxBoxSizer(wxHORIZONTAL);
 		for(g = 0; g < 4; g++)
 		{
-			temp = new SA::MasterFader(this,fId++); // create new MasterFader
+			temp = new Resound::MasterFader(this,fId++); // create new MasterFader
 			masterFaderArray.push_back(temp); // store in array
 			grp->Add(temp, wxSizerFlags(1).Align(0).Border(wxALL,1)); // add to GUI
 		}
@@ -62,7 +62,7 @@ SA::PerformanceView::PerformanceView(wxWindow* parent)
 		wxBoxSizer* grp = new wxBoxSizer(wxHORIZONTAL);
 		for(g = 0; g < 4; g++)
 		{
-			temp = new SA::MasterFader(this,fId++); // create new MasterFader
+			temp = new Resound::MasterFader(this,fId++); // create new MasterFader
 			masterFaderArray.push_back(temp); // store in array
 			grp->Add(temp, wxSizerFlags(1).Align(0).Border(wxALL,1)); // add to GUI
 		}
@@ -77,22 +77,22 @@ SA::PerformanceView::PerformanceView(wxWindow* parent)
 }
 
 // class destructor
-SA::PerformanceView::~PerformanceView()
+Resound::PerformanceView::~PerformanceView()
 {
 	// insert your code here
 }
 
 // automation update for this window // triggers redraw
-void SA::PerformanceView::Tick(float dT)
+void Resound::PerformanceView::Tick(float dT)
 {}
 
-void SA::PerformanceView::OnFaderMove(wxCommandEvent& event)
+void Resound::PerformanceView::OnFaderMove(wxCommandEvent& event)
 {
 	int id = event.GetId();
 	int newVal = event.GetInt();
 }
 
-void SA::PerformanceView::Init()
+void Resound::PerformanceView::Init()
 {
 	for (int n = 0; n < masterFaderArray.size(); n++) {
 		masterFaderArray[n]->SetValue(0);

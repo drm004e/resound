@@ -22,7 +22,7 @@
 #include "pvar.h"
 #include "performance.h" // class's header file
 
-namespace SA
+namespace Resound
 {
 
 //---------------------- ParameterLockPreset -------------------------------
@@ -57,4 +57,4 @@ Performance::~Performance()
 {}
 
 
-} // namespace SA
+} // namespace Resound

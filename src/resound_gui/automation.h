@@ -24,7 +24,7 @@
 // Automation manager singleton class
 
 
-namespace SA
+namespace Resound
 {
 
 class AutomatedObject; // pre declare

@@ -84,15 +84,15 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 	//wxMessageBox(_T("ok"));
 
 	// make the network client
-	m_audioMatrix = new SA::AMClient();
+	m_audioMatrix = new Resound::AMClient();
 
 	// make the behaviour sub system
-	m_behaviourManager = new SA::BehaviourManager();
+	m_behaviourManager = new Resound::BehaviourManager();
 
 	// register sub systems
 
-	SA::ParameterNamespaceManager::get_instance().register_parameter_namespace(SA::ParameterNamespacePtr(m_audioMatrix));
-	SA::ParameterNamespaceManager::get_instance().register_parameter_namespace(SA::ParameterNamespacePtr(m_behaviourManager));
+	Resound::ParameterNamespaceManager::get_instance().register_parameter_namespace(Resound::ParameterNamespacePtr(m_audioMatrix));
+	Resound::ParameterNamespaceManager::get_instance().register_parameter_namespace(Resound::ParameterNamespacePtr(m_behaviourManager));
 
 	// setup midi system
 	/* this system is undefined in linux!! FIXME linux midi
@@ -112,11 +112,11 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 
 	// add any behaviours
 	// eventually load plugins!
-	RegisterBaseBehaviours(m_behaviourManager);
+	register_base_behaviours(m_behaviourManager);
 
-	perfView = new SA::PerformanceView(leftBook);
-	monitorView = new SA::MonitorView(leftBook,-1,m_audioMatrix);
-	behaviourView = new SA::BehaviourView(leftBook,-1,m_behaviourManager);
+	perfView = new Resound::PerformanceView(leftBook);
+	monitorView = new Resound::MonitorView(leftBook,-1,m_audioMatrix);
+	behaviourView = new Resound::BehaviourView(leftBook,-1,m_behaviourManager);
 	leftBook->AddPage(perfView,_T("Master"),true);
 	leftBook->AddPage(monitorView,_T("Matrix"),false);
 	leftBook->AddPage(behaviourView,_T("Behaviour"),false);
@@ -129,11 +129,15 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 	SetSizer(topSizer);
 	topSizer->SetSizeHints(this);   // set size hints to honour minimum size
 	topSizer->Layout();
+
+	// start the automation driver
+	m_automationDriver.Start(33);
+
 }
 
 void MainFrame::OnQuit(wxCommandEvent & WXUNUSED(event)) // THIS SEEMS TO CAUSE AN EXCEPTION!
 {
-	SA::ParameterNamespaceManager::destroy_instance();
+	Resound::ParameterNamespaceManager::destroy_instance();
 	MManager::Destroy();
 	PopEventHandler();
 	Close(TRUE);

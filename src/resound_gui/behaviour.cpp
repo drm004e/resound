@@ -28,189 +28,165 @@
 #include <sstream>
 // -------------------------------- Behaviour --------------------------------
 // class constructor
-SA::Behaviour::Behaviour()
+Resound::Behaviour::Behaviour()
 {}
 // class destructor
-SA::Behaviour::~Behaviour()
+Resound::Behaviour::~Behaviour()
 {}
 
 
 // operations used in construction
-void SA::Behaviour::register_parameter(std::string address, ParameterPtr param)
+void Resound::Behaviour::register_parameter(std::string address, ParameterPtr param)
 {
 	// add a new Parameter
 	Parameter p;
-	p.set_name(name);
+	p.set_name(m_name);
 }
-void SA::Behaviour::SetName(std::string _name)
+void Resound::Behaviour::set_name(std::string name)
 {
-	name = _name;
+	m_name = name;
 	// rename all Parameters !
 }
-std::string SA::Behaviour::GetName()
+std::string Resound::Behaviour::get_name()
 {
-	return name;
+	return m_name;
 }
 
 // setting and getting the collective for this behaviour
-void SA::Behaviour::SetCollective(const Collective& _coll)
+void Resound::Behaviour::set_collective(const Collective& coll)
 {
-	collective = _coll;
+	m_collective = coll;
 }
-SA::Collective& SA::Behaviour::GetCollective()
+Resound::Collective& Resound::Behaviour::get_collective()
 {
-	return collective;
+	return m_collective;
 }
 
 
 
 // --------------------------------Behaviour Class--------------------------------
 
-SA::BehaviourClass::BehaviourClass(FourCharId _classId, std::string _className, Behaviour::BehaviourFactory _factory)
+Resound::BehaviourClassFactory::BehaviourClassFactory(BehaviourClassId classId, std::string classNiceName, BehaviourFactory factory) :
+m_classId(classId),
+m_classNiceName(classNiceName),
+m_factory(factory)
+{}
+
+Resound::BehaviourClassId Resound::BehaviourClassFactory::get_class_id()
 {
-	classId = _classId;
-	className = _className;
-	factory = _factory;
+	return m_classId;
 }
-SA::FourCharId SA::BehaviourClass::GetClassId()
+
+std::string Resound::BehaviourClassFactory::get_name()
 {
-	return classId;
+	return m_classNiceName;
 }
-std::string SA::BehaviourClass::GetName()
-{
-	return className;
-}
-SA::Behaviour* SA::BehaviourClass::Create()
+
+Resound::BehaviourPtr Resound::BehaviourClassFactory::create()
 {
 	// create one of these class of behaviour
-	return factory();
+	return m_factory();
 }
 
 // -------------------------------- Behaviour manager ----------------------------
 
-SA::BehaviourManager::BehaviourManager() :
+Resound::BehaviourManager::BehaviourManager() :
 ParameterNamespace("Behaviour")
 {
-	nextId = 0;
+	m_nextId = 0;
 }
-SA::BehaviourManager::~BehaviourManager()
+Resound::BehaviourManager::~BehaviourManager()
 {
-	Destroy();
+
 }
-void SA::BehaviourManager::RegisterBehaviourClass(BehaviourClass bClass)
+void Resound::BehaviourManager::register_behaviour_class_factory(BehaviourClassFactory bClass)
 {
 	// check for existing
-	FourCharId classId = bClass.GetClassId();
-	BehaviourClassMap::iterator i = classMap.find(classId);
-	if(i != classMap.end()) {
+	BehaviourClassId classId = bClass.get_class_id();
+	BehaviourClassFactoryMap::iterator i = m_classMap.find(classId);
+	if(i != m_classMap.end()) {
 		// throw behaviour class already exists
-		throw SA::RegisterBehaviourException();
+		throw Resound::RegisterBehaviourException();
 	} else // add the class
 	{
-		classMap[classId] = bClass; // table look-up
+		m_classMap[classId] = bClass; // table look-up
 	}
 }
 
-SA::Behaviour* SA::BehaviourManager::CreateBehaviourDirect(FourCharId classId)
+Resound::BehaviourPtr Resound::BehaviourManager::create_behaviour_direct(BehaviourClassId classId)
 {
 	// first search for the class id
-	BehaviourClassMap::iterator i = classMap.find(classId);
-	if(i != classMap.end()) {
+	BehaviourClassFactoryMap::iterator i = m_classMap.find(classId);
+	if(i != m_classMap.end()) {
 		// do exception checking here because the plugin may throw
-		Behaviour* temp = (*i).second.Create(); // create using the factory
+		BehaviourPtr temp = (*i).second.create(); // create using the factory
 
 		if(temp) // if its ok
 		{
-			temp->classId = classId; // set the class id
+			temp->m_classId = classId; // set the class id
 		}
 		return temp;
 	} else {
 		// classId does not exist
 		// throw exception
-		throw SA::CreateBehaviourException();
+		throw Resound::CreateBehaviourException();
 	}
 }
 
-SA::Behaviour* SA::BehaviourManager::CreateBehaviour(FourCharId classId)
+Resound::BehaviourPtr Resound::BehaviourManager::create_behaviour(BehaviourClassId classId)
 {
-	if(classId == FourCharId()) // check for null type and set
+	//TODO remove dialog from here
+	if(classId == "") // check for null type and set
 	{
 		// have to get user to select type first
 
 		// construct arraystring of all names
 		wxArrayString aStr;
-		std::vector<FourCharId> idLookup; // temp array for lookup
-		for(BehaviourClassMap::iterator i = classMap.begin(); i != classMap.end(); i++)
+		std::vector<BehaviourClassId> idLookup; // temp array for lookup
+		for(BehaviourClassFactoryMap::iterator i = m_classMap.begin(); i != m_classMap.end(); i++)
 		{
 			idLookup.push_back((*i).first); // store the associated FourCharId by index
-			aStr.Add(wxConvertMB2WX((*i).second.GetName().c_str())); // add the string for the dialog // FIXME wxString conversion problem FIXED
+			aStr.Add(wxConvertMB2WX((*i).second.get_name().c_str())); // add the string for the dialog // FIXME wxString conversion problem FIXED
 		}
 		int classIndex = wxGetSingleChoiceIndex(_T("Please select a behaviour class"),_T("Select Behaviour"),aStr);
 
 		// lookup the index
 		classId = idLookup[classIndex]; // set the class id
 	}
-	// create a behviour and add it to the manager
+	// create a behaviour and add it to the manager
 
 	// first search for the class id
-	BehaviourClassMap::iterator i = classMap.find(classId);
-	if(i != classMap.end()) {
+	BehaviourClassFactoryMap::iterator i = m_classMap.find(classId);
+	if(i != m_classMap.end()) {
 		// do exception checking here because the plugin may throw
-		Behaviour* temp = (*i).second.Create(); // create using the factory
+		BehaviourPtr temp = (*i).second.create(); // create using the factory
 
 		if(temp) // if its ok
 		{
 			std::stringstream s;
-			s << "new " << (*i).second.GetName() << " Id:" << nextId;
-			temp->SetName(s.str()); // set a temp name//FIXME string conversion FIXED
-			temp->id = nextId; // set an id for the behaviour
-			temp->classId = classId; // set the class id
-			behaviourMap[nextId] = temp; // add to the map
-			nextId++; // update unique id
+			s << "new " << (*i).second.get_name() << " Id:" << m_nextId;
+			temp->set_name(s.str()); // set a temp name//FIXME string conversion FIXED
+			temp->m_id = m_nextId; // set an id for the behaviour
+			temp->m_classId = classId; // set the class id
+			m_behaviourMap[m_nextId] = temp; // add to the map
+			m_nextId++; // update unique id
 		}
 		return temp;
 	} else {
 		// classId does not exist
 		// throw exception
-		throw SA::CreateBehaviourException();
+		throw Resound::CreateBehaviourException();
 	}
 
 }
-
-void SA::BehaviourManager::Destroy()
-{
-	// destroy all behaviours called to clean up
-	for(BehaviourMap::iterator i = behaviourMap.begin(); i != behaviourMap.begin(); i++) {
-		delete (*i).second;
-		(*i).second = 0;
-	}
-	behaviourMap.clear();
-}
-
-
-// implement the ParameterNamespace interface
-void* SA::BehaviourManager::SettingsPanel(wxWindow* parent)
-{
-	// open a sub system settings dialog
-
-	return 0;
-}
-
-void* SA::BehaviourManager::SelectPanel(wxWindow* parent)
-{
-	// open an appropriate dialog for Parameter selection return the address or null address
-	return new SA::BehaviourSelectPanel(parent,this);
-}
-
-
 
 
 // ------------------------------------ Behaviour Select Panel -----------------------
-BEGIN_EVENT_TABLE(SA::BehaviourSelectPanel, PVSSelectPanel)
-EVT_BUTTON( BSID_CREATE, SA::BehaviourSelectPanel::OnCreateBehaviour)
+BEGIN_EVENT_TABLE(Resound::BehaviourSelectPanel, PVSSelectPanel)
+EVT_BUTTON( BSID_CREATE, Resound::BehaviourSelectPanel::OnCreateBehaviour)
 END_EVENT_TABLE()
 
-SA::BehaviourSelectPanel::BehaviourSelectPanel(wxWindow* parent, ParameterNamespace* _subSystem)
+Resound::BehaviourSelectPanel::BehaviourSelectPanel(wxWindow* parent, ParameterNamespace* _subSystem)
 		: PVSSelectPanel(parent,_subSystem)
 {
 	// construct the sub objects and sizer
@@ -233,7 +209,7 @@ SA::BehaviourSelectPanel::BehaviourSelectPanel(wxWindow* parent, ParameterNamesp
 	topSizer->Layout();
 }
 
-void SA::BehaviourSelectPanel::BuildPanel()
+void Resound::BehaviourSelectPanel::BuildPanel()
 {
 	// cast sub system to known type
 	BehaviourManager* behaviourManager = (BehaviourManager*) subSystem;
@@ -241,13 +217,13 @@ void SA::BehaviourSelectPanel::BuildPanel()
 	wxBoxSizer* sizer = new wxBoxSizer( wxVERTICAL );
 	behaviourSizer->Add(sizer);
 
-	for(BehaviourMap::iterator i = behaviourManager->GetBehaviourMap().begin(); i !=  behaviourManager->GetBehaviourMap().end(); i++) {
+	for(BehaviourMap::iterator i = behaviourManager->get_behaviour_map().begin(); i !=  behaviourManager->get_behaviour_map().end(); i++) {
 		int id = (*i).first;
-		Behaviour* b = (*i).second;
+		BehaviourPtr b = (*i).second;
 		wxGridSizer* gridSizer = new wxGridSizer(1,0,1,1);
 		/* // FIXME Parameter mod
 		for(int n = 0; n < b->GetNumParameters(); n++) {
-			gridSizer->Add(new SA::AddressSelectWidget(this,-1,ParameterAddress("null osc address"))); //FIXME drastic changes to pvar address
+			gridSizer->Add(new Resound::AddressSelectWidget(this,-1,ParameterAddress("null osc address"))); //FIXME drastic changes to pvar address
 		}
 		//sizer->Add(new wxStaticText(this,-1,b->GetName())); //FIXME wxString conversion
 		*/
@@ -258,11 +234,11 @@ void SA::BehaviourSelectPanel::BuildPanel()
 	topSizer->Layout();
 
 }
-void SA::BehaviourSelectPanel::OnCreateBehaviour(wxCommandEvent &event)
+void Resound::BehaviourSelectPanel::OnCreateBehaviour(wxCommandEvent &event)
 {
 	// cast sub system to known type
 	BehaviourManager* behaviourManager = (BehaviourManager*) subSystem;
-	behaviourManager->CreateBehaviour();
+	behaviourManager->create_behaviour();
 	BuildPanel();
 }
 

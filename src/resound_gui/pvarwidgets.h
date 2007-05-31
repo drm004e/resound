@@ -24,7 +24,7 @@
 #include "vumeterwidget.h"
 #include "faderwidget.h"
 
-namespace SA
+namespace Resound
 {
 
 

@@ -19,6 +19,15 @@
 #ifndef __BASE_H
 #define __BASE_H
 
+#include "automation.h"
+
+class AutomationDriver : public wxTimer{
+public:
+	void Notify(){
+		Resound::AutomationManager::get_instance().tick(0.01);
+	}
+};
+
 class MainFrame: public wxFrame
 {
 public:
@@ -35,13 +44,13 @@ public:
 
 	void RebuildGUI(); // force a gui rebuild
 private:
+	AutomationDriver m_automationDriver;
+	Resound::PerformanceView *perfView;
+	Resound::MonitorView* monitorView; // VIEWER - NOTHING TO SAVE/LOAD
+	Resound::BehaviourView* behaviourView; // VIEWER - NOTHING TO SAVE/LOAD
 
-	SA::PerformanceView *perfView;
-	SA::MonitorView* monitorView; // VIEWER - NOTHING TO SAVE/LOAD
-	SA::BehaviourView* behaviourView; // VIEWER - NOTHING TO SAVE/LOAD
-
-	SA::AMClient *m_audioMatrix; // NETWORK SUB-SYSTEM - NOTHING TO SAVE/LOAD
-	SA::BehaviourManager *m_behaviourManager; // REQUIRES SAVING
+	Resound::AMClient *m_audioMatrix; // NETWORK SUB-SYSTEM - NOTHING TO SAVE/LOAD
+	Resound::BehaviourManager *m_behaviourManager; // REQUIRES SAVING
 
 	DECLARE_EVENT_TABLE()
 };

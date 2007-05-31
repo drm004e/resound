@@ -20,23 +20,23 @@
 #include "pvar.h" // class's header file
 #include <iostream>
 // -------------------------------- Parameter --------------------------------
-SA::Parameter::Parameter() :
+Resound::Parameter::Parameter() :
 m_value(0),
 m_name("No name"),
 m_isLocked(false)
 {}
 
-SA::Parameter::~Parameter()
+Resound::Parameter::~Parameter()
 {}
 
-int SA::Parameter::get_value()
+int Resound::Parameter::get_value()
 {
 	// obtain the value
 	if(m_isLocked)
 		return m_lockedValue;
 	return m_value;
 }
-void SA::Parameter::set_value(int oldVal, int newVal)
+void Resound::Parameter::set_value(int oldVal, int newVal)
 {
 	// set using previous value
 	int delta = newVal - oldVal;
@@ -46,7 +46,7 @@ void SA::Parameter::set_value(int oldVal, int newVal)
 	}
 
 }
-void SA::Parameter::set_value_direct(int newVal)
+void Resound::Parameter::set_value_direct(int newVal)
 {
 	// set directly used to initialize
 	if(newVal != m_value) {
@@ -54,7 +54,7 @@ void SA::Parameter::set_value_direct(int newVal)
 		this->on_value_changed(); // call virtual notification function
 	}
 }
-void SA::Parameter::lock(int lockedValue)
+void Resound::Parameter::lock(int lockedValue)
 {
 	// locks the value - the real value will still be changed but GetValue will return the locked value
 	m_isLocked = true;
@@ -62,57 +62,57 @@ void SA::Parameter::lock(int lockedValue)
 	this->on_value_changed(); // call virtual notification function
 }
 
-void SA::Parameter::unlock()
+void Resound::Parameter::unlock()
 {
 	// get value will return the real value;
 	m_isLocked = false;
 	this->on_value_changed(); // call virtual notification function
 }
 
-void SA::Parameter::on_value_changed()
+void Resound::Parameter::on_value_changed()
 {}
 
-void SA::Parameter::set_name(std::string name)
+void Resound::Parameter::set_name(std::string name)
 {
 	m_name = name;
 }
 
-std::string SA::Parameter::get_name()
+std::string Resound::Parameter::get_name()
 {
 	return m_name;
 }
 // -------------------------------- ParameterNamespace ------------------
-void SA::ParameterNamespace::register_parameter(std::string address, ParameterPtr param){
-	SA::ParameterNamespaceManager::get_instance().register_parameter(std::string("/") + m_name + address, param);
+void Resound::ParameterNamespace::register_parameter(std::string address, ParameterPtr param){
+	Resound::ParameterNamespaceManager::get_instance().register_parameter(std::string("/") + m_name + address, param);
 }
 // -------------------------------- ParameterNamespaceManager ------------------
 // singleton manager object
-SA::ParameterNamespaceManager* SA::ParameterNamespaceManager::s_singleton = 0;
-SA::ParameterNamespaceManager& SA::ParameterNamespaceManager::get_instance()
+Resound::ParameterNamespaceManager* Resound::ParameterNamespaceManager::s_singleton = 0;
+Resound::ParameterNamespaceManager& Resound::ParameterNamespaceManager::get_instance()
 {
 	if(s_singleton == 0) {
 		s_singleton = new ParameterNamespaceManager();
 	}
 	return *s_singleton;
 }
-void SA::ParameterNamespaceManager::destroy_instance()
+void Resound::ParameterNamespaceManager::destroy_instance()
 {
 	if(s_singleton)
 		delete s_singleton;
 }
 
-SA::ParameterNamespaceManager::ParameterNamespaceManager()
+Resound::ParameterNamespaceManager::ParameterNamespaceManager()
 {}
 
-SA::ParameterNamespaceManager::~ParameterNamespaceManager()
+Resound::ParameterNamespaceManager::~ParameterNamespaceManager()
 {}
 
-void SA::ParameterNamespaceManager::register_parameter_namespace(ParameterNamespacePtr parameterNamespace)
+void Resound::ParameterNamespaceManager::register_parameter_namespace(ParameterNamespacePtr parameterNamespace)
 {
 	//subSystem->SetId(subSystemList.size()); // sets the global id of this sub system // FIXME sub system ids no longer exist
 	m_parameterNamespaceList.push_back(parameterNamespace);
 }
-SA::ParameterPtr SA::ParameterNamespaceManager::get_parameter(const ParameterAddress &addr)
+Resound::ParameterPtr Resound::ParameterNamespaceManager::get_parameter(const ParameterAddress &addr)
 {
 	
 	ParameterAddressMap::iterator it = m_parameterAddressMap.find(addr);
@@ -122,11 +122,11 @@ SA::ParameterPtr SA::ParameterNamespaceManager::get_parameter(const ParameterAdd
 		throw ParameterAddressException(addr);
 	}
 }
-int SA::ParameterNamespaceManager::peek_parameter_value(const ParameterAddress &addr)
+int Resound::ParameterNamespaceManager::peek_parameter_value(const ParameterAddress &addr)
 {
 	return get_parameter(addr)->get_value();
 }
-void SA::ParameterNamespaceManager::register_parameter(std::string address, ParameterPtr param){
+void Resound::ParameterNamespaceManager::register_parameter(std::string address, ParameterPtr param){
 	ParameterAddressMap::iterator it = m_parameterAddressMap.find(address);
 	if(it != m_parameterAddressMap.end()){
 		throw ParameterAddressException(address); // non unique address registered
@@ -136,11 +136,11 @@ void SA::ParameterNamespaceManager::register_parameter(std::string address, Para
 	}
 }
 // -------------------------------- Parameter link --------------------------------
-SA::ParameterLink::ParameterLink() :
+Resound::ParameterLink::ParameterLink() :
 m_lastValue(0)
 {}
 
-SA::ParameterLink::ParameterLink(const ParameterAddress &t) :
+Resound::ParameterLink::ParameterLink(const ParameterAddress &t) :
 m_lastValue(0),
 m_targetAddress(t)
 {}
@@ -149,13 +149,13 @@ m_targetAddress(t)
 // each ParameterLink must operat successfully on targets so
 // copy and assignment must take this into account
 // targets are maintained but influence on values is reset
-SA::ParameterLink::ParameterLink(const ParameterLink& p) :
+Resound::ParameterLink::ParameterLink(const ParameterLink& p) :
 m_lastValue(0),
 m_targetAddress(p.m_targetAddress)
 {}
 
 //assignemtn
-SA::ParameterLink& SA::ParameterLink::operator=(const ParameterLink& p){
+Resound::ParameterLink& Resound::ParameterLink::operator=(const ParameterLink& p){
 	if(&p == this) {
 		return *this; // ignore self assignment
 	}
@@ -166,17 +166,17 @@ SA::ParameterLink& SA::ParameterLink::operator=(const ParameterLink& p){
 }
 
 
-SA::ParameterLink::~ParameterLink(){
+Resound::ParameterLink::~ParameterLink(){
 	set_value(0); // get rid of influence before destroying
 }
 
-void SA::ParameterLink::set_target(const ParameterAddress &addr){
+void Resound::ParameterLink::set_target(const ParameterAddress &addr){
 	// set the target - assumes valid address
 	// notify previous target and remove influence
 	set_value(0); // removes any influence
 	m_targetAddress = addr;
 }
-void SA::ParameterLink::set_value(int val){
+void Resound::ParameterLink::set_value(int val){
 	// uses the suming system to set a new value
 	if(val != m_lastValue) {
 		// only update if different because it avoids calls to obtain the target param
@@ -184,12 +184,12 @@ void SA::ParameterLink::set_value(int val){
 		m_lastValue = val;
 	}
 }
-int SA::ParameterLink::get_value()
+int Resound::ParameterLink::get_value()
 {
 	return ParameterNamespaceManager::get_instance().peek_parameter_value(m_targetAddress);
 }
 
-SA::ParameterPtr SA::ParameterLink::get_parameter()
+Resound::ParameterPtr Resound::ParameterLink::get_parameter()
 {
 	return ParameterNamespaceManager::get_instance().get_parameter(m_targetAddress);
 }
@@ -197,28 +197,28 @@ SA::ParameterPtr SA::ParameterLink::get_parameter()
 
 // -------------------------------- Element ------------------------------------------
 
-SA::Element::Element()
+Resound::Element::Element()
 {}
-SA::Element::~Element()
+Resound::Element::~Element()
 {}
-void SA::Element::set_value(int value)
+void Resound::Element::set_value(int value)
 {
 	for(int n = 0; n < m_parameterLinkArray.size(); n++) {
 		m_parameterLinkArray[n].set_value(value);
 	}
 }
 // ParameterLink insert and add
-void SA::Element::add_link(const ParameterLink& link)
+void Resound::Element::add_link(const ParameterLink& link)
 {
 	m_parameterLinkArray.push_back(link);
 }
-void SA::Element::insert_link(int index, const ParameterLink& link)
+void Resound::Element::insert_link(int index, const ParameterLink& link)
 {
 	// insert at index
 	ParameterLinkArray::iterator it = m_parameterLinkArray.begin() + index + 1;
 	m_parameterLinkArray.insert(it,link);
 }
-void SA::Element::prepend_link(int index, const ParameterLink& link)
+void Resound::Element::prepend_link(int index, const ParameterLink& link)
 {
 	// insert before index
 	ParameterLinkArray::iterator it = m_parameterLinkArray.begin() + index;
@@ -228,22 +228,22 @@ void SA::Element::prepend_link(int index, const ParameterLink& link)
 
 
 // -------------------------------- Collective ---------------------------------------
-SA::Collective::Collective()
+Resound::Collective::Collective()
 {
 	// add_element(); // a single basic element
 }
-SA::Collective::~Collective()
+Resound::Collective::~Collective()
 {
 }
 
-void SA::Collective::set_value(int value)
+void Resound::Collective::set_value(int value)
 {
 	for(int n = 0; n < m_elementArray.size(); n++) {
 		m_elementArray[n].set_value(value);
 	}
 }
 
-void SA::Collective::display()
+void Resound::Collective::display()
 {
 /* FIXME removal of gui functions from pvar
 	std::string str;
@@ -266,26 +266,26 @@ void SA::Collective::display()
 */
 }
 
-void SA::Collective::add_element(const Element& element)
+void Resound::Collective::add_element(const Element& element)
 {
 	// add element at end
 	m_elementArray.push_back(element);
 };
-void SA::Collective::insert_element(int index, const Element& element)
+void Resound::Collective::insert_element(int index, const Element& element)
 {
 	// insert at index
 	ElementArray::iterator it = m_elementArray.begin() + index + 1;
 	m_elementArray.insert(it,element);
 
 };
-void SA::Collective::prepend_element(int index, const Element& element)
+void Resound::Collective::prepend_element(int index, const Element& element)
 {
 	// insert before element at index
 	ElementArray::iterator it = m_elementArray.begin() + index;
 	m_elementArray.insert(it,element);
 };
 
-void SA::Collective::remove_element(int index)
+void Resound::Collective::remove_element(int index)
 {
 	ElementArray::iterator it = m_elementArray.begin() + index;
 	m_elementArray.erase(it);
@@ -294,19 +294,19 @@ void SA::Collective::remove_element(int index)
 
 
 // --------------------------------- Collective Cursor Edit ----------------------------
-SA::CollectiveCursorEdit::CollectiveCursorEdit(Collective* collective)
+Resound::CollectiveCursorEdit::CollectiveCursorEdit(Collective* collective)
 {
 	// construct passing collective to be edited
 	m_collective = collective;
 	set_last(); // move to last element;
 }
 
-SA::Collective* SA::CollectiveCursorEdit::get_collective()
+Resound::Collective* Resound::CollectiveCursorEdit::get_collective()
 {
 	return m_collective;
 }
 
-SA::Element& SA::CollectiveCursorEdit::get_current_element() // change to & in implementation!
+Resound::Element& Resound::CollectiveCursorEdit::get_current_element() // change to & in implementation!
 {
 	if (m_cursorIndex == -1) // if we are asking (erroneously) for the element at index -1...
 	{
@@ -320,13 +320,13 @@ SA::Element& SA::CollectiveCursorEdit::get_current_element() // change to & in i
 	}
 }
 
-int SA::CollectiveCursorEdit::get_cursor_position()
+int Resound::CollectiveCursorEdit::get_cursor_position()
 {
 	// get the cursor position -1 is head element, 0 is first real element
 	return m_cursorIndex;
 }
 
-void SA::CollectiveCursorEdit::set_cursor_position(int newCursorIndex)
+void Resound::CollectiveCursorEdit::set_cursor_position(int newCursorIndex)
 {
 	if (newCursorIndex < -1) // if we tried to set the cursor to before the head 'element'...
 	{
@@ -339,7 +339,7 @@ void SA::CollectiveCursorEdit::set_cursor_position(int newCursorIndex)
 	}
 }
 
-void SA::CollectiveCursorEdit::add_link(const ParameterLink& link)
+void Resound::CollectiveCursorEdit::add_link(const ParameterLink& link)
 {
 	// adds a link at the current location
 
@@ -350,13 +350,13 @@ void SA::CollectiveCursorEdit::add_link(const ParameterLink& link)
 	(*m_collective)[m_cursorIndex].add_link(link);
 }
 
-void SA::CollectiveCursorEdit::clear_links()
+void Resound::CollectiveCursorEdit::clear_links()
 {
 	// FIXME gui functionality removed from pvar
 	//wxMessageBox(_T("CollectiveCursorEdit::ClearLinks() - Not implemented yet!"));
 }
 
-void SA::CollectiveCursorEdit::next()
+void Resound::CollectiveCursorEdit::next()
 {
 	// moves to the next element
 	int numElements = m_collective->get_num_elements();
@@ -365,7 +365,7 @@ void SA::CollectiveCursorEdit::next()
 		m_cursorIndex = numElements-1;
 	}
 }
-void SA::CollectiveCursorEdit::previous()
+void Resound::CollectiveCursorEdit::previous()
 {
 	// moves to the previous element
 	--m_cursorIndex;
@@ -373,14 +373,14 @@ void SA::CollectiveCursorEdit::previous()
 		m_cursorIndex = -1;
 	}
 }
-void SA::CollectiveCursorEdit::insert(const Element& element)
+void Resound::CollectiveCursorEdit::insert(const Element& element)
 {
 	// insert element after current element // cursor is set to the new element
 	m_collective->prepend_element(m_cursorIndex + 1, element);
 	m_cursorIndex++;
 }
 
-void SA::CollectiveCursorEdit::shift_left()
+void Resound::CollectiveCursorEdit::shift_left()
 {
 	if (m_cursorIndex >= 1) // shift left cannot apply to the first element or head!
 	{
@@ -391,7 +391,7 @@ void SA::CollectiveCursorEdit::shift_left()
 	}
 }
 
-void SA::CollectiveCursorEdit::shift_right()
+void Resound::CollectiveCursorEdit::shift_right()
 {
 	if (m_cursorIndex > -1 && m_cursorIndex < m_collective->get_num_elements()-1) // shift right cannot apply to last element or head!
 	{
@@ -404,7 +404,7 @@ void SA::CollectiveCursorEdit::shift_right()
 
 /// Removes the current element as indicated by the cursor position
 /// Cursor is then set to the previous element or head
-void SA::CollectiveCursorEdit::remove()
+void Resound::CollectiveCursorEdit::remove()
 {
 	if (m_cursorIndex > -1) // as long as we are not at the collective head...
 	{
@@ -414,17 +414,17 @@ void SA::CollectiveCursorEdit::remove()
 	// Do we need a check to see if the cursor is BEYOND the last valid element???
 }
 
-void SA::CollectiveCursorEdit::set_head()
+void Resound::CollectiveCursorEdit::set_head()
 {
 	// move to the head element // move to element -1
 	m_cursorIndex = -1;
 }
-void SA::CollectiveCursorEdit::set_first()
+void Resound::CollectiveCursorEdit::set_first()
 {
 	// move to the first element
 	m_cursorIndex = 0;
 }
-void SA::CollectiveCursorEdit::set_last()
+void Resound::CollectiveCursorEdit::set_last()
 {
 	// move to the last element
 	m_cursorIndex = m_collective->get_num_elements() - 1;

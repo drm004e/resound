@@ -25,12 +25,12 @@
 #include "vumeterwidget.h" // class's header file
 
 // event table
-BEGIN_EVENT_TABLE(SA::StaticVUMeterWidget, wxControl)
-EVT_PAINT(SA::StaticVUMeterWidget::OnPaint)
+BEGIN_EVENT_TABLE(Resound::StaticVUMeterWidget, wxControl)
+EVT_PAINT(Resound::StaticVUMeterWidget::OnPaint)
 END_EVENT_TABLE()
 
 // class constructor
-SA::StaticVUMeterWidget::StaticVUMeterWidget(wxWindow *parent,int id,int _val, int _min, int _max, wxString offFilename, wxString onFilename)
+Resound::StaticVUMeterWidget::StaticVUMeterWidget(wxWindow *parent,int id,int _val, int _min, int _max, wxString offFilename, wxString onFilename)
 		: wxControl(parent, id,wxPoint(0,0), wxSize(0,0))
 {
 	SetWindowStyle(wxCLIP_CHILDREN);
@@ -58,13 +58,13 @@ SA::StaticVUMeterWidget::StaticVUMeterWidget(wxWindow *parent,int id,int _val, i
 }
 
 // class destructor
-SA::StaticVUMeterWidget::~StaticVUMeterWidget()
+Resound::StaticVUMeterWidget::~StaticVUMeterWidget()
 {
 	// insert your code here
 }
 
 // paint handling
-void SA::StaticVUMeterWidget::OnPaint(wxPaintEvent& event)
+void Resound::StaticVUMeterWidget::OnPaint(wxPaintEvent& event)
 {
 	wxPaintDC dc(this);
 
@@ -78,14 +78,14 @@ void SA::StaticVUMeterWidget::OnPaint(wxPaintEvent& event)
 }
 
 // settings
-void SA::StaticVUMeterWidget::SetValue(int _val)
+void Resound::StaticVUMeterWidget::SetValue(int _val)
 {
 	if(val != _val) {
 		val = _val;
 		Refresh(false);
 	}
 };
-void SA::StaticVUMeterWidget::SetRange(int _min, int _max)
+void Resound::StaticVUMeterWidget::SetRange(int _min, int _max)
 {
 	if(_min < _max) {
 		min = _min;
@@ -96,11 +96,11 @@ void SA::StaticVUMeterWidget::SetRange(int _min, int _max)
 
 // --------------------------------- Automated vu meter ----------------------
 // class constructor
-SA::VUMeterWidget::VUMeterWidget(wxWindow *parent,int id,int _val, int _min, int _max, wxString offFilename, wxString onFilename)
+Resound::VUMeterWidget::VUMeterWidget(wxWindow *parent,int id,int _val, int _min, int _max, wxString offFilename, wxString onFilename)
 		: StaticVUMeterWidget(parent, id,_val,_min,_max,offFilename,onFilename)
 {}
 // time elapsed function for decay and peak hold extension
-void SA::VUMeterWidget::tick(float dT)
+void Resound::VUMeterWidget::tick(float dT)
 {
 	if(val > 0) {
 		float v = val;
@@ -111,12 +111,12 @@ void SA::VUMeterWidget::tick(float dT)
 }
 // --------------------------------- Parameter  vu meter ----------------------
 // class constructor
-SA::ParameterVUMeterWidget::ParameterVUMeterWidget(wxWindow *parent,int id,int _val, int _min, int _max, wxString offFilename, wxString onFilename)
+Resound::ParameterVUMeterWidget::ParameterVUMeterWidget(wxWindow *parent,int id,int _val, int _min, int _max, wxString offFilename, wxString onFilename)
 		: StaticVUMeterWidget(parent, id,_val,_min,_max,offFilename,onFilename)
 {
 }
 // time elapsed function for decay and peak hold extension
-void SA::ParameterVUMeterWidget::tick(float dT)
+void Resound::ParameterVUMeterWidget::tick(float dT)
 {
 	try{
 		int v = target.get_value();
@@ -129,7 +129,7 @@ void SA::ParameterVUMeterWidget::tick(float dT)
 	}
 }
 
-void SA::ParameterVUMeterWidget::SetTarget(ParameterAddress addr)
+void Resound::ParameterVUMeterWidget::SetTarget(ParameterAddress addr)
 {
 	target.set_target(addr);
 }

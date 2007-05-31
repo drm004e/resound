@@ -28,22 +28,22 @@
 #include "pvarwidgets.h" // class's header file
 #include <cstring>
 // -------------------------------- ParameterAddressWidgetBase --------------------
-SA::ParameterAddressWidgetBase::ParameterAddressWidgetBase(wxWindow* parent, int id, ParameterAddress _addr)
+Resound::ParameterAddressWidgetBase::ParameterAddressWidgetBase(wxWindow* parent, int id, ParameterAddress _addr)
 		: wxWindow(parent,id)
 {
 	addr = _addr;
 }
-SA::ParameterAddressWidgetBase::~ParameterAddressWidgetBase()
+Resound::ParameterAddressWidgetBase::~ParameterAddressWidgetBase()
 {}
 
-SA::ParameterAddress SA::ParameterAddressWidgetBase::ParameterAddressWidgetBase::GetAddress()
+Resound::ParameterAddress Resound::ParameterAddressWidgetBase::ParameterAddressWidgetBase::GetAddress()
 {
 	return addr;
 };
 
 // -------------------------------- PVSSettingsPanel -------------------------
 
-SA::PVSSettingsPanel::PVSSettingsPanel(wxWindow* parent, ParameterNamespace* _subSystem, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name)
+Resound::PVSSettingsPanel::PVSSettingsPanel(wxWindow* parent, ParameterNamespace* _subSystem, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name)
 		: wxPanel(parent, id, pos, size, style, name)
 {
 	subSystem = _subSystem; // store the related sub system
@@ -58,7 +58,7 @@ SA::PVSSettingsPanel::PVSSettingsPanel(wxWindow* parent, ParameterNamespace* _su
 }
 
 // -------------------------------- PVSSelectPanel -------------------------
-SA::PVSSelectPanel::PVSSelectPanel(wxWindow* parent, ParameterNamespace* _subSystem, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name)
+Resound::PVSSelectPanel::PVSSelectPanel(wxWindow* parent, ParameterNamespace* _subSystem, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name)
 		: wxPanel(parent, id, pos, size, style, name)
 {
 	subSystem = _subSystem; // store the related subsystem
@@ -67,16 +67,16 @@ SA::PVSSelectPanel::PVSSelectPanel(wxWindow* parent, ParameterNamespace* _subSys
 // -------------------------------- Collective widget --------------------------------
 // #include "vumeterwidget.h"
 // event table
-BEGIN_EVENT_TABLE(SA::CollectiveWidget, wxPanel)
-EVT_BUTTON(PVLW_ASSIGN, SA::CollectiveWidget::OnAssign)
-EVT_CONTEXT_MENU(SA::CollectiveWidget::OnContextMenu)
-EVT_MENU(PVLW_CM_MONITOR, SA::CollectiveWidget::OnContextMonitor)
-EVT_MENU(PVLW_CM_EDIT, SA::CollectiveWidget::OnContextEdit)
-EVT_MENU(PVLW_CM_DISPLAY, SA::CollectiveWidget::OnContextDisplay)
-EVT_MENU(PVLW_CM_UNASSIGN, SA::CollectiveWidget::OnContextUnassign)
+BEGIN_EVENT_TABLE(Resound::CollectiveWidget, wxPanel)
+EVT_BUTTON(PVLW_ASSIGN, Resound::CollectiveWidget::OnAssign)
+EVT_CONTEXT_MENU(Resound::CollectiveWidget::OnContextMenu)
+EVT_MENU(PVLW_CM_MONITOR, Resound::CollectiveWidget::OnContextMonitor)
+EVT_MENU(PVLW_CM_EDIT, Resound::CollectiveWidget::OnContextEdit)
+EVT_MENU(PVLW_CM_DISPLAY, Resound::CollectiveWidget::OnContextDisplay)
+EVT_MENU(PVLW_CM_UNASSIGN, Resound::CollectiveWidget::OnContextUnassign)
 END_EVENT_TABLE()
 
-SA::CollectiveWidget::CollectiveWidget(wxWindow* parent, int id, wxString _name, Collective* _collective,
+Resound::CollectiveWidget::CollectiveWidget(wxWindow* parent, int id, wxString _name, Collective* _collective,
                                        bool _showMeters, int _maxMeters)
 		: wxPanel(parent,id)
 {
@@ -116,13 +116,13 @@ SA::CollectiveWidget::CollectiveWidget(wxWindow* parent, int id, wxString _name,
 	topSizer->Layout();
 }
 
-void SA::CollectiveWidget::SetCollective(Collective* _coll)
+void Resound::CollectiveWidget::SetCollective(Collective* _coll)
 {
 	collective = _coll;
 	UpdateLink();
 }
 
-void SA::CollectiveWidget::UpdateLink()
+void Resound::CollectiveWidget::UpdateLink()
 { // update the link
 	// targetLabel->SetLabel(collective->GetName());// NOT USING THIS FOR NOW
 	meterSizer->Remove(0);
@@ -166,22 +166,22 @@ void SA::CollectiveWidget::UpdateLink()
 	parent->GetSizer()->SetSizeHints(parent);
 }
 
-void SA::CollectiveWidget::Assign()
+void Resound::CollectiveWidget::Assign()
 {
-	SA::Collective newCollective = *collective;
-	SA::CBDialog dlg(this, &newCollective);
+	Resound::Collective newCollective = *collective;
+	Resound::CBDialog dlg(this, &newCollective);
 	if(dlg.ShowModal() == wxID_OK) {
 		*collective = newCollective;
 		UpdateLink();
 	}
 }
 
-void SA::CollectiveWidget::OnAssign(wxCommandEvent &event)
+void Resound::CollectiveWidget::OnAssign(wxCommandEvent &event)
 {
 	Assign();
 }
 
-void SA::CollectiveWidget::OnContextMenu(wxContextMenuEvent &event)
+void Resound::CollectiveWidget::OnContextMenu(wxContextMenuEvent &event)
 {
 	wxMenu contextMenu;
 	contextMenu.Append(PVLW_CM_EDIT, _T("Assign / Edit Collective"));
@@ -191,28 +191,28 @@ void SA::CollectiveWidget::OnContextMenu(wxContextMenuEvent &event)
 	PopupMenu(&contextMenu);
 }
 
-void SA::CollectiveWidget::OnContextMonitor(wxCommandEvent &event)
+void Resound::CollectiveWidget::OnContextMonitor(wxCommandEvent &event)
 {
 	wxMessageBox(_T("Monitor the collective assigned to this VPC - not implemented yet"));
 }
 
-void SA::CollectiveWidget::OnContextEdit(wxCommandEvent &event)
+void Resound::CollectiveWidget::OnContextEdit(wxCommandEvent &event)
 {
 	Assign();
 }
 
-void SA::CollectiveWidget::OnContextDisplay(wxCommandEvent &event)
+void Resound::CollectiveWidget::OnContextDisplay(wxCommandEvent &event)
 {
 	collective->display();
 }
 
-void SA::CollectiveWidget::OnContextUnassign(wxCommandEvent &event)
+void Resound::CollectiveWidget::OnContextUnassign(wxCommandEvent &event)
 {
 	wxMessageDialog* confirm = new wxMessageDialog(this,
 	                           _T("Are you sure you want to clear all assignments made to this control?"),
 	                           _T("Unassign Control"), wxYES_NO | wxNO_DEFAULT);
 	if (confirm->ShowModal() == wxID_YES) {
-		SA::Collective newCollective;
+		Resound::Collective newCollective;
 		*collective = newCollective;
 		UpdateLink();
 	}
@@ -221,7 +221,7 @@ void SA::CollectiveWidget::OnContextUnassign(wxCommandEvent &event)
 
 // ----------------------------------- gui CollectiveEditor : wxPanel -------------------------------------
 
-SA::CollectiveEditor::CollectiveEditor(CollectiveBuilder* _parent, int id, CollectiveCursorEdit* _collectiveWrapper)
+Resound::CollectiveEditor::CollectiveEditor(CollectiveBuilder* _parent, int id, CollectiveCursorEdit* _collectiveWrapper)
 		: wxPanel (_parent, id)
 {
 	SetMinSize(wxSize(100,100));
@@ -237,10 +237,10 @@ SA::CollectiveEditor::CollectiveEditor(CollectiveBuilder* _parent, int id, Colle
 	UpdateFromCollective();
 }
 
-SA::CollectiveEditor::~CollectiveEditor()
+Resound::CollectiveEditor::~CollectiveEditor()
 {}
 
-void SA::CollectiveEditor::UpdateFromCollective()
+void Resound::CollectiveEditor::UpdateFromCollective()
 {
 	if (scWin) {
 		scWin->Destroy();
@@ -309,18 +309,18 @@ void SA::CollectiveEditor::UpdateFromCollective()
 // ----------------------------------- CollectiveElementWidget -------------------------------------------
 
 // Declare custom events for this class.
-DEFINE_EVENT_TYPE(SA::saEVT_ELEMENT_SELECT)
+DEFINE_EVENT_TYPE(Resound::saEVT_ELEMENT_SELECT)
 
-BEGIN_EVENT_TABLE(SA::CollectiveElementWidget, wxWindow)
-EVT_LEFT_UP(SA::CollectiveElementWidget::OnLeftMouseUp)
-EVT_CONTEXT_MENU(SA::CollectiveElementWidget::OnContextMenu)
-EVT_MENU(CEW_CM_SHIFT_LEFT, SA::CollectiveElementWidget::OnContextShiftLeft)
-EVT_MENU(CEW_CM_SHIFT_RIGHT, SA::CollectiveElementWidget::OnContextShiftRight)
-EVT_MENU(CEW_CM_UNASSIGN, SA::CollectiveElementWidget::OnContextUnassign)
-EVT_MENU(CEW_CM_REMOVE, SA::CollectiveElementWidget::OnContextRemove)
+BEGIN_EVENT_TABLE(Resound::CollectiveElementWidget, wxWindow)
+EVT_LEFT_UP(Resound::CollectiveElementWidget::OnLeftMouseUp)
+EVT_CONTEXT_MENU(Resound::CollectiveElementWidget::OnContextMenu)
+EVT_MENU(CEW_CM_SHIFT_LEFT, Resound::CollectiveElementWidget::OnContextShiftLeft)
+EVT_MENU(CEW_CM_SHIFT_RIGHT, Resound::CollectiveElementWidget::OnContextShiftRight)
+EVT_MENU(CEW_CM_UNASSIGN, Resound::CollectiveElementWidget::OnContextUnassign)
+EVT_MENU(CEW_CM_REMOVE, Resound::CollectiveElementWidget::OnContextRemove)
 END_EVENT_TABLE()
 
-SA::CollectiveElementWidget::CollectiveElementWidget(wxWindow* parent, int id, bool highlight)
+Resound::CollectiveElementWidget::CollectiveElementWidget(wxWindow* parent, int id, bool highlight)
 		: wxWindow(parent, id, wxDefaultPosition, wxSize(15,15), wxRAISED_BORDER)
 {
 	if (highlight) {
@@ -328,16 +328,16 @@ SA::CollectiveElementWidget::CollectiveElementWidget(wxWindow* parent, int id, b
 	}
 }
 
-SA::CollectiveElementWidget::~CollectiveElementWidget()
+Resound::CollectiveElementWidget::~CollectiveElementWidget()
 {}
 
-void SA::CollectiveElementWidget::OnLeftMouseUp(wxMouseEvent& event)
+void Resound::CollectiveElementWidget::OnLeftMouseUp(wxMouseEvent& event)
 {
 	// create and send an saEVT_ELEMENT_SELECT event...
 	SendElementSelectedEvent(CEW_CM_LEFT_CLICK); // ... i.e. select the element that was left-clicked
 }
 
-void SA::CollectiveElementWidget::OnContextMenu(wxContextMenuEvent &event)
+void Resound::CollectiveElementWidget::OnContextMenu(wxContextMenuEvent &event)
 {
 	wxMenu contextMenu;
 	if ( event.GetId() >= 0 ) // if it was an actual element right-clicked
@@ -358,7 +358,7 @@ void SA::CollectiveElementWidget::OnContextMenu(wxContextMenuEvent &event)
 	PopupMenu(&contextMenu);
 }
 
-void SA::CollectiveElementWidget::OnContextShiftLeft(wxCommandEvent& event)
+void Resound::CollectiveElementWidget::OnContextShiftLeft(wxCommandEvent& event)
 {
 	SendElementSelectedEvent(CEW_CM_SHIFT_LEFT);
 	//wxMessageBox(_T("CollectiveElementWidget::OnContextShiftLeft function. To Do!"));
@@ -368,24 +368,24 @@ void SA::CollectiveElementWidget::OnContextShiftLeft(wxCommandEvent& event)
 	// This would require changes to SendElementSelectedEvent that currently takes no parameter...
 }
 
-void SA::CollectiveElementWidget::OnContextShiftRight(wxCommandEvent& event)
+void Resound::CollectiveElementWidget::OnContextShiftRight(wxCommandEvent& event)
 {
 	//wxMessageBox(_T("CollectiveElementWidget::OnContextShiftRight function. To Do!"));
 	SendElementSelectedEvent(CEW_CM_SHIFT_RIGHT);
 }
 
-void SA::CollectiveElementWidget::OnContextUnassign(wxCommandEvent& event)
+void Resound::CollectiveElementWidget::OnContextUnassign(wxCommandEvent& event)
 {
 	wxMessageBox(_T("CollectiveElementWidget::OnContextUnassign function. To Do!"));
 	SendElementSelectedEvent(CEW_CM_UNASSIGN);
 }
 
-void SA::CollectiveElementWidget::OnContextRemove(wxCommandEvent& event)
+void Resound::CollectiveElementWidget::OnContextRemove(wxCommandEvent& event)
 {
 	SendElementSelectedEvent(CEW_CM_REMOVE);
 }
 
-void SA::CollectiveElementWidget::SendElementSelectedEvent(CEW_CM action)
+void Resound::CollectiveElementWidget::SendElementSelectedEvent(CEW_CM action)
 {
 	int id = GetId(); // get the ID of the CollectiveElementWidget that was clicked.
 	wxCommandEvent event( saEVT_ELEMENT_SELECT, id ); // build an event of the custom type with the ID
@@ -396,11 +396,11 @@ void SA::CollectiveElementWidget::SendElementSelectedEvent(CEW_CM action)
 
 // ----------------------------------- CollectiveLinkWidget -------------------------------------------
 
-BEGIN_EVENT_TABLE(SA::CollectiveLinkWidget, wxWindow)
-EVT_LEFT_UP(SA::CollectiveLinkWidget::OnLeftMouseUp)
+BEGIN_EVENT_TABLE(Resound::CollectiveLinkWidget, wxWindow)
+EVT_LEFT_UP(Resound::CollectiveLinkWidget::OnLeftMouseUp)
 END_EVENT_TABLE()
 
-SA::CollectiveLinkWidget::CollectiveLinkWidget(wxWindow* parent, int id, wxString linkName)
+Resound::CollectiveLinkWidget::CollectiveLinkWidget(wxWindow* parent, int id, wxString linkName)
 		: wxWindow(parent, id, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER) // size used to be (15,8)
 {
 	SetFont(*wxSMALL_FONT);
@@ -414,10 +414,10 @@ SA::CollectiveLinkWidget::CollectiveLinkWidget(wxWindow* parent, int id, wxStrin
 	topSizer->Layout();
 }
 
-SA::CollectiveLinkWidget::~CollectiveLinkWidget()
+Resound::CollectiveLinkWidget::~CollectiveLinkWidget()
 {}
 
-void SA::CollectiveLinkWidget::OnLeftMouseUp(wxMouseEvent& event)
+void Resound::CollectiveLinkWidget::OnLeftMouseUp(wxMouseEvent& event)
 {
 	wxMessageBox(_T("Clicked on CollectiveLinkWidget"));
 }
@@ -426,7 +426,7 @@ void SA::CollectiveLinkWidget::OnLeftMouseUp(wxMouseEvent& event)
 
 
 // ------------------------------------ CBDialog ------------------------------------------
-SA::CBDialog::CBDialog(wxWindow* parent, Collective* _collective)
+Resound::CBDialog::CBDialog(wxWindow* parent, Collective* _collective)
 		: wxDialog(parent,-1,_T("Collective Builder Dialog"), wxDefaultPosition)
 {
 	wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
@@ -442,14 +442,14 @@ SA::CBDialog::CBDialog(wxWindow* parent, Collective* _collective)
 // ------------------------------------ CollectiveBuilder ---------------------------------
 
 // event table
-BEGIN_EVENT_TABLE(SA::CollectiveBuilder, wxPanel)
-EVT_BUTTON(CBID_ADD, SA::CollectiveBuilder::OnAddToPalette)
-EVT_BUTTON(CBID_CLEAR, SA::CollectiveBuilder::OnClearSelection)
-EVT_COMMAND  (wxID_ANY, saEVT_PVARADDRESS_SELECT, SA::CollectiveBuilder::OnAddressSelected)
-EVT_COMMAND  (wxID_ANY, saEVT_ELEMENT_SELECT, SA::CollectiveBuilder::OnElementSelected)
+BEGIN_EVENT_TABLE(Resound::CollectiveBuilder, wxPanel)
+EVT_BUTTON(CBID_ADD, Resound::CollectiveBuilder::OnAddToPalette)
+EVT_BUTTON(CBID_CLEAR, Resound::CollectiveBuilder::OnClearSelection)
+EVT_COMMAND  (wxID_ANY, saEVT_PVARADDRESS_SELECT, Resound::CollectiveBuilder::OnAddressSelected)
+EVT_COMMAND  (wxID_ANY, saEVT_ELEMENT_SELECT, Resound::CollectiveBuilder::OnElementSelected)
 END_EVENT_TABLE()
 
-SA::CollectiveBuilder::CollectiveBuilder(wxWindow* parent, Collective* _collective)
+Resound::CollectiveBuilder::CollectiveBuilder(wxWindow* parent, Collective* _collective)
 		: wxPanel(parent, -1, wxDefaultPosition, wxDefaultSize, wxWANTS_CHARS)
 {
 	collective = _collective; // get the collective to be edited...
@@ -483,15 +483,15 @@ SA::CollectiveBuilder::CollectiveBuilder(wxWindow* parent, Collective* _collecti
 	int numSubSystems = ParameterNamespaceManager::get_instance().get_num_parameter_namespaces();
 	for(int n = 0; n < numSubSystems; n++) // for each sub-system
 	{
-		SA::ParameterNamespace &system = ParameterNamespaceManager::get_instance().get_parameter_namespace(n);
-//		SA::PVSSelectPanel* panel = (SA::PVSSelectPanel*)system.SelectPanel(noteBook);  // FIXME removed panel ownership by PNamespaces FIXED pending testing
+		Resound::ParameterNamespace &system = ParameterNamespaceManager::get_instance().get_parameter_namespace(n);
+//		Resound::PVSSelectPanel* panel = (Resound::PVSSelectPanel*)system.SelectPanel(noteBook);  // FIXME removed panel ownership by PNamespaces FIXED pending testing
 		//noteBook->AddPage(panel,system.get_name(),false); // add a notebook page (tab) // FIXME string conversion FIXED pending testing
 	}
  END REMOVED DAVE 29/05/07*/
 
 	// adding audio matrix manually see above REMOVED DAVE 29/05/07
-	SA::ParameterNamespace& system = ParameterNamespaceManager::get_instance().get_parameter_namespace(0);
-	SA::PVSSelectPanel* panel = new SA::AudioMatrixSelectPanel(noteBook,&system);
+	Resound::ParameterNamespace& system = ParameterNamespaceManager::get_instance().get_parameter_namespace(0);
+	Resound::PVSSelectPanel* panel = new Resound::AudioMatrixSelectPanel(noteBook,&system);
 	noteBook->AddPage(panel,_T("Audio Matrix"),false);
 	// adding behaviour manually see above REMOVED DAVE 29/05/07
 
@@ -509,28 +509,28 @@ SA::CollectiveBuilder::CollectiveBuilder(wxWindow* parent, Collective* _collecti
 	topSizer->Layout();
 }
 
-void SA::CollectiveBuilder::OnAddToPalette(wxCommandEvent &event)
+void Resound::CollectiveBuilder::OnAddToPalette(wxCommandEvent &event)
 {
 	wxMessageBox(_T("Implement this")); //TODO on add to palette
 }
 
 
-void SA::CollectiveBuilder::OnClearSelection(wxCommandEvent &event)
+void Resound::CollectiveBuilder::OnClearSelection(wxCommandEvent &event)
 {
 	/* THIS CAN PROBABLY BE TAKEN OUT IMMEDIATELY...
 	for(int n=0;n < selectedWidgets.size(); n++)
 	{
-	    SA::AddressSelectWidget* widget = (SA::AddressSelectWidget*)selectedWidgets[n];
+	    Resound::AddressSelectWidget* widget = (Resound::AddressSelectWidget*)selectedWidgets[n];
 	    widget->SetSelected(false);
 	}
 	selectedWidgets.clear();
 	selection.clear();*/
 }
 
-void SA::CollectiveBuilder::OnAddressSelected(wxCommandEvent &event)
+void Resound::CollectiveBuilder::OnAddressSelected(wxCommandEvent &event)
 {
 	// get the originating object
-	SA::AddressSelectWidget* widget = (SA::AddressSelectWidget*)event.GetEventObject();
+	Resound::AddressSelectWidget* widget = (Resound::AddressSelectWidget*)event.GetEventObject();
 	// add selected link to temporary ParameterLink
 	ParameterLink tempLink = ParameterLink(widget->GetAddress());
 
@@ -552,7 +552,7 @@ void SA::CollectiveBuilder::OnAddressSelected(wxCommandEvent &event)
 	// call the editor's update function to refresh the display
 }
 
-void SA::CollectiveBuilder::OnElementSelected(wxCommandEvent &event)
+void Resound::CollectiveBuilder::OnElementSelected(wxCommandEvent &event)
 {
 	collectiveWrapper->set_cursor_position(event.GetId()); // just set cursor position
 	int action = event.GetInt(); // get the action to be performed on the collective from the event
@@ -585,16 +585,16 @@ void SA::CollectiveBuilder::OnElementSelected(wxCommandEvent &event)
 /// #include <wx/dcbuffer.h>
 
 // implement custom events
-DEFINE_EVENT_TYPE(SA::saEVT_PVARADDRESS_SELECT)
+DEFINE_EVENT_TYPE(Resound::saEVT_PVARADDRESS_SELECT)
 
 // event table
-BEGIN_EVENT_TABLE(SA::AddressSelectWidget, SA::ParameterAddressWidgetBase)
-EVT_LEFT_UP(SA::AddressSelectWidget::OnLeftMouseUp)
-EVT_RIGHT_UP(SA::AddressSelectWidget::OnRightMouseUp)
-EVT_PAINT(SA::AddressSelectWidget::OnPaint)
+BEGIN_EVENT_TABLE(Resound::AddressSelectWidget, Resound::ParameterAddressWidgetBase)
+EVT_LEFT_UP(Resound::AddressSelectWidget::OnLeftMouseUp)
+EVT_RIGHT_UP(Resound::AddressSelectWidget::OnRightMouseUp)
+EVT_PAINT(Resound::AddressSelectWidget::OnPaint)
 END_EVENT_TABLE()
 
-SA::AddressSelectWidget::AddressSelectWidget(wxWindow* parent, int id, ParameterAddress _addr)
+Resound::AddressSelectWidget::AddressSelectWidget(wxWindow* parent, int id, ParameterAddress _addr)
 		: ParameterAddressWidgetBase(parent,id,_addr)
 {
 
@@ -619,7 +619,7 @@ SA::AddressSelectWidget::AddressSelectWidget(wxWindow* parent, int id, Parameter
 
 }
 
-void SA::AddressSelectWidget::SetSelected(bool b)
+void Resound::AddressSelectWidget::SetSelected(bool b)
 {
 	if(b) {
 		selected = true;
@@ -633,7 +633,7 @@ void SA::AddressSelectWidget::SetSelected(bool b)
 }
 
 // this function triggers the custom event:-
-void SA::AddressSelectWidget::SendAddressSelectEvent(AS_MOUSE_ACTION mouseAction)
+void Resound::AddressSelectWidget::SendAddressSelectEvent(AS_MOUSE_ACTION mouseAction)
 {
 	// build the event
 	int id = GetId();
@@ -645,21 +645,21 @@ void SA::AddressSelectWidget::SendAddressSelectEvent(AS_MOUSE_ACTION mouseAction
 	// Send it
 	GetEventHandler()->ProcessEvent( event );
 }
-void SA::AddressSelectWidget::OnLeftMouseUp(wxMouseEvent& event)
+void Resound::AddressSelectWidget::OnLeftMouseUp(wxMouseEvent& event)
 {
 	SendAddressSelectEvent (AS_LEFT_CLICK);
 	//wxMessageBox(_T("Left Mouse Up"));
 }
 
 
-void SA::AddressSelectWidget::OnRightMouseUp(wxMouseEvent& event)
+void Resound::AddressSelectWidget::OnRightMouseUp(wxMouseEvent& event)
 {
 	SendAddressSelectEvent (AS_RIGHT_CLICK);
 	//wxMessageBox(_T("Right Mouse Up"));
 }
 
 
-void SA::AddressSelectWidget::OnPaint(wxPaintEvent& event)
+void Resound::AddressSelectWidget::OnPaint(wxPaintEvent& event)
 {
 	wxBufferedPaintDC dc(this);
 	wxSize size = GetSize();

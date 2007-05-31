@@ -21,7 +21,7 @@
 #ifndef SAFADER_H
 #define SAFADER_H
 
-namespace SA
+namespace Resound
 {
 // custom event send by fader object
 DECLARE_EVENT_TYPE(saEVT_FADER_CHANGED, -1)

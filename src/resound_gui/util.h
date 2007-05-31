@@ -16,12 +16,12 @@
 //   Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 //   MA 02111-1307 USA
 //   
-#ifndef SA_UTIL_H
-#define SA_UTIL_H
+#ifndef __UTIL_H
+#define __UTIL_H
 
 // usefull utils globaly defined
 
-namespace SA{
+namespace Resound{
 
 inline float RANGEMAPF(float v, float iMin, float iMax, float oMin, float oMax)
 {

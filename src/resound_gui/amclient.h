@@ -16,8 +16,8 @@
 //   Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 //   MA 02111-1307 USA
 //   
-#ifndef __SA_AUDIOMATRIX__
-#define __SA_AUDIOMATRIX__
+#ifndef ____AUDIOMATRIX__
+#define ____AUDIOMATRIX__
 
 // all classes relating to the core of the audio matrix reside here
 // include for transmited data format
@@ -27,7 +27,7 @@
 
 #include "pvarwidgets.h"
 
-namespace SA
+namespace Resound
 {
 /// An audio matrix specialized pvar.
 /// This class links real float attenuation values in the

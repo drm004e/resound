@@ -24,7 +24,7 @@
 #include <wx/wx.h> // inheriting class's header file
 #include "monitorview.h"
 
-namespace SA
+namespace Resound
 {
 
 // Frame window for holding the monitorView class
@@ -37,7 +37,7 @@ public:
 	~MonitorFrame();
 private:
 
-	SA::MonitorView* monitorView;
+	Resound::MonitorView* monitorView;
 
 	DECLARE_EVENT_TABLE()
 };

@@ -31,27 +31,27 @@
 #include "amclient.h" // classes header
 #include <sstream>
 // AMParameter -------------------------------------------------------------------------------------
-SA::AMParameter::AMParameter() :
+Resound::AMParameter::AMParameter() :
 m_needsUpdate(false)
 {}
 
-SA::AMParameter::~AMParameter()
+Resound::AMParameter::~AMParameter()
 {}
 
-void SA::AMParameter::on_value_changed()
+void Resound::AMParameter::on_value_changed()
 {
 	// gets called on actual change of value
 	m_needsUpdate = true;
 }
 
 
-bool SA::AMParameter::node_needs_update()
+bool Resound::AMParameter::node_needs_update()
 {
 	return m_needsUpdate;
 }
 
 // called by amclient when updates should be done
-void SA::AMParameter::update_osc_target()
+void Resound::AMParameter::update_osc_target()
 {
 	// update the target value
 	float v = CLAMPF((float)get_value() * (1.0f/128.0f), 0.0f, 1.0f); // set the value of the node and clamp it
@@ -59,24 +59,24 @@ void SA::AMParameter::update_osc_target()
 	m_needsUpdate = false;
 }
 
-void SA::AMParameter::set_osc_target(lo_address host, std::string path){
+void Resound::AMParameter::set_osc_target(lo_address host, std::string path){
 	m_hostAddress = host;
 	m_oscAddress = path;
 }
 
 // AM Client -------------------------------------------------------------------------------------
 
-SA::AMClient::AMClient() :
+Resound::AMClient::AMClient() :
 Resound::OSCManager("8765"),
-SA::ParameterNamespace("audio_matrix")
+Resound::ParameterNamespace("audio_matrix")
 {
 	build_parameter_matrix(10,10); // fake matrix
 }
-SA::AMClient::~AMClient()
+Resound::AMClient::~AMClient()
 {}
 
 // build the audio matrix and associated Parameters
-void SA::AMClient::build_parameter_matrix(int numInputs, int numOutputs)
+void Resound::AMClient::build_parameter_matrix(int numInputs, int numOutputs)
 {
 
 	// make pvar matrix
@@ -103,23 +103,23 @@ void SA::AMClient::build_parameter_matrix(int numInputs, int numOutputs)
 
 
 // implement the ParameterNamespace interface
-void* SA::AMClient::SettingsPanel(wxWindow* parent)
+void* Resound::AMClient::SettingsPanel(wxWindow* parent)
 {
 	// open a sub system settings dialog
 
 	return 0;
 }
 
-void* SA::AMClient::SelectPanel(wxWindow* parent)
+void* Resound::AMClient::SelectPanel(wxWindow* parent)
 {
 	// open an appropriate dialog for Parameter selection return the address or null address
-	return new SA::AudioMatrixSelectPanel(parent,this);
+	return new Resound::AudioMatrixSelectPanel(parent,this);
 }
 
 
 
 // tick
-void SA::AMClient::tick(float dT)
+void Resound::AMClient::tick(float dT)
 {
 	// check pvars against matrix parameters transmit if required
 	// maintain server and client copies
@@ -137,7 +137,7 @@ void SA::AMClient::tick(float dT)
 }
 
 // ----------------------------------------- AudioMatrixSelectPanel -----------------
-SA::AudioMatrixSelectPanel::AudioMatrixSelectPanel(wxWindow* parent, ParameterNamespace* _subSystem)
+Resound::AudioMatrixSelectPanel::AudioMatrixSelectPanel(wxWindow* parent, ParameterNamespace* _subSystem)
 		: PVSSelectPanel(parent,_subSystem)
 {
 	// cast subsystem to amClient - theoretically it can only be one of these
@@ -156,7 +156,7 @@ SA::AudioMatrixSelectPanel::AudioMatrixSelectPanel(wxWindow* parent, ParameterNa
 		for(int c = 0; c <= amClient->get_num_outputs(); c++) {
 			std::stringstream s;
 			s << "/" << amClient->get_name() <<"/matrix/att/" << r << "/" << c; // generate the name
-			SA::AddressSelectWidget *panel = new SA::AddressSelectWidget(scroll,-1,ParameterAddress(s.str())); // FIXME drastic pvar addressing changes // FIXED, pending testing
+			Resound::AddressSelectWidget *panel = new Resound::AddressSelectWidget(scroll,-1,ParameterAddress(s.str())); // FIXME drastic pvar addressing changes // FIXED, pending testing
 
 			wxColour bkColour;
 
