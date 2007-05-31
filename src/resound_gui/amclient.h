@@ -40,7 +40,7 @@ private:
 	std::string m_oscAddress; ///< the osc path for this node
 public:
 	/// Default constructor
-	AMParameter();
+	AMParameter(const EntityName& name);
 
 	/// Destructor
 	virtual ~AMParameter();
@@ -67,7 +67,7 @@ class AMClient : public Resound::OSCManager, public ParameterNamespace, public A
 public:
 	/// Constructor
 	/// @param _log : a pointer to a wxTextCtrl that can be used to log events
-	AMClient();
+	AMClient(int inputs, int outputs);
 	~AMClient(); ///< Destructor
 
 	// implement the ParameterNamespace interface
@@ -102,7 +102,7 @@ private:
 	/// @param _numOutputs : the number of outputs to build.
 	void build_parameter_matrix(int numInputs, int numOutputs);
 
-	Array2<AMParameter> m_parameterMatrix; ///< AMParameters controlled by user
+//	Array2<AMParameterPtr> m_parameterMatrix; ///< AMParameters controlled by user
 };
 
 /// An interface panel visible in the collective builder dialog.

@@ -43,12 +43,12 @@ Resound::MasterFader::MasterFader(wxWindow* parent, int id)
 
 	// faders meters
 	fader1 = new Resound::FaderWidget(this,MFG_FADER1,0,0,128);
-	meter1 = new Resound::ParameterVUMeterWidget(this,MFG_METER1,rand() % 128,0,128);
-	meter2 = new Resound::VUMeterWidget(this,MFG_METER2,rand() % 128,0,128);
+	//meter1 = new Resound::ParameterVUMeterWidget(this,MFG_METER1,rand() % 128,0,128);
+	//meter2 = new Resound::VUMeterWidget(this,MFG_METER2,rand() % 128,0,128);
 
 	topTierSizer->Add(fader1,wxSizerFlags(0).Align(0).Border(wxALL,0)); // fader
-	topTierSizer->Add(meter1,wxSizerFlags(0).Align(0).Border(wxALL,0)); //meter1
-	topTierSizer->Add(meter2,wxSizerFlags(0).Align(0).Border(wxALL,0)); // meter2
+	//topTierSizer->Add(meter1,wxSizerFlags(0).Align(0).Border(wxALL,0)); //meter1
+	//topTierSizer->Add(meter2,wxSizerFlags(0).Align(0).Border(wxALL,0)); // meter2
 
 	// buttons
 	collectiveWidget = new Resound::CollectiveWidget(this,MFG_ASSIGN1,_T("Assign"),

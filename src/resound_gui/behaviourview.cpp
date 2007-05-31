@@ -31,7 +31,7 @@
 #include "pvarwidgets.h"
 
 #include "behaviourview.h" // class's header file
-
+#include <sstream>
 //------------------------------------------ BehaviourViewItem ----------------------------
 //events
 BEGIN_EVENT_TABLE(Resound::BehaviourViewItem, wxPanel)
@@ -50,7 +50,7 @@ Resound::BehaviourViewItem::BehaviourViewItem(wxWindow* parent, int id, Behaviou
 
 	// construct the sub objects and sizer
 	wxSizer* topSizer = new wxBoxSizer( wxVERTICAL );
-	label = new wxStaticText(this,-1,wxString(wxConvertMB2WX(behaviour->get_name().c_str())));//FIXME string conversion FIXED
+	label = new wxStaticText(this,-1,wxString(wxConvertMB2WX(behaviour->get_name().c_str())));
 	topSizer->Add(label);
 
 	wxSizer* sizer = new wxBoxSizer( wxHORIZONTAL );
@@ -60,13 +60,13 @@ Resound::BehaviourViewItem::BehaviourViewItem(wxWindow* parent, int id, Behaviou
 	collectiveWidget = new Resound::CollectiveWidget(this,-1,_T("Assign"), &behaviour->get_collective(), true);
 	sizer->Add(collectiveWidget);
 
-/* FIXME drastic changes to the way behaviours register parameters
+	// FIXME drastic changes to the way behaviours register parameters
 	for(int n = 0; n < behaviour->get_num_parameters(); n++) { 
-		stringstream s;
-		s << "/behaviour/" << behaviour->GetName() << "/" << n;
+		std::stringstream s;
+		s << "/behaviour/" << behaviour->get_name() << "/" << behaviour->get_parameter(n)->get_name();
 		sizer->Add(new Resound::MonitorNodeWidget(this,-1,ParameterAddress(s.str()))); // FIXME behaviour parameter addressing
 	}
-*/
+
 	topSizer->Add(sizer);
 
 	// layout

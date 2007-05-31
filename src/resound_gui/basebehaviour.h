@@ -35,10 +35,10 @@ class BPGroup : public Behaviour
 public:
 	static BehaviourPtr Factory()
 	{
-		return BehaviourPtr(new BPGroup);
+		return BehaviourPtr(new BPGroup("pgroup"));
 	};
 	// class constructor
-	BPGroup();
+	BPGroup(std::string name);
 	// class destructor
 	~BPGroup();
 };
@@ -50,10 +50,10 @@ class BMultiCrossfade : public Behaviour
 public:
 	static BehaviourPtr Factory()
 	{
-		return BehaviourPtr(new BMultiCrossfade);
+		return BehaviourPtr(new BMultiCrossfade("mp_crossfade"));
 	};
 	// class constructor
-	BMultiCrossfade();
+	BMultiCrossfade(std::string name);
 	// class destructor
 	~BMultiCrossfade();
 };
@@ -64,10 +64,10 @@ class BWave : public Behaviour, public AutomatedObject
 public:
 	static BehaviourPtr Factory()
 	{
-		return BehaviourPtr(new BWave);
+		return BehaviourPtr(new BWave("wave"));
 	};
 	// class constructor
-	BWave();
+	BWave(std::string name);
 	// class destructor
 	~BWave();
 
@@ -87,10 +87,10 @@ class BMexicanWave : public Behaviour, public AutomatedObject
 public:
 	static BehaviourPtr Factory()
 	{
-		return BehaviourPtr(new BMexicanWave);
+		return BehaviourPtr(new BMexicanWave("mexican_wave"));
 	};
 	// class constructor
-	BMexicanWave();
+	BMexicanWave(std::string name);
 	// class destructor
 	~BMexicanWave();
 
@@ -112,10 +112,10 @@ class BRandom : public Behaviour, public AutomatedObject
 public:
 	static BehaviourPtr Factory()
 	{
-		return BehaviourPtr(new BRandom);
+		return BehaviourPtr(new BRandom("random"));
 	};
 	// class constructor
-	BRandom();
+	BRandom(std::string name);
 	// class destructor
 	~BRandom();
 

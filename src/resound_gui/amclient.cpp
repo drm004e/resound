@@ -31,7 +31,8 @@
 #include "amclient.h" // classes header
 #include <sstream>
 // AMParameter -------------------------------------------------------------------------------------
-Resound::AMParameter::AMParameter() :
+Resound::AMParameter::AMParameter(const EntityName& name) :
+Parameter(name),
 m_needsUpdate(false)
 {}
 
@@ -39,19 +40,6 @@ Resound::AMParameter::~AMParameter()
 {}
 
 void Resound::AMParameter::on_value_changed()
-{
-	// gets called on actual change of value
-	m_needsUpdate = true;
-}
-
-
-bool Resound::AMParameter::node_needs_update()
-{
-	return m_needsUpdate;
-}
-
-// called by amclient when updates should be done
-void Resound::AMParameter::update_osc_target()
 {
 	// update the target value
 	float v = CLAMPF((float)get_value() * (1.0f/128.0f), 0.0f, 1.0f); // set the value of the node and clamp it
@@ -66,11 +54,11 @@ void Resound::AMParameter::set_osc_target(lo_address host, std::string path){
 
 // AM Client -------------------------------------------------------------------------------------
 
-Resound::AMClient::AMClient() :
+Resound::AMClient::AMClient(int inputs, int outputs) :
 Resound::OSCManager("8765"),
 Resound::ParameterNamespace("audio_matrix")
 {
-	build_parameter_matrix(10,10); // fake matrix
+	build_parameter_matrix(inputs,outputs); // fake matrix
 }
 Resound::AMClient::~AMClient()
 {}
@@ -80,7 +68,7 @@ void Resound::AMClient::build_parameter_matrix(int numInputs, int numOutputs)
 {
 
 	// make pvar matrix
-	m_parameterMatrix.Create(numInputs+1,numOutputs+1);
+//	m_parameterMatrix.Create(numInputs+1,numOutputs+1);
 	m_numInputs = numInputs;
 	m_numOutputs = numOutputs;
 
@@ -88,13 +76,13 @@ void Resound::AMClient::build_parameter_matrix(int numInputs, int numOutputs)
 
 	// fill in pvar details
 	int r,c;
-	for(r = 0; r < m_parameterMatrix.SizeX(); r++) {
-		for(c = 0; c < m_parameterMatrix.SizeY(); c++) {
+	for(r = 0; r < m_numInputs+1; r++) {
+		for(c = 0; c < m_numOutputs+1; c++) {
 
 			//create the local parameter and point it at its osc target
 			std::stringstream s;
 			s << "/matrix/att/" << r << "/" << c; // generate the name
-			AMParameter* node = new AMParameter; // make the node
+			AMParameter* node = new AMParameter(s.str()); // make the node
 			node->set_osc_target(host, s.str()); // set the external osc method address
 			register_parameter(s.str(), ParameterPtr(node));
 		}
@@ -121,18 +109,6 @@ void* Resound::AMClient::SelectPanel(wxWindow* parent)
 // tick
 void Resound::AMClient::tick(float dT)
 {
-	// check pvars against matrix parameters transmit if required
-	// maintain server and client copies
-		int r,c;
-		for(r = 0; r < m_parameterMatrix.SizeX(); r++) {
-			for(c = 0; c < m_parameterMatrix.SizeY(); c++) {
-				AMParameter& t = m_parameterMatrix.Index(r,c);
-				if(t.node_needs_update()) // updates the node if required
-				{
-					t.update_osc_target(); // this will cause the OSC message to get sent
-				}
-			}
-		}
 
 }
 

@@ -27,6 +27,7 @@
 
 #include "pvarwidgets.h" // class's header file
 #include <cstring>
+#include "behaviour.h"
 // -------------------------------- ParameterAddressWidgetBase --------------------
 Resound::ParameterAddressWidgetBase::ParameterAddressWidgetBase(wxWindow* parent, int id, ParameterAddress _addr)
 		: wxWindow(parent,id)
@@ -485,15 +486,19 @@ Resound::CollectiveBuilder::CollectiveBuilder(wxWindow* parent, Collective* _col
 	{
 		Resound::ParameterNamespace &system = ParameterNamespaceManager::get_instance().get_parameter_namespace(n);
 //		Resound::PVSSelectPanel* panel = (Resound::PVSSelectPanel*)system.SelectPanel(noteBook);  // FIXME removed panel ownership by PNamespaces FIXED pending testing
-		//noteBook->AddPage(panel,system.get_name(),false); // add a notebook page (tab) // FIXME string conversion FIXED pending testing
+		//noteBook->AddPage(panel,system.get_name(),false); // add a notebook page (tab) 
 	}
  END REMOVED DAVE 29/05/07*/
 
 	// adding audio matrix manually see above REMOVED DAVE 29/05/07
-	Resound::ParameterNamespace& system = ParameterNamespaceManager::get_instance().get_parameter_namespace(0);
-	Resound::PVSSelectPanel* panel = new Resound::AudioMatrixSelectPanel(noteBook,&system);
-	noteBook->AddPage(panel,_T("Audio Matrix"),false);
+	Resound::ParameterNamespace& amNamespace = ParameterNamespaceManager::get_instance().get_parameter_namespace(0);
+	wxWindow* panel1 = (Resound::PVSSelectPanel*) new Resound::AudioMatrixSelectPanel(noteBook,&amNamespace);
+	noteBook->AddPage(panel1,_T("Matrix"),false);
+
 	// adding behaviour manually see above REMOVED DAVE 29/05/07
+	Resound::ParameterNamespace& behaviourNamespace = ParameterNamespaceManager::get_instance().get_parameter_namespace(1);
+	wxWindow* panel2 = new Resound::BehaviourSelectPanel(noteBook,&behaviourNamespace);
+	noteBook->AddPage(panel2,_T("Behaviour"),false);
 
 
 	// add notebook to topsizer

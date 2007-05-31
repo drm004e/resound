@@ -28,14 +28,26 @@
 
 namespace Resound
 {
+
+typedef std::string EntityName;
+
+class Entity{
+public:
+	Entity(const EntityName& name);
+	virtual ~Entity();
+	virtual void set_name(const EntityName& name);
+	virtual const EntityName& get_name();
+private:
+	EntityName m_name;
+};
+
 /// Parameters are targets for automation and control
 /// Parameters use integer arithmetic to eliminate rounding errors
-class Parameter
+class Parameter : public Entity
 {
 public:
-	Parameter();
+	Parameter(const EntityName& name);
 	virtual ~Parameter();
-
 	//values
 	virtual int get_value(); ///< obtain the value
 	virtual void set_value(int oldVal, int newVal); ///< set using previous value
@@ -43,19 +55,14 @@ public:
 	virtual void on_value_changed(); ///<a virtual function called directly by SetValue and SetValue Direct
 	virtual void lock(int lockedValue); ///< locks the value - the real value will still be changed but GetValue will return the locked value
 	virtual void unlock(); ///< get value will return the real value;
-
-	//names
-	void set_name(std::string name); // name this Pvar
-	std::string get_name();
-
 private:
-	std::string m_name;
 	int m_value;
 	int m_lockedValue;
 	bool m_isLocked;
 };
 
 typedef boost::shared_ptr<Parameter> ParameterPtr;
+typedef std::vector<ParameterPtr> ParameterArray;
 
 /// Parameters are stored in various locations - behaviours, sub systems etc
 /// a Parameter address is used to get hold of a Parameter
@@ -95,15 +102,10 @@ public:
 /// the subsystem also deals with Parameter -> real world variable translation
 /// typically this is inherited from.
 /// eg. the audio matrix is a ParameterNamespace
-class ParameterNamespace
+class ParameterNamespace : public Entity
 {
-private:
-	std::string m_name; ///< subsystem name forms the first part of any mapped addresses
-	// so in the address /behaviour/mexican1/freq. /behaviour is the subsystem 
 public:
-	ParameterNamespace(std::string name) : m_name(name) {}
-	/// get the name of this sub system
-	std::string get_name(){return m_name;}
+	ParameterNamespace(EntityName name) : Entity(name) {}
 
 	/// register a parameter at the sub address specified,
 	/// the sub system address will be prepended to the address specified
@@ -154,10 +156,9 @@ private:
 	ParameterAddressMap m_parameterAddressMap; ///< the global address space
 };
 
-// Parameters are linked using a Parameterlink
-// the link is indirect - ie not with a pointer -
-// this attempts to avoid possible bugs with invalid pointers due to object creation/deletion
-// the link also deals with Parameter summing and takes care of previously sent values
+/// Parameters are linked using a Parameterlink
+/// the link also deals with Parameter summing and takes care of previously sent values
+/// the link is cached in a smart pointer, but is set via the parameter addressing system
 class ParameterLink
 {
 public:

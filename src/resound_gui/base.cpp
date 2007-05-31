@@ -75,16 +75,13 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 	wxNotebook* leftBook = new wxNotebook(this,-1);
 
 
-	wxTextCtrl *netLog = new wxTextCtrl(leftBook, wxID_ANY,
-	                                    _T("Netlog...\n"),
-	                                    wxPoint(0,0), wxSize(300,100),
-	                                    wxTE_MULTILINE | wxTE_READONLY);
+	//wxTextCtrl *netLog = new wxTextCtrl(leftBook, wxID_ANY,_T("Netlog...\n"),wxPoint(0,0), wxSize(300,100),wxTE_MULTILINE | wxTE_READONLY);
 
 
 	//wxMessageBox(_T("ok"));
 
 	// make the network client
-	m_audioMatrix = new Resound::AMClient();
+	m_audioMatrix = new Resound::AMClient(5,6);
 
 	// make the behaviour sub system
 	m_behaviourManager = new Resound::BehaviourManager();
@@ -120,7 +117,7 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 	leftBook->AddPage(perfView,_T("Master"),true);
 	leftBook->AddPage(monitorView,_T("Matrix"),false);
 	leftBook->AddPage(behaviourView,_T("Behaviour"),false);
-	leftBook->AddPage(netLog,_T("Console"),false);
+	//leftBook->AddPage(netLog,_T("Console"),false);
 	// create top sizer and fill with stuff
 	wxBoxSizer *topSizer = new wxBoxSizer( wxHORIZONTAL );
 	topSizer->Add(leftBook,wxSizerFlags(1).Center().Border(wxALL,1));
@@ -131,7 +128,7 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 	topSizer->Layout();
 
 	// start the automation driver
-	m_automationDriver.Start(33);
+	m_automationDriver.Start(5);
 
 }
 
@@ -171,7 +168,25 @@ void MainFrame::OnLoad(wxCommandEvent& event)
 
 void MainFrame::OnAbout(wxCommandEvent& event)
 {
-	wxMessageBox(_T("Resound\n Licensed under the terms of the GNU Public Licence Version 2.0\n"), _T("About Resound"));
+wxMessageBox(_T(
+"Resound: \n\n\
+Copyright (c) 2007 David Moore, James Mooney, All Rights Reserved.\n\n\
+This program is free software; you can redistribute it and/or \
+modify it under the terms of the GNU General Public License as \
+published by the Free Software Foundation; either version 2 of \
+the License, or (at your option) any later version.\n\n\
+This program is distributed in the hope that it will be useful, \
+but WITHOUT ANY WARRANTY; without even the implied warranty of \
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the \
+GNU General Public License for more details.\n\n\
+You should have received a copy of the GNU General Public License \
+along with this program; if not, write to the Free Software \
+Foundation, Inc., 59 Temple Place, Suite 330, Boston,\n\
+MA 02111-1307 USA\n\
+\nContributors:\n\
+\tDr D. Moore\n\
+\tDr J. Mooney\n\
+"), _T("About Resound"));
 }
 
 

@@ -37,11 +37,12 @@ void Resound::register_base_behaviours(BehaviourManager* theManager)
 // ----------------------------------------- Proportinal group ---------------
 
 // class constructor
-Resound::BPGroup::BPGroup()
+Resound::BPGroup::BPGroup(std::string name) :
+Resound::Behaviour(name)
 {
-	register_parameter("level", ParameterPtr(new Parameter));
-	register_parameter("min", ParameterPtr(new Parameter));
-	register_parameter("max", ParameterPtr(new Parameter));
+	register_parameter(ParameterPtr(new Parameter("level")));
+	register_parameter(ParameterPtr(new Parameter("min")));
+	register_parameter(ParameterPtr(new Parameter("max")));
 }
 
 // class destructor
@@ -53,9 +54,10 @@ Resound::BPGroup::~BPGroup()
 // ---------------------------------------- Multicrossfade ------------------
 
 // class constructor
-Resound::BMultiCrossfade::BMultiCrossfade()
+Resound::BMultiCrossfade::BMultiCrossfade(std::string name) :
+Resound::Behaviour(name)
 {
-	register_parameter("position", ParameterPtr(new Parameter));
+	register_parameter(ParameterPtr(new Parameter("position")));
 }
 
 // class destructor
@@ -66,12 +68,13 @@ Resound::BMultiCrossfade::~BMultiCrossfade()
 
 // ---------------------------------------- Wave ----------------------------
 // class constructor
-Resound::BWave::BWave() :
-m_amp(new Parameter),
-m_freq(new Parameter)
+Resound::BWave::BWave(std::string name) :
+Resound::Behaviour(name),
+m_amp(new Parameter("amp")),
+m_freq(new Parameter("freq"))
 {
-	register_parameter("amp", m_amp);
-	register_parameter("freq", m_freq);
+	register_parameter(m_amp);
+	register_parameter(m_freq);
 
 	// init
 	angle = 0;
@@ -106,12 +109,13 @@ void Resound::BWave::tick(float dT)
 }
 // ---------------------------------------- Mexican Wave ----------------------------
 // class constructor
-Resound::BMexicanWave::BMexicanWave() :
-m_amp(new Parameter),
-m_freq(new Parameter)
+Resound::BMexicanWave::BMexicanWave(std::string name) :
+Resound::Behaviour(name),
+m_amp(new Parameter("amp")),
+m_freq(new Parameter("freq"))
 {
-	register_parameter("amp", m_amp);
-	register_parameter("freq", m_freq);
+	register_parameter(m_amp);
+	register_parameter(m_freq);
 
 	// init
 	angle = 0;
@@ -145,12 +149,13 @@ void Resound::BMexicanWave::tick(float dT)
 
 // ---------------------------------------- Random ----------------------------
 // class constructor
-Resound::BRandom::BRandom() :
-m_amp(new Parameter),
-m_freq(new Parameter)
+Resound::BRandom::BRandom(std::string name) :
+Resound::Behaviour(name),
+m_amp(new Parameter("amp")),
+m_freq(new Parameter("freq"))
 {
-	register_parameter("amp", m_amp);
-	register_parameter("freq", m_freq);
+	register_parameter(m_amp);
+	register_parameter(m_freq);
 }
 
 // class destructor

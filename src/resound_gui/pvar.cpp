@@ -19,10 +19,27 @@
 
 #include "pvar.h" // class's header file
 #include <iostream>
+
+// ------------------------------- Entity ----------------------------------
+Resound::Entity::Entity(const EntityName& name) :
+m_name(name)
+{}
+
+Resound::Entity::~Entity()
+{}
+
+void Resound::Entity::set_name(const EntityName& name){
+	m_name = name;
+}
+
+const Resound::EntityName& Resound::Entity::get_name(){
+	return m_name;
+}
+
 // -------------------------------- Parameter --------------------------------
-Resound::Parameter::Parameter() :
+Resound::Parameter::Parameter(const EntityName& name) :
+Resound::Entity(name),
 m_value(0),
-m_name("No name"),
 m_isLocked(false)
 {}
 
@@ -72,18 +89,10 @@ void Resound::Parameter::unlock()
 void Resound::Parameter::on_value_changed()
 {}
 
-void Resound::Parameter::set_name(std::string name)
-{
-	m_name = name;
-}
 
-std::string Resound::Parameter::get_name()
-{
-	return m_name;
-}
 // -------------------------------- ParameterNamespace ------------------
 void Resound::ParameterNamespace::register_parameter(std::string address, ParameterPtr param){
-	Resound::ParameterNamespaceManager::get_instance().register_parameter(std::string("/") + m_name + address, param);
+	Resound::ParameterNamespaceManager::get_instance().register_parameter(std::string("/") + get_name() + address, param);
 }
 // -------------------------------- ParameterNamespaceManager ------------------
 // singleton manager object
@@ -142,7 +151,8 @@ m_lastValue(0)
 
 Resound::ParameterLink::ParameterLink(const ParameterAddress &t) :
 m_lastValue(0),
-m_targetAddress(t)
+m_targetAddress(t),
+m_targetPtr(ParameterNamespaceManager::get_instance().get_parameter(m_targetAddress))
 {}
 
 // copy construct
@@ -151,17 +161,16 @@ m_targetAddress(t)
 // targets are maintained but influence on values is reset
 Resound::ParameterLink::ParameterLink(const ParameterLink& p) :
 m_lastValue(0),
-m_targetAddress(p.m_targetAddress)
+m_targetAddress(p.m_targetAddress),
+m_targetPtr(p.m_targetPtr)
 {}
 
-//assignemtn
+//assignemtnPtr
 Resound::ParameterLink& Resound::ParameterLink::operator=(const ParameterLink& p){
 	if(&p == this) {
 		return *this; // ignore self assignment
 	}
-	set_value(0); // remove influence on old target
-	m_targetAddress = p.m_targetAddress; // get the new target
-	m_lastValue = 0; // set last value to 0
+	set_target(p.m_targetAddress); // get the new target
 	return *this;
 }
 
@@ -175,23 +184,31 @@ void Resound::ParameterLink::set_target(const ParameterAddress &addr){
 	// notify previous target and remove influence
 	set_value(0); // removes any influence
 	m_targetAddress = addr;
+	m_targetPtr = ParameterNamespaceManager::get_instance().get_parameter(m_targetAddress);
+	m_lastValue = 0; // set last value to 0
 }
 void Resound::ParameterLink::set_value(int val){
 	// uses the suming system to set a new value
 	if(val != m_lastValue) {
 		// only update if different because it avoids calls to obtain the target param
-		ParameterNamespaceManager::get_instance().get_parameter(m_targetAddress)->set_value(m_lastValue, val);
-		m_lastValue = val;
+		if(m_targetPtr){
+			m_targetPtr->set_value(m_lastValue, val);
+			m_lastValue = val;
+		}
 	}
 }
 int Resound::ParameterLink::get_value()
 {
-	return ParameterNamespaceManager::get_instance().peek_parameter_value(m_targetAddress);
+	if(m_targetPtr){
+		return m_targetPtr->get_value();
+	} else {
+		return 0;
+	}
 }
 
 Resound::ParameterPtr Resound::ParameterLink::get_parameter()
 {
-	return ParameterNamespaceManager::get_instance().get_parameter(m_targetAddress);
+	return m_targetPtr;
 }
 
 

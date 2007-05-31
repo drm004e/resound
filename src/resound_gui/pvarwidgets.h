@@ -50,6 +50,9 @@ public:
 protected:
 	ParameterNamespace *subSystem;
 };
+
+
+/// these are parameter selection panels that are specific to namespaces
 class PVSSelectPanel : public wxPanel
 {
 public:

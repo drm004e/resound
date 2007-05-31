@@ -27,24 +27,35 @@
 
 #include <sstream>
 // -------------------------------- Behaviour --------------------------------
+int Resound::Behaviour::s_globalId=0;
+
 // class constructor
-Resound::Behaviour::Behaviour()
-{}
+Resound::Behaviour::Behaviour(std::string name)
+{
+	// tag on the unique global id
+	std::stringstream s;
+	s << name << "_" << get_global_id();
+	m_name = s.str();
+}
 // class destructor
 Resound::Behaviour::~Behaviour()
 {}
 
 
 // operations used in construction
-void Resound::Behaviour::register_parameter(std::string address, ParameterPtr param)
+void Resound::Behaviour::register_parameter(ParameterPtr param)
 {
-	// add a new Parameter
-	Parameter p;
-	p.set_name(m_name);
+	// add a new Parameter to the local refference
+	m_parameters.push_back(param);
+	// register with the namespace manager
+	std::stringstream s;
+	s << "/behaviour/" << m_name << "/" << param->get_name(); // generate the name
+	Resound::ParameterNamespaceManager::get_instance().register_parameter(s.str(),param);
 }
 void Resound::Behaviour::set_name(std::string name)
 {
-	m_name = name;
+	// TODO this needs to be done
+	//m_name = name;
 	// rename all Parameters !
 }
 std::string Resound::Behaviour::get_name()
@@ -91,7 +102,7 @@ Resound::BehaviourPtr Resound::BehaviourClassFactory::create()
 // -------------------------------- Behaviour manager ----------------------------
 
 Resound::BehaviourManager::BehaviourManager() :
-ParameterNamespace("Behaviour")
+ParameterNamespace("behaviour")
 {
 	m_nextId = 0;
 }
@@ -221,12 +232,13 @@ void Resound::BehaviourSelectPanel::BuildPanel()
 		int id = (*i).first;
 		BehaviourPtr b = (*i).second;
 		wxGridSizer* gridSizer = new wxGridSizer(1,0,1,1);
-		/* // FIXME Parameter mod
-		for(int n = 0; n < b->GetNumParameters(); n++) {
-			gridSizer->Add(new Resound::AddressSelectWidget(this,-1,ParameterAddress("null osc address"))); //FIXME drastic changes to pvar address
+		
+		for(int n = 0; n < b->get_num_parameters() ; n++) {
+			std::stringstream s;
+			s << "/" << behaviourManager->get_name() << "/" << b->get_name() << "/" << b->get_parameter(n)->get_name(); // generate the name
+			gridSizer->Add(new Resound::AddressSelectWidget(this,-1,ParameterAddress(s.str()))); 
 		}
-		//sizer->Add(new wxStaticText(this,-1,b->GetName())); //FIXME wxString conversion
-		*/
+		sizer->Add(new wxStaticText(this,-1,wxConvertMB2WX(b->get_name().c_str()))); 
 		sizer->Add(gridSizer);
 	}
 

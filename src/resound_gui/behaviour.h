@@ -43,10 +43,11 @@ typedef std::string BehaviourClassId;
 class Behaviour
 {
 public:
-	Behaviour(); ///< construction
+	Behaviour(std::string name); ///< construction must have a name
 	virtual ~Behaviour(); ///< destruct
 
 	/// set the behaviours public name
+	/// warning this causes re-addressing of parameters
 	void set_name(std::string name);
 
 	/// return the behaviours name
@@ -64,17 +65,23 @@ public:
 	/// return the collective used by this behaviour
 	Collective& get_collective();
 
+	/// return a pointer to a specific indexed parameter 
+	ParameterPtr get_parameter(int index){ return m_parameters.at(index); }
+	/// return the number of parameters in this behaviour
+	int get_num_parameters(){ return m_parameters.size(); }
 protected:
 	/// register a parameter addressable by the global system
-	void register_parameter(std::string address, ParameterPtr param); // add a new Parameter, auto register it with the global namespace
-
+	void register_parameter(ParameterPtr param); // add a new Parameter, auto register it with the global namespace
 private:
 	std::string m_name; ///< behaviours user defined name (&)
 	Collective m_collective; ///< this behaviours current collective (&)
 	int m_id; ///< the unique id for this behaviour (&)
 	BehaviourClassId m_classId; ///< the class id string (&)
-
+	ParameterArray m_parameters;
 	friend class BehaviourManager;
+	/// return the next global behaviour id
+	static int get_global_id(){return s_globalId++;}
+	static int s_globalId; 
 };
 
 // TODO consider possible template implementation for behaviour factory?
