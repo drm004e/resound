@@ -79,4 +79,4 @@ add_executable (resound_gui
 	util.h
 )
 #link with libs
-target_link_libraries (resound_gui resound_common)
+target_link_libraries (resound_gui resound_common boost_serialization)

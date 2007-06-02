@@ -17,8 +17,12 @@
 //   MA 02111-1307 USA
 //   
 
-#include "pvar.h" // class's header file
+#include "performance.h" // class's header file
 #include <iostream>
+
+//#include <boost/serialization/export.hpp> // this file has interesting meta programming and has to be in a specific place
+
+//BOOST_CLASS_EXPORT(Parameter);
 
 // ------------------------------- Entity ----------------------------------
 Resound::Entity::Entity(const EntityName& name) :
@@ -38,8 +42,9 @@ const Resound::EntityName& Resound::Entity::get_name(){
 
 // -------------------------------- Parameter --------------------------------
 Resound::Parameter::Parameter(const EntityName& name) :
-Resound::Entity(name),
+Entity(name),
 m_value(0),
+m_lockedValue(0),
 m_isLocked(false)
 {}
 
@@ -92,23 +97,10 @@ void Resound::Parameter::on_value_changed()
 
 // -------------------------------- ParameterNamespace ------------------
 void Resound::ParameterNamespace::register_parameter(std::string address, ParameterPtr param){
-	Resound::ParameterNamespaceManager::get_instance().register_parameter(std::string("/") + get_name() + address, param);
+	RESOUND_NAMESPACE()->register_parameter(std::string("/") + get_name() + address, param);
 }
 // -------------------------------- ParameterNamespaceManager ------------------
-// singleton manager object
-Resound::ParameterNamespaceManager* Resound::ParameterNamespaceManager::s_singleton = 0;
-Resound::ParameterNamespaceManager& Resound::ParameterNamespaceManager::get_instance()
-{
-	if(s_singleton == 0) {
-		s_singleton = new ParameterNamespaceManager();
-	}
-	return *s_singleton;
-}
-void Resound::ParameterNamespaceManager::destroy_instance()
-{
-	if(s_singleton)
-		delete s_singleton;
-}
+
 
 Resound::ParameterNamespaceManager::ParameterNamespaceManager()
 {}
@@ -152,7 +144,7 @@ m_lastValue(0)
 Resound::ParameterLink::ParameterLink(const ParameterAddress &t) :
 m_lastValue(0),
 m_targetAddress(t),
-m_targetPtr(ParameterNamespaceManager::get_instance().get_parameter(m_targetAddress))
+m_targetPtr(RESOUND_NAMESPACE()->get_parameter(m_targetAddress))
 {}
 
 // copy construct
@@ -184,7 +176,7 @@ void Resound::ParameterLink::set_target(const ParameterAddress &addr){
 	// notify previous target and remove influence
 	set_value(0); // removes any influence
 	m_targetAddress = addr;
-	m_targetPtr = ParameterNamespaceManager::get_instance().get_parameter(m_targetAddress);
+	m_targetPtr = RESOUND_NAMESPACE()->get_parameter(m_targetAddress);
 	m_lastValue = 0; // set last value to 0
 }
 void Resound::ParameterLink::set_value(int val){

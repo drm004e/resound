@@ -34,12 +34,9 @@ namespace Resound
 /// audio matrix to the controlable Parameters.
 class AMParameter : public Parameter
 {
-private:
-	bool m_needsUpdate; // resound_server needs update
-	lo_address m_hostAddress; ///< the host address for this server
-	std::string m_oscAddress; ///< the osc path for this node
 public:
 	/// Default constructor
+	AMParameter(){}; // needed for serialization
 	AMParameter(const EntityName& name);
 
 	/// Destructor
@@ -57,7 +54,22 @@ public:
 
 	/// set the OSC target of this node
 	void set_osc_target(lo_address host, std::string path);
-	
+
+private:
+	bool m_needsUpdate; // resound_server needs update
+	lo_address m_hostAddress; ///< the host address for this server
+	std::string m_oscAddress; ///< the osc path for this node
+
+	friend class boost::serialization::access; ///< allow serialization access at low level
+	/// serialization definition
+	template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(Parameter);
+        ar & BOOST_SERIALIZATION_NVP(m_needsUpdate);
+		//ar & BOOST_SERIALIZATION_NVP(m_hostAddress); FIXME this wont go beacuse its a liblo class
+		ar & BOOST_SERIALIZATION_NVP(m_oscAddress);
+    }
 };
 
 /// The client side Audio Matrix Server.

@@ -38,6 +38,7 @@
 
 #include "base.h"
 
+#include "performance.h"
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 EVT_MENU(ID_MAINWIN_QUIT, MainFrame::OnQuit)
@@ -49,6 +50,10 @@ END_EVENT_TABLE()
 MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &size)
 		: wxFrame((wxFrame *) NULL, -1, title, pos, size)
 {
+	// first we create an empty performance
+
+	RESOUND_PERFORMANCE_MANAGER().new_performance();
+
 
 	// setup menus
 	wxMenu *FileMenu = new wxMenu;
@@ -88,8 +93,8 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 
 	// register sub systems
 
-	Resound::ParameterNamespaceManager::get_instance().register_parameter_namespace(Resound::ParameterNamespacePtr(m_audioMatrix));
-	Resound::ParameterNamespaceManager::get_instance().register_parameter_namespace(Resound::ParameterNamespacePtr(m_behaviourManager));
+	RESOUND_NAMESPACE()->register_parameter_namespace(Resound::ParameterNamespacePtr(m_audioMatrix));
+	RESOUND_NAMESPACE()->register_parameter_namespace(Resound::ParameterNamespacePtr(m_behaviourManager));
 
 	// setup midi system
 	/* this system is undefined in linux!! FIXME linux midi
@@ -134,7 +139,6 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 
 void MainFrame::OnQuit(wxCommandEvent & WXUNUSED(event)) // THIS SEEMS TO CAUSE AN EXCEPTION!
 {
-	Resound::ParameterNamespaceManager::destroy_instance();
 	MManager::Destroy();
 	PopEventHandler();
 	Close(TRUE);
@@ -145,11 +149,7 @@ void MainFrame::OnSave(wxCommandEvent& event)
 	wxFileDialog dlg(this, _T("Save Performance to File"), _T(""), _T(""), _T("*.rpf"), wxSAVE);
 	if (dlg.ShowModal() == wxID_OK) {
 		// create file output stream from dialog box path
-		wxFileOutputStream fileStream(dlg.GetPath());
-
-		// create X-platform data output stream from file stream
-		wxDataOutputStream stream(fileStream);
-
+		Resound::PerformanceManager::get_instance().save_performance_xml((const char*)wxConvertWX2MB(dlg.GetPath()));
 	}
 
 }
@@ -159,10 +159,7 @@ void MainFrame::OnLoad(wxCommandEvent& event)
 	wxFileDialog dlg(this, _T("Load Performance from File"), _T(""), _T(""), _T("*.rpf"), wxOPEN);
 	if (dlg.ShowModal() == wxID_OK) {
 		// create file output stream from dialog box path
-		wxFileInputStream fileStream(dlg.GetPath());
-
-		// create X-platform data output stream from file stream
-		wxDataInputStream stream(fileStream);
+		Resound::PerformanceManager::get_instance().load_performance_xml((const char*)wxConvertWX2MB(dlg.GetPath()));
 	}
 }
 

@@ -26,19 +26,41 @@
 #include <map>
 #include <boost/shared_ptr.hpp>
 
+#include <boost/serialization/nvp.hpp>
+#include <boost/serialization/utility.hpp>
+#include <boost/serialization/string.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/list.hpp>
+#include <boost/serialization/map.hpp>
+#include <boost/serialization/shared_ptr.hpp>
+#include <boost/serialization/base_object.hpp>
+#include <boost/serialization/version.hpp>
+
+
+
 namespace Resound
 {
-
+/// a name storage type
 typedef std::string EntityName;
+
 
 class Entity{
 public:
-	Entity(const EntityName& name);
-	virtual ~Entity();
+	Entity(){};
+	Entity(const EntityName& name); ///< public constructor, requires a name
+	virtual ~Entity(); /// destructor
 	virtual void set_name(const EntityName& name);
-	virtual const EntityName& get_name();
+	virtual const EntityName& get_name();	///< reutrn the entity name
 private:
-	EntityName m_name;
+	EntityName m_name; ///< the name of this entity
+
+	friend class boost::serialization::access; ///< allow serialization access at low level
+	/// serialization definition
+	template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & BOOST_SERIALIZATION_NVP(m_name); //
+    }
 };
 
 /// Parameters are targets for automation and control
@@ -46,9 +68,11 @@ private:
 class Parameter : public Entity
 {
 public:
+	Parameter() : m_value(0), m_lockedValue(0), m_isLocked(false) {};
 	Parameter(const EntityName& name);
 	virtual ~Parameter();
 	//values
+
 	virtual int get_value(); ///< obtain the value
 	virtual void set_value(int oldVal, int newVal); ///< set using previous value
 	virtual void set_value_direct(int newVal); ///< set directly used to initialize
@@ -59,7 +83,20 @@ private:
 	int m_value;
 	int m_lockedValue;
 	bool m_isLocked;
+
+	friend class boost::serialization::access; ///< allow serialization access at low level
+	/// serialization definition
+	template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(Entity);
+        ar & BOOST_SERIALIZATION_NVP(m_value);
+		ar & BOOST_SERIALIZATION_NVP(m_lockedValue);
+		ar & BOOST_SERIALIZATION_NVP(m_isLocked);
+    }
 };
+
+
 
 typedef boost::shared_ptr<Parameter> ParameterPtr;
 typedef std::vector<ParameterPtr> ParameterArray;
@@ -68,8 +105,7 @@ typedef std::vector<ParameterPtr> ParameterArray;
 /// a Parameter address is used to get hold of a Parameter
 class ParameterAddress
 {
-private:
-	std::string m_address; ///< the url/osc style address
+
 public:
 	///construct
 	ParameterAddress() : m_address("default"){};
@@ -86,6 +122,17 @@ public:
 
 	bool operator < (const ParameterAddress& op) const { return m_address < op.m_address;}
 	bool operator == (const ParameterAddress& op) const { return m_address == op.m_address;}
+
+private:
+	std::string m_address; ///< the url/osc style address
+
+	friend class boost::serialization::access; ///< allow serialization access at low level
+	/// serialization definition
+	template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & BOOST_SERIALIZATION_NVP(m_address);
+    }
 };
 
 /// exception thrown when parameter addresses are invalid
@@ -125,12 +172,9 @@ typedef std::vector<ParameterNamespacePtr> ParameterNamespaceList;
 /// manager will not deal with them
 class ParameterNamespaceManager
 {
-
 public:
-	/// return the singleton instance
-	static ParameterNamespaceManager& get_instance();
-	/// destroy the singleton instance
-	static void destroy_instance();
+	ParameterNamespaceManager(); ///< construct
+	~ParameterNamespaceManager(); ///< destruct
 	/// register the existence of a parameter namespace
 	void register_parameter_namespace(ParameterNamespacePtr parameterNamespace);
 	/// get the number of namespaces registered
@@ -148,13 +192,19 @@ public:
 	/// register a given parameter at the global osc/url path specified
 	void register_parameter(std::string address, ParameterPtr param);
 private:
-	// singleton
-	ParameterNamespaceManager(); ///< construct
-	~ParameterNamespaceManager(); ///< destruct
-	static ParameterNamespaceManager* s_singleton;///< the singleton object ptr
 	ParameterNamespaceList m_parameterNamespaceList; ///< the namespace list
 	ParameterAddressMap m_parameterAddressMap; ///< the global address space
+
+	friend class boost::serialization::access; ///< allow serialization access at low level
+	/// serialization definition
+	template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & BOOST_SERIALIZATION_NVP(m_parameterAddressMap);
+    }
 };
+
+typedef boost::shared_ptr<ParameterNamespaceManager> ParameterNamespaceManagerPtr;
 
 /// Parameters are linked using a Parameterlink
 /// the link also deals with Parameter summing and takes care of previously sent values
@@ -187,17 +237,22 @@ private:
 	ParameterAddress m_targetAddress; /// the global address to the parameter
 	int m_lastValue; ///< the last value sent to the target Parameter
 	ParameterPtr m_targetPtr; ///< the actual targeted parameter
+
+	friend class boost::serialization::access; ///< allow serialization access at low level
+	/// serialization definition
+	template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & BOOST_SERIALIZATION_NVP(m_targetAddress);
+		ar & BOOST_SERIALIZATION_NVP(m_lastValue);
+		ar & BOOST_SERIALIZATION_NVP(m_targetPtr);
+    }
 };
 
 /// elements are the sub groups of collectives
 /// they contain an array of pvar links, with unique targets within the element
 class Element
 {
-private:
-	std::string m_name;
-	typedef std::vector<ParameterLink> ParameterLinkArray;
-	ParameterLinkArray m_parameterLinkArray;
-
 public:
 	Element();
 	virtual ~Element();
@@ -217,6 +272,20 @@ public:
 	int get_num_links(){return m_parameterLinkArray.size();}
 	// overloaded indexing
 	ParameterLink& operator[](int index){return m_parameterLinkArray[index];}
+
+private:
+	std::string m_name;
+	typedef std::vector<ParameterLink> ParameterLinkArray;
+	ParameterLinkArray m_parameterLinkArray;
+
+	friend class boost::serialization::access; ///< allow serialization access at low level
+	/// serialization definition
+	template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & BOOST_SERIALIZATION_NVP(m_name);
+		ar & BOOST_SERIALIZATION_NVP(m_parameterLinkArray);
+    }
 };
 
 /// collectives form the basis of grouped assignment
@@ -224,11 +293,6 @@ public:
 /// on which behaviours operate
 class Collective
 {
-private:
-	std::string m_name;
-	// the array of elements
-	typedef std::vector<Element> ElementArray;
-	ElementArray m_elementArray;
 
 public:
 	Collective();
@@ -252,6 +316,22 @@ public:
 	int get_num_elements(){return m_elementArray.size();}
 	// overloaded indexing
 	Element& operator[](int index){return m_elementArray[index];}
+
+private:
+	std::string m_name;
+	// the array of elements
+	typedef std::vector<Element> ElementArray;
+	ElementArray m_elementArray;
+
+	friend class boost::serialization::access; ///< allow serialization access at low level
+	/// serialization definition
+	template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & BOOST_SERIALIZATION_NVP(m_name);
+		ar & BOOST_SERIALIZATION_NVP(m_elementArray);
+    }
+
 };
 
 /// collectivecursoredit is a utility class for manipulating a collective

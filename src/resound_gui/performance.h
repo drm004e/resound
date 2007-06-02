@@ -21,6 +21,9 @@
 #ifndef SA_PERFORMANCE_H
 #define SA_PERFORMANCE_H
 
+#include "pvar.h"
+#include "automation.h"
+
 namespace Resound
 {
 
@@ -35,6 +38,15 @@ public:
 private:
 	ParameterAddress m_addr;
 	int m_value;
+
+	friend class boost::serialization::access; ///< allow serialization access at low level
+	/// serialization definition
+	template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & BOOST_SERIALIZATION_NVP(m_value);
+		ar & BOOST_SERIALIZATION_NVP(m_addr);
+    }
 };
 
 /// Stores the preset information for a single Master Fader
@@ -47,6 +59,15 @@ public:
 private:
 	int m_value;
 	Collective m_target;
+
+	friend class boost::serialization::access; ///< allow serialization access at low level
+	/// serialization definition
+	template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & BOOST_SERIALIZATION_NVP(m_value);
+		ar & BOOST_SERIALIZATION_NVP(m_target);
+    }
 };
 
 /// A single preset contained in a given performance
@@ -62,6 +83,15 @@ public:
 private:
 	std::vector<MasterFaderPreset> m_masterFaderPresetArray;
 	std::vector<ParameterLockPreset> m_parameterLockPresetArray;
+
+	friend class boost::serialization::access; ///< allow serialization access at low level
+	/// serialization definition
+	template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & BOOST_SERIALIZATION_NVP(m_masterFaderPresetArray);
+		ar & BOOST_SERIALIZATION_NVP(m_parameterLockPresetArray);
+    }
 };
 
 /// The bottom level of a saved performance file.
@@ -73,10 +103,43 @@ public:
 	Performance();
 	// class destructor
 	virtual ~Performance();
-
+	ParameterNamespaceManagerPtr get_parameter_global_namespace(){return m_parameterNamespaceManager;}
 private:
 	std::vector<PerformancePreset> m_presetArray;
+	ParameterNamespaceManagerPtr m_parameterNamespaceManager;
+
+	friend class boost::serialization::access; ///< allow serialization access at low level
+	/// serialization definition
+	template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & BOOST_SERIALIZATION_NVP(m_presetArray);
+		ar & BOOST_SERIALIZATION_NVP(m_parameterNamespaceManager);
+    }
 };
+
+typedef boost::shared_ptr<Performance> PerformancePtr;
+
+/// manages the current performance
+/// singleton application document
+class PerformanceManager{
+private:
+	PerformanceManager();
+	~PerformanceManager();
+	static PerformanceManager* s_instance;
+public:
+	static PerformanceManager& get_instance();
+	PerformancePtr get_performance(){ return m_activePerformance; }
+	void new_performance();
+	void save_performance_xml(const std::string& filepath);
+	void load_performance_xml(const std::string& filepath);
+private:
+	PerformancePtr m_activePerformance;
+};
+
+#define RESOUND_PERFORMANCE_MANAGER() Resound::PerformanceManager::get_instance()
+#define RESOUND_PERFORMANCE() Resound::PerformanceManager::get_instance().get_performance()
+#define RESOUND_NAMESPACE() Resound::PerformanceManager::get_instance().get_performance()->get_parameter_global_namespace()
 
 } // namespace Resound
 #endif // SA_PERFORMANCE_H

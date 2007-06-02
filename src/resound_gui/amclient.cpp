@@ -30,6 +30,8 @@
 #include "app.h"
 #include "amclient.h" // classes header
 #include <sstream>
+
+
 // AMParameter -------------------------------------------------------------------------------------
 Resound::AMParameter::AMParameter(const EntityName& name) :
 Parameter(name),
@@ -51,6 +53,8 @@ void Resound::AMParameter::set_osc_target(lo_address host, std::string path){
 	m_hostAddress = host;
 	m_oscAddress = path;
 }
+
+//BOOST_CLASS_EXPORT_GUID(Resound::AMParameter, "Resound::AMParameter");
 
 // AM Client -------------------------------------------------------------------------------------
 
