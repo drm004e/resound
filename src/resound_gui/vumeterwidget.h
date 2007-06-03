@@ -21,6 +21,12 @@
 #ifndef VUMETER_H
 #define VUMETER_H
 
+#include "pch.h" // precompiler header
+
+#include "util.h"
+#include "automation.h"
+#include "pvar.h"
+
 namespace Resound
 {
 

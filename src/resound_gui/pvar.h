@@ -20,12 +20,10 @@
 #ifndef SA_PVAR_H
 #define SA_PVAR_H
 
-#include <string>
-#include <vector>
-#include <list>
-#include <map>
-#include <boost/shared_ptr.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+#include <boost/archive/xml_oarchive.hpp>
 
+#include <boost/serialization/base_object.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/utility.hpp>
 #include <boost/serialization/string.hpp>
@@ -33,10 +31,9 @@
 #include <boost/serialization/list.hpp>
 #include <boost/serialization/map.hpp>
 #include <boost/serialization/shared_ptr.hpp>
-#include <boost/serialization/base_object.hpp>
 #include <boost/serialization/version.hpp>
 
-
+#include <boost/serialization/export.hpp>
 
 namespace Resound
 {
@@ -65,7 +62,7 @@ private:
 
 /// Parameters are targets for automation and control
 /// Parameters use integer arithmetic to eliminate rounding errors
-class Parameter : public Entity
+class Parameter
 {
 public:
 	Parameter() : m_value(0), m_lockedValue(0), m_isLocked(false) {};
@@ -79,7 +76,15 @@ public:
 	virtual void on_value_changed(); ///<a virtual function called directly by SetValue and SetValue Direct
 	virtual void lock(int lockedValue); ///< locks the value - the real value will still be changed but GetValue will return the locked value
 	virtual void unlock(); ///< get value will return the real value;
+
+
+	void set_name(const EntityName& name) {};
+	const EntityName& get_name(){return m_name;};
+
+	virtual void dummy()=0;
+	
 private:
+	std::string m_name;
 	int m_value;
 	int m_lockedValue;
 	bool m_isLocked;
@@ -89,15 +94,33 @@ private:
 	template<class Archive>
     void serialize(Archive & ar, const unsigned int version)
     {
-		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(Entity);
+		ar & BOOST_SERIALIZATION_NVP(m_name);
         ar & BOOST_SERIALIZATION_NVP(m_value);
 		ar & BOOST_SERIALIZATION_NVP(m_lockedValue);
 		ar & BOOST_SERIALIZATION_NVP(m_isLocked);
     }
 };
+}
+BOOST_IS_ABSTRACT(Resound::Parameter)
 
+namespace Resound{
+class BasicParameter : public Parameter{
+public:
+	BasicParameter(){};
+	BasicParameter(const EntityName& name) : Parameter(name){}
+	virtual void dummy(){}
+private:
+	friend class boost::serialization::access; ///< allow serialization access at low level
+	/// serialization definition
+	template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(Parameter);
+    }
+};
+}
 
-
+namespace Resound{
 typedef boost::shared_ptr<Parameter> ParameterPtr;
 typedef std::vector<ParameterPtr> ParameterArray;
 

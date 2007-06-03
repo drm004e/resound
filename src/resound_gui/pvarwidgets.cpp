@@ -21,7 +21,7 @@
 
 #include "performance.h"
 
-#include "amclient.h" // possible circular dep here requires pvar and comms
+#include "amclient_widgets.h" // possible circular dep here requires pvar and comms
 #include "vumeterwidget.h"
 
 #include "pvarwidgets.h" // class's header file

@@ -38,6 +38,8 @@ INCLUDE(Use_wxWindows)
 add_executable (resound_gui
 	amclient.cpp
 	amclient.h
+	amclient_widgets.h
+	amclient_widgets.cpp
 	app.cpp
 	app.h
 	automation.cpp

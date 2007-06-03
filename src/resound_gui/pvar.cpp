@@ -20,10 +20,6 @@
 #include "performance.h" // class's header file
 #include <iostream>
 
-//#include <boost/serialization/export.hpp> // this file has interesting meta programming and has to be in a specific place
-
-//BOOST_CLASS_EXPORT(Parameter);
-
 // ------------------------------- Entity ----------------------------------
 Resound::Entity::Entity(const EntityName& name) :
 m_name(name)
@@ -42,7 +38,7 @@ const Resound::EntityName& Resound::Entity::get_name(){
 
 // -------------------------------- Parameter --------------------------------
 Resound::Parameter::Parameter(const EntityName& name) :
-Entity(name),
+m_name(name),
 m_value(0),
 m_lockedValue(0),
 m_isLocked(false)

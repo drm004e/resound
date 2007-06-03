@@ -25,8 +25,6 @@
 
 #include <resound_common/osc_manager.h>
 
-#include "pvarwidgets.h"
-
 namespace Resound
 {
 /// An audio matrix specialized pvar.
@@ -55,6 +53,8 @@ public:
 	/// set the OSC target of this node
 	void set_osc_target(lo_address host, std::string path);
 
+	virtual void dummy(){};
+
 private:
 	bool m_needsUpdate; // resound_server needs update
 	lo_address m_hostAddress; ///< the host address for this server
@@ -71,7 +71,9 @@ private:
 		ar & BOOST_SERIALIZATION_NVP(m_oscAddress);
     }
 };
+}
 
+namespace Resound{
 /// The client side Audio Matrix Server.
 /// This class deals with the socket event handling for network communication
 class AMClient : public Resound::OSCManager, public ParameterNamespace, public AutomatedObject
@@ -81,10 +83,6 @@ public:
 	/// @param _log : a pointer to a wxTextCtrl that can be used to log events
 	AMClient(int inputs, int outputs);
 	~AMClient(); ///< Destructor
-
-	// implement the ParameterNamespace interface
-	virtual void* SettingsPanel(wxWindow* parent); ///< Creates a sub system settings dialog
-	virtual void* SelectPanel(wxWindow* parent); ///< create an appropriate dialog for Parameter selection return the address or null address
 
 	int get_num_inputs()
 	{
@@ -117,14 +115,6 @@ private:
 //	Array2<AMParameterPtr> m_parameterMatrix; ///< AMParameters controlled by user
 };
 
-/// An interface panel visible in the collective builder dialog.
-class AudioMatrixSelectPanel : public PVSSelectPanel
-{
-public:
-	/// Constructor
-	/// @param _subsystem : will be cast to AMClient*
-	AudioMatrixSelectPanel(wxWindow* parent, ParameterNamespace* _subSystem);
-};
 
 
 

@@ -40,9 +40,9 @@ void Resound::register_base_behaviours(BehaviourManager* theManager)
 Resound::BPGroup::BPGroup(std::string name) :
 Resound::Behaviour(name)
 {
-	register_parameter(ParameterPtr(new Parameter("level")));
-	register_parameter(ParameterPtr(new Parameter("min")));
-	register_parameter(ParameterPtr(new Parameter("max")));
+	register_parameter(ParameterPtr(new BasicParameter("level")));
+	register_parameter(ParameterPtr(new BasicParameter("min")));
+	register_parameter(ParameterPtr(new BasicParameter("max")));
 }
 
 // class destructor
@@ -57,7 +57,7 @@ Resound::BPGroup::~BPGroup()
 Resound::BMultiCrossfade::BMultiCrossfade(std::string name) :
 Resound::Behaviour(name)
 {
-	register_parameter(ParameterPtr(new Parameter("position")));
+	register_parameter(ParameterPtr(new BasicParameter("position")));
 }
 
 // class destructor
@@ -70,8 +70,8 @@ Resound::BMultiCrossfade::~BMultiCrossfade()
 // class constructor
 Resound::BWave::BWave(std::string name) :
 Resound::Behaviour(name),
-m_amp(new Parameter("amp")),
-m_freq(new Parameter("freq"))
+m_amp(new BasicParameter("amp")),
+m_freq(new BasicParameter("freq"))
 {
 	register_parameter(m_amp);
 	register_parameter(m_freq);
@@ -111,8 +111,8 @@ void Resound::BWave::tick(float dT)
 // class constructor
 Resound::BMexicanWave::BMexicanWave(std::string name) :
 Resound::Behaviour(name),
-m_amp(new Parameter("amp")),
-m_freq(new Parameter("freq"))
+m_amp(new BasicParameter("amp")),
+m_freq(new BasicParameter("freq"))
 {
 	register_parameter(m_amp);
 	register_parameter(m_freq);
@@ -151,8 +151,8 @@ void Resound::BMexicanWave::tick(float dT)
 // class constructor
 Resound::BRandom::BRandom(std::string name) :
 Resound::Behaviour(name),
-m_amp(new Parameter("amp")),
-m_freq(new Parameter("freq"))
+m_amp(new BasicParameter("amp")),
+m_freq(new BasicParameter("freq"))
 {
 	register_parameter(m_amp);
 	register_parameter(m_freq);
