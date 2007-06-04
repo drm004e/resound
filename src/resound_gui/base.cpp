@@ -86,7 +86,7 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 	//wxMessageBox(_T("ok"));
 
 	// make the network client
-	m_audioMatrix = new Resound::AMClient(5,6);
+	m_audioMatrix = new Resound::AMClient(8,8);
 
 	// make the behaviour sub system
 	m_behaviourManager = new Resound::BehaviourManager();
