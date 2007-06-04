@@ -159,9 +159,14 @@ Resound::BehaviourPtr Resound::BehaviourManager::create_behaviour(BehaviourClass
 			aStr.Add(wxConvertMB2WX((*i).second.get_name().c_str())); // add the string for the dialog // FIXME wxString conversion problem FIXED
 		}
 		int classIndex = wxGetSingleChoiceIndex(_T("Please select a behaviour class"),_T("Select Behaviour"),aStr);
-
-		// lookup the index
-		classId = idLookup[classIndex]; // set the class id
+		if(classIndex >= 0){
+			// lookup the index
+			classId = idLookup[classIndex]; // set the class id
+		} 	else {
+			// user cancelled // this is a quick fix for sourceforge bug #1730756
+			// throw exception
+			throw Resound::CreateBehaviourException();
+		}
 	}
 	// create a behaviour and add it to the manager
 
