@@ -74,12 +74,11 @@ OSCManager(port)
 	m_bufferSize =  jack_get_buffer_size(m_jc);
 	m_sampleRate =  jack_get_sample_rate(m_jc);
 
-	// set some default attenuations, usefull for stress test
-
+	// set some default attenuations, usefull for stress tes
 	for(int r=0; r < m_numInputs;r++){
 		for(int c=0; c < m_numOutputs;c++){
-			m_nAttMatrix.Index(r,c) = 0.5f;
-			m_iAttMatrix.Index(r,c) = 0.5f;
+			m_nAttMatrix.Index(r,c) = 0.0f;
+			m_iAttMatrix.Index(r,c) = 0.0f;
 		}
 	}
 
