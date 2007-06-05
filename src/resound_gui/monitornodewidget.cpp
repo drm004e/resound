@@ -45,7 +45,7 @@ Resound::MonitorNodeWidget::MonitorNodeWidget(wxWindow* parent, int id, Paramete
 	// construct the sub objects and sizer
 	wxBoxSizer *topSizer = new wxBoxSizer( wxHORIZONTAL );
 	wxBoxSizer *leftSizer = new wxBoxSizer( wxVERTICAL );
-	//label = (const char*)RESOUND_NAMESPACE()->GetParameter(addr).get_name().c_str(); FIXME std::string->wxString conversion
+	SetToolTip(wxConvertMB2WX(addr.get_address().c_str())); 
 	leftSizer->Add(new wxStaticText(this,MNW_LABEL,label, wxPoint(0,0),wxSize(40,18),wxALIGN_CENTRE),wxSizerFlags(0).Align(0).Border(wxALL,0));
 	leftSizer->Add(new wxToggleButton(this,MNW_LOCKBUTTON,_("L"), wxPoint(0,0),wxSize(20,20)),wxSizerFlags(0).Center().Border(wxALL,0));
 	topSizer->Add(leftSizer);

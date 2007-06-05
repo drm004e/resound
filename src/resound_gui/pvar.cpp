@@ -90,7 +90,8 @@ void Resound::Parameter::unlock()
 void Resound::Parameter::on_value_changed()
 {}
 
-
+// -------------------------------- BasicParameter ----------------------------
+BOOST_CLASS_EXPORT(Resound::BasicParameter);
 // -------------------------------- ParameterNamespace ------------------
 void Resound::ParameterNamespace::register_parameter(std::string address, ParameterPtr param){
 	RESOUND_NAMESPACE()->register_parameter(std::string("/") + get_name() + address, param);

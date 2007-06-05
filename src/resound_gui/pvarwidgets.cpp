@@ -608,6 +608,7 @@ Resound::AddressSelectWidget::AddressSelectWidget(wxWindow* parent, int id, Para
 	SetMinSize(size);
 	SetMaxSize(size);
 
+	SetToolTip(wxConvertMB2WX(addr.get_address().c_str())); 
 	//name = ParameterNamespaceManager::GetSingleton().GetParameter(addr).get_name(); // FIXME string conversion
 
 	SetBackgroundColour(wxColour(100,100,100)); // off white so you can see it // parent should set color
