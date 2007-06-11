@@ -25,7 +25,7 @@ ${RESOUND_SOURCE_DIR}/
 )
 SET(CMAKE_CXX_FLAGS -g)
 # now include the wx_script, must be done after setting cxx_flags because it adds to them
-INCLUDE(Use_wxWindows)
+#INCLUDE(Use_wxWindows)
 
 # build the excecutable
 add_library (resound_common

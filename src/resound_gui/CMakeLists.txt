@@ -27,12 +27,13 @@ ${RESOUND_SOURCE_DIR}/
 /usr/include/wx-2.6/
 )
 
-#
+
 # use dbuggin flags
 SET(CMAKE_CXX_FLAGS -g )
 
-# now include the wx_script, must be done after setting cxx_flags because it adds to them
-INCLUDE(Use_wxWindows)
+
+FIND_PACKAGE(wxWidgets)
+INCLUDE(UsewxWidgets)
 
 # build the excecutable
 add_executable (resound_gui
@@ -81,4 +82,4 @@ add_executable (resound_gui
 	util.h
 )
 #link with libs
-target_link_libraries (resound_gui resound_common boost_serialization)
+target_link_libraries (resound_gui resound_common boost_serialization ${wxWidgets_LIBRARIES})

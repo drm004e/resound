@@ -28,7 +28,7 @@ public:
 	}
 };
 
-class MainFrame: public wxFrame
+class MainFrame : public wxFrame
 {
 public:
 	MainFrame(const wxString &title, const wxPoint &pos, const wxSize &size);
@@ -40,7 +40,7 @@ public:
 	void OnLoad(wxCommandEvent& event);
 
 	// Tom trying to get to grips with using widgets events
-	void MainFrame::OnAbout(wxCommandEvent& event);
+	void OnAbout(wxCommandEvent& event);
 
 	void RebuildGUI(); // force a gui rebuild
 private:
