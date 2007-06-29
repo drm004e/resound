@@ -58,6 +58,7 @@ Resound::BMultiCrossfade::BMultiCrossfade(std::string name) :
 Resound::Behaviour(name)
 {
 	register_parameter(ParameterPtr(new BasicParameter("position")));
+	// this 
 }
 
 // class destructor

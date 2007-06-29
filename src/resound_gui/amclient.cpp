@@ -61,7 +61,7 @@ BOOST_CLASS_EXPORT(Resound::AMParameter);
 
 Resound::AMClient::AMClient(int inputs, int outputs) :
 Resound::OSCManager("8765"),
-Resound::ParameterNamespace("audio_matrix")
+Resound::ParameterNamespace("am")
 {
 	build_parameter_matrix(inputs,outputs); // fake matrix
 }
@@ -86,9 +86,9 @@ void Resound::AMClient::build_parameter_matrix(int numInputs, int numOutputs)
 
 			//create the local parameter and point it at its osc target
 			std::stringstream s;
-			s << "/matrix/att/" << r << "/" << c; // generate the name
+			s << "/att/" << r << "/" << c; // generate the name
 			AMParameter* node = new AMParameter(s.str()); // make the node
-			node->set_osc_target(host, s.str()); // set the external osc method address
+			node->set_osc_target(host, std::string("/matrix") + s.str()); // set the external osc method address
 			register_parameter(s.str(), ParameterPtr(node));
 		}
 	}

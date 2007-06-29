@@ -55,15 +55,15 @@ Resound::BehaviourViewItem::BehaviourViewItem(wxWindow* parent, int id, Behaviou
 
 	wxSizer* sizer = new wxBoxSizer( wxHORIZONTAL );
 
-	sizer->Add(new wxButton(this,BSID_EDITOR,_("Editor")));
-	sizer->Add(new wxButton(this,BSID_RENAME,_("Rename")));
+	//sizer->Add(new wxButton(this,BSID_EDITOR,_("Editor")));
+	//sizer->Add(new wxButton(this,BSID_RENAME,_("Rename")));
 	collectiveWidget = new Resound::CollectiveWidget(this,-1,_T("Assign"), &behaviour->get_collective(), true);
 	sizer->Add(collectiveWidget);
 
 	// FIXME drastic changes to the way behaviours register parameters
 	for(int n = 0; n < behaviour->get_num_parameters(); n++) { 
 		std::stringstream s;
-		s << "/behaviour/" << behaviour->get_name() << "/" << behaviour->get_parameter(n)->get_name();
+		s << "/bm/" << behaviour->get_name() << "/" << behaviour->get_parameter(n)->get_name();
 		sizer->Add(new Resound::MonitorNodeWidget(this,-1,ParameterAddress(s.str()))); // FIXME behaviour parameter addressing
 	}
 

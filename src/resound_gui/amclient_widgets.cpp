@@ -22,7 +22,7 @@ Resound::AudioMatrixSelectPanel::AudioMatrixSelectPanel(wxWindow* parent, Parame
 	for(int r = 0; r <= amClient->get_num_inputs(); r++) {
 		for(int c = 0; c <= amClient->get_num_outputs(); c++) {
 			std::stringstream s;
-			s << "/" << amClient->get_name() <<"/matrix/att/" << r << "/" << c; // generate the name
+			s << "/" << amClient->get_name() <<"/att/" << r << "/" << c; // generate the name
 			Resound::AddressSelectWidget *panel = new Resound::AddressSelectWidget(scroll,-1,ParameterAddress(s.str())); // FIXME drastic pvar addressing changes // FIXED, pending testing
 
 			wxColour bkColour;

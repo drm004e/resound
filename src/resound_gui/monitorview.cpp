@@ -69,7 +69,7 @@ void Resound::MonitorView::Rebuild()
 	for(int r = 0; r <= amClient->get_num_inputs(); r++) {
 		for(int c = 0; c <= amClient->get_num_outputs(); c++) {
 			std::stringstream s;
-			s << "/" << amClient->get_name() <<"/matrix/att/" << r << "/" << c; // generate the name
+			s << "/" << amClient->get_name() <<"/att/" << r << "/" << c; // generate the name
 			Resound::MonitorNodeWidget *widget = new Resound::MonitorNodeWidget(scroll,pId++,ParameterAddress(s.str())); // FIXME pvar address // FIXED, pending testing
 
 			wxColour bkColour;

@@ -48,7 +48,7 @@ void Resound::Behaviour::register_parameter(ParameterPtr param)
 	m_parameters.push_back(param);
 	// register with the namespace manager
 	std::stringstream s;
-	s << "/behaviour/" << m_name << "/" << param->get_name(); // generate the name
+	s << "/bm/" << m_name << "/" << param->get_name(); // generate the name
 	RESOUND_NAMESPACE()->register_parameter(s.str(),param);
 }
 void Resound::Behaviour::set_name(std::string name)
@@ -101,7 +101,7 @@ Resound::BehaviourPtr Resound::BehaviourClassFactory::create()
 // -------------------------------- Behaviour manager ----------------------------
 
 Resound::BehaviourManager::BehaviourManager() :
-ParameterNamespace("behaviour")
+ParameterNamespace("bm")
 {
 	m_nextId = 0;
 }
@@ -208,7 +208,7 @@ Resound::BehaviourSelectPanel::BehaviourSelectPanel(wxWindow* parent, ParameterN
 	topSizer = new wxBoxSizer( wxVERTICAL );
 
 	topSizer->Add(new wxStaticText(this,-1,_T("Behaviour panel")));
-	topSizer->Add(new wxButton(this,BSID_CREATE,_T("Create Behaviour")));
+	//topSizer->Add(new wxButton(this,BSID_CREATE,_T("Create Behaviour")));
 
 
 	// build the dynamic section of the panel

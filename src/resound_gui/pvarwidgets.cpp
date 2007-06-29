@@ -185,8 +185,8 @@ void Resound::CollectiveWidget::OnContextMenu(wxContextMenuEvent &event)
 {
 	wxMenu contextMenu;
 	contextMenu.Append(PVLW_CM_EDIT, _T("Assign / Edit Collective"));
-	contextMenu.Append(PVLW_CM_MONITOR, _T("Monitor Collective")); // ( _CM_ in id = context help )
-	contextMenu.Append(PVLW_CM_DISPLAY, _T("Display Collective"));
+	//contextMenu.Append(PVLW_CM_MONITOR, _T("Monitor Collective")); // ( _CM_ in id = context help )
+	//contextMenu.Append(PVLW_CM_DISPLAY, _T("Display Collective"));
 	contextMenu.Append(PVLW_CM_UNASSIGN, _T("Unassign All"));
 	PopupMenu(&contextMenu);
 }
@@ -342,18 +342,18 @@ void Resound::CollectiveElementWidget::OnContextMenu(wxContextMenuEvent &event)
 	wxMenu contextMenu;
 	if ( event.GetId() >= 0 ) // if it was an actual element right-clicked
 	{
-		contextMenu.Append(CEW_CM_SHIFT_LEFT, _T("<--")); // ( CEW_CM  = CollectiveElementWidget context menu )
-		contextMenu.Append(CEW_CM_SHIFT_RIGHT, _T("-->"));
-		contextMenu.Append(CEW_CM_UNASSIGN, _T("Unassign Parameters from this Element"));
+		contextMenu.Append(CEW_CM_SHIFT_LEFT, _T("<-- Shift Element Left")); // ( CEW_CM  = CollectiveElementWidget context menu )
+		contextMenu.Append(CEW_CM_SHIFT_RIGHT, _T("--> Shift Element Right"));
+		//contextMenu.Append(CEW_CM_UNASSIGN, _T("Unassign Parameters from this Element"));
 		contextMenu.Append(CEW_CM_REMOVE, _T("Remove Element from Collective"));
 	} else // it was the 'master' (head) collective element widget right clicked
 	{
 		/* TODO (James#1#): 'Head Element' context menu not implemented yet */
-		contextMenu.Append(-1, _T("Remove Links from All Elements"));
-		contextMenu.Append(-1, _T("Remove All Elements from Collective"));
-		contextMenu.Append(-1, _T("Add to Collectives Palette"));
-		contextMenu.Append(-1, _T("-OTHER 'COLLECTIVE' OPTIONS-"));
-		contextMenu.Append(-1, _T("(This menu not implemented yet)"));
+		//contextMenu.Append(-1, _T("Remove Links from All Elements"));
+		//contextMenu.Append(-1, _T("Remove All Elements from Collective"));
+		//contextMenu.Append(-1, _T("Add to Collectives Palette"));
+		//contextMenu.Append(-1, _T("-OTHER 'COLLECTIVE' OPTIONS-"));
+		//contextMenu.Append(-1, _T("(This menu not implemented yet)"));
 	}
 	PopupMenu(&contextMenu);
 }
