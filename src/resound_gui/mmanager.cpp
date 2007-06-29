@@ -23,6 +23,9 @@
 #ifdef __WIN32__
     #include "mmanagerwin32.h" // windows platform include
 #endif
+#ifdef __linux__
+    #include "mmanager_alsa.h" // linux alsa platform include
+#endif
 
 #include <resound_common/exception.h>
 
@@ -32,13 +35,13 @@
 MListener::MListener()
 {
 	// Construct
-	//MManager::GetSingleton().RegisterMListener(this); // linux midi incomplete FIXME
+	MManager::get_instance().RegisterMListener(this); 
 }
 
 MListener::~MListener()
 {
 	// Destruct
-	//MManager::GetSingleton().UnregisterMListener(this); // linux midi incomplete FIXME
+	MManager::get_instance().UnregisterMListener(this);
 }
 
 // ------------------------------------ Functions -----------------------------
@@ -148,7 +151,7 @@ void MInputDevice::OnMidiMessage(MIDI_BYTE status, MIDI_BYTE dataA, MIDI_BYTE da
 	}
 
 	// now call singleton
-	MManager::GetSingleton().OnMidiMessage(0,status,dataA,dataB,timeStamp);
+	MManager::get_instance().OnMidiMessage(0,status,dataA,dataB,timeStamp);
 }
 
 int MInputDevice::GetControllerValue(int channel, int controller)
@@ -165,18 +168,22 @@ MOutputDevice::~MOutputDevice()
 
 // ---------------------- midi manager -----------------------------------
 MManager* MManager::singleton = 0;
-MManager& MManager::GetSingleton()
+MManager& MManager::get_instance()
 {
 	if(!singleton) {
+	// here we instanciate a specific driver version depending on platform
 #ifdef __WIN32__
 		singleton = new MManagerWin32();
+#endif
+#ifdef __linux__
+		singleton = new MManagerALSA();
 #endif
 
 	}
 	return *singleton;
 }
 
-void MManager::Destroy()
+void MManager::destroy_instance()
 {
 	if(singleton)
 		delete singleton;

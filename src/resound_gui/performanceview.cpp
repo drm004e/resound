@@ -51,18 +51,19 @@ Resound::PerformanceView::PerformanceView(wxWindow* parent)
 		wxBoxSizer* grp = new wxBoxSizer(wxHORIZONTAL);
 		for(g = 0; g < 4; g++)
 		{
-			temp = new Resound::MasterFader(this,fId++); // create new MasterFader
+			temp = new Resound::MasterFader(this,fId++, 7); // create new MasterFader
 			masterFaderArray.push_back(temp); // store in array
 			grp->Add(temp, wxSizerFlags(1).Align(0).Border(wxALL,1)); // add to GUI
 		}
 		upperTierSizer->Add(grp, wxSizerFlags(1).Align(0).Border(wxALL,5));
 	}
+	fId = 0;
 	for(n = 0; n < 4; n++) // create bottom row of MasterFaders
 	{
 		wxBoxSizer* grp = new wxBoxSizer(wxHORIZONTAL);
 		for(g = 0; g < 4; g++)
 		{
-			temp = new Resound::MasterFader(this,fId++); // create new MasterFader
+			temp = new Resound::MasterFader(this,fId++, 10); // create new MasterFader
 			masterFaderArray.push_back(temp); // store in array
 			grp->Add(temp, wxSizerFlags(1).Align(0).Border(wxALL,1)); // add to GUI
 		}

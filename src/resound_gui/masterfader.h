@@ -41,7 +41,7 @@ class MasterFader : public wxPanel,  public MListener
 {
 public:
 	// class constructor
-	MasterFader(wxWindow* parent, int id);
+	MasterFader(wxWindow* parent, int id, int cc);
 	// class destructor
 	~MasterFader();
 
@@ -58,7 +58,7 @@ private:
 	VUMeterWidget *meter2; // no saving implemented
 	Collective collective;
 	CollectiveWidget* collectiveWidget;
-
+	int parameter;
 	// event handling macro
 	DECLARE_EVENT_TABLE()
 };

@@ -61,6 +61,8 @@ add_executable (resound_gui
 	masterfader.h
 	mmanager.cpp
 	mmanager.h
+	mmanager_alsa.cpp #linux alsa
+	mmanager_alsa.cpp #linux alsa
 	mmanagerwin32.cpp #win32
 	mmanagerwin32.h #win32
 	monitorframe.cpp
@@ -82,4 +84,4 @@ add_executable (resound_gui
 	util.h
 )
 #link with libs
-target_link_libraries (resound_gui resound_common boost_serialization ${wxWidgets_LIBRARIES})
+target_link_libraries (resound_gui resound_common boost_serialization asound ${wxWidgets_LIBRARIES})

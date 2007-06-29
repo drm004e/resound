@@ -32,8 +32,10 @@ EVT_COMMAND(MFG_FADER1, saEVT_FADER_CHANGED, Resound::MasterFader::OnFaderChange
 END_EVENT_TABLE()
 
 // class constructor
-Resound::MasterFader::MasterFader(wxWindow* parent, int id)
-		: wxPanel(parent,id)
+Resound::MasterFader::MasterFader(wxWindow* parent, int id, int cc)
+: wxPanel(parent,id),
+parameter(cc)
+
 {
 	SetWindowStyle(wxSIMPLE_BORDER );
 	// construct the sub objects and sizer
@@ -97,7 +99,7 @@ void Resound::MasterFader::OnMidiMessage(MIDI_BYTE status, MIDI_BYTE dataA, MIDI
 	int channel = MIDIStatusToChannel(status);
 	switch(type) {
 	case MIDI_CONTROL_CHANGE:
-		if(channel == GetId()) {
+		if(channel == GetId() && parameter == dataA) {
 			SetValue((int) dataB);
 		}
 		break;

@@ -24,7 +24,9 @@
 class AutomationDriver : public wxTimer{
 public:
 	void Notify(){
+		MManager::get_instance().tick();
 		Resound::AutomationManager::get_instance().tick(0.005);
+		
 	}
 };
 

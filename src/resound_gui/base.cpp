@@ -97,20 +97,8 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 	RESOUND_NAMESPACE()->register_parameter_namespace(Resound::ParameterNamespacePtr(m_behaviourManager));
 
 	// setup midi system
-	/* this system is undefined in linux!! FIXME linux midi
 
-	MIDIDeviceNameArray& inNames = MManager::get_instance().GetInputDeviceNames();
-	MIDIDeviceNameArray& outNames = MManager::get_instance().GetOutputDeviceNames();
-
-	for(int n = 0; n < inNames.size(); n++) {
-		netLog->AppendText(wxString(_T(" MIDI input device found: ")) + wxString(inNames[n].c_str())+ wxString(_T("\n")));
-		MManager::get_instance().OpenInputDevice(n);
-	}
-	for(int n = 0; n < outNames.size(); n++) {
-		netLog->AppendText(wxString(_T(" MIDI output device found: ")) + wxString(outNames[n].c_str())+ wxString(_T("\n")));
-		MManager::get_instance().OpenOutputDevice(n);
-	}
-	*/
+	MManager::get_instance().OpenInputDevice(1);
 
 	// add any behaviours
 	// eventually load plugins!
@@ -139,7 +127,7 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 
 void MainFrame::OnQuit(wxCommandEvent & WXUNUSED(event)) // THIS SEEMS TO CAUSE AN EXCEPTION!
 {
-	MManager::Destroy();
+	MManager::destroy_instance();
 	PopEventHandler();
 	Close(TRUE);
 }

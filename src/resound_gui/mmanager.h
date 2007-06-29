@@ -21,6 +21,8 @@
 #ifndef __MManager__
 #define __MManager__
 
+#include <vector>
+
 typedef unsigned char MIDI_BYTE;
 typedef long MIDI_TIME_STAMP;
 typedef std::vector<std::wstring> MIDIDeviceNameArray;
@@ -57,6 +59,8 @@ public:
 	virtual ~MInputDevice();
 	void OnMidiMessage(MIDI_BYTE status, MIDI_BYTE dataA, MIDI_BYTE dataB, MIDI_TIME_STAMP timeStamp);
 	int GetControllerValue(int channel, int controller); ///< Get the value of a Midi CC
+	/// overload for midi systems that need polling
+	virtual void tick(){};
 };
 
 /// Abstract class for midi ouput device
@@ -90,6 +94,10 @@ int MIDIStatusToChannel(MIDI_BYTE status);
 /// Make a status byte with specified type and channel. Channel is ignored for some types.
 MIDI_BYTE MakeStatusByte(int type, int channel);
 
+typedef std::vector<MListener*> MListenerList;
+typedef std::vector<MInputDevice*> MInputDeviceList;
+typedef std::vector<MOutputDevice*> MOutputDeviceList;
+
 /// Singleton MIDI management class
 /// Platform specific versions in herit and are automatically return in place of this generic version
 class MManager
@@ -102,9 +110,9 @@ protected:
 	MIDIDeviceNameArray inputDeviceNames;
 	MIDIDeviceNameArray outputDeviceNames;
 
-	std::vector<MListener*> listeners;
-	std::vector<MInputDevice*> inputDevices;
-	std::vector<MOutputDevice*> outputDevices;
+	MListenerList listeners;
+	MInputDeviceList inputDevices;
+	MOutputDeviceList outputDevices;
 
 	/// Protected constructor (singleton)
 	MManager();
@@ -115,11 +123,11 @@ public:
 
 	/// singleton creation and accessor
 	/// \return The one instance of the midi manager singleton
-	static MManager& GetSingleton();
+	static MManager& get_instance();
 
 	/// Destroy the one instance of the singleton
 	/// Should be called during system cleanup
-	static void Destroy();
+	static void destroy_instance();
 
 	/// Add a listener object.
 	/// called from singleton by MListener constructor
@@ -149,6 +157,9 @@ public:
 
 	int GetControllerValue(int deviceId, int channel, int controller); ///< Get the value of a Midi CC
 	float GetMappedControllerValue(int deviceId, int channel, int controller, float min, float max); ///< Get a CC Value mapped onto a new range
+
+	/// overload for midi systems that need polling
+	virtual void tick(){};
 };
 
 #endif
