@@ -72,16 +72,21 @@ Resound::BMultiCrossfade::~BMultiCrossfade()
 
 void Resound::BMultiCrossfade::on_parameter_changed(){
 	// get pvars and range adjust
-	int amp = m_amp->get_value();
-	//float pos = (float)m_pos->get_value() * (1.0f/128.0f);
+	float amp = (float)m_amp->get_value() * (1.0f/128.0f);
+	float pos = (float)m_pos->get_value() * (1.0f/128.0f) * TWOPI;
 
 	// get the target collective
 	Collective& rCol = get_collective();
-	int num_elements = rCol.get_num_elements();
+	float offset = TWOPI / (float)rCol.get_num_elements();
 
-		// apply to collective.Set(n)
+	// calculate wave function
+	float angle = pos;
+
+	// apply to collective.Set(n)
 	for(int n = 0; n < rCol.get_num_elements(); n++) {
-		rCol[n].set_value(amp);
+		float s = sinf(angle + (offset*n)) * amp;
+		int val = (int)(s * 128.0f);
+		rCol[n].set_value(val);
 	}
 }
 // ---------------------------------------- Wave ----------------------------
@@ -193,10 +198,7 @@ void Resound::BRandom::tick(float dT)
 	// apply to collective
 	for(int r = 0; r < rCol.get_num_elements(); r++) {
 		int val = (int)((float)((rand() % 256) - 128) * amp);
-		for(int c = 0; c < rCol[r].get_num_links(); c++) {
-			
-			rCol[r][c].set_value(val);
-		}
+		rCol[r].set_value(val);
 	}
 
 }

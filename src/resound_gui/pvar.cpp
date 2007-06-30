@@ -135,11 +135,15 @@ void Resound::ParameterNamespaceManager::register_parameter(std::string address,
 }
 // -------------------------------- Parameter link --------------------------------
 Resound::ParameterLink::ParameterLink() :
-m_lastValue(0)
+m_lastValue(0),
+m_lastScaledValue(0),
+m_scalingFactor(1.0f)
 {}
 
 Resound::ParameterLink::ParameterLink(const ParameterAddress &t) :
 m_lastValue(0),
+m_lastScaledValue(0),
+m_scalingFactor(1.0f),
 m_targetAddress(t),
 m_targetPtr(RESOUND_NAMESPACE()->get_parameter(m_targetAddress))
 {}
@@ -150,6 +154,8 @@ m_targetPtr(RESOUND_NAMESPACE()->get_parameter(m_targetAddress))
 // targets are maintained but influence on values is reset
 Resound::ParameterLink::ParameterLink(const ParameterLink& p) :
 m_lastValue(0),
+m_lastScaledValue(0),
+m_scalingFactor(p.m_scalingFactor),
 m_targetAddress(p.m_targetAddress),
 m_targetPtr(p.m_targetPtr)
 {}
@@ -175,14 +181,17 @@ void Resound::ParameterLink::set_target(const ParameterAddress &addr){
 	m_targetAddress = addr;
 	m_targetPtr = RESOUND_NAMESPACE()->get_parameter(m_targetAddress);
 	m_lastValue = 0; // set last value to 0
+	m_lastScaledValue = 0; // set last value to 0
 }
 void Resound::ParameterLink::set_value(int val){
 	// uses the suming system to set a new value
 	if(val != m_lastValue) {
 		// only update if different because it avoids calls to obtain the target param
 		if(m_targetPtr){
-			m_targetPtr->set_value(m_lastValue, val);
-			m_lastValue = val;
+			int sval = int(float(val) * m_scalingFactor);
+			m_targetPtr->set_value(m_lastScaledValue, sval);
+			m_lastScaledValue = sval;
+			m_lastValue =  val;
 		}
 	}
 }
@@ -193,6 +202,16 @@ int Resound::ParameterLink::get_value()
 	} else {
 		return 0;
 	}
+}
+	
+void Resound::ParameterLink::set_scaling_factor(float scalingFactor){
+	m_scalingFactor = scalingFactor;
+	set_value(m_lastValue);
+}
+
+float Resound::ParameterLink::get_scaling_factor(){
+
+	return m_scalingFactor;
 }
 
 Resound::ParameterPtr Resound::ParameterLink::get_parameter()

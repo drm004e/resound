@@ -294,7 +294,7 @@ void Resound::CollectiveEditor::UpdateFromCollective()
 	// set virtual size hints
 	// layout the sizer
 
-	scWin->SetMinSize(wxSize(400,200)); // this is BOLLOCKS!! Scrolling window not working particularly well...
+	scWin->SetMinSize(wxSize(400,200)); // this is not good! Scrolling window not working particularly well...
 	scWin->SetSizer(mainSizer);
 	mainSizer->SetVirtualSizeHints(scWin);
 	mainSizer->Layout();
@@ -419,7 +419,7 @@ Resound::CollectiveLinkWidget::~CollectiveLinkWidget()
 
 void Resound::CollectiveLinkWidget::OnLeftMouseUp(wxMouseEvent& event)
 {
-	wxMessageBox(_T("Clicked on CollectiveLinkWidget"));
+	//wxMessageBox(_T("Clicked on CollectiveLinkWidget"));
 }
 
 

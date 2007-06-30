@@ -253,14 +253,21 @@ public:
 	/// get the current value of the targeted parareter
 	int get_value(); 
 
+	/// set the scaling factor
+	void set_scaling_factor(float scalingFactor); 
+
+	/// get the current scaling factor
+	float get_scaling_factor(); 
+
 	/// return a pointer to the targeted parameter
 	ParameterPtr get_parameter(); // get the target pvar
 
 private:
 	ParameterAddress m_targetAddress; /// the global address to the parameter
-	int m_lastValue; ///< the last value sent to the target Parameter
+	int m_lastValue; ///< the last value set
+	int m_lastScaledValue; ///< the last value sent to the target Parameter
 	ParameterPtr m_targetPtr; ///< the actual targeted parameter
-
+	float m_scalingFactor; ///< the scaling factor applied
 	friend class boost::serialization::access; ///< allow serialization access at low level
 	/// serialization definition
 	template<class Archive>
@@ -268,6 +275,8 @@ private:
     {
         ar & BOOST_SERIALIZATION_NVP(m_targetAddress);
 		ar & BOOST_SERIALIZATION_NVP(m_lastValue);
+		ar & BOOST_SERIALIZATION_NVP(m_lastScaledValue);
+		ar & BOOST_SERIALIZATION_NVP(m_scalingFactor);
 		ar & BOOST_SERIALIZATION_NVP(m_targetPtr);
     }
 };
