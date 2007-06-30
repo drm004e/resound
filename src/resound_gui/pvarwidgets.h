@@ -162,13 +162,13 @@ private:
 class CollectiveLinkWidget : public wxWindow
 {
 public:
-	CollectiveLinkWidget(wxWindow* parent, int id, wxString linkName);
+	CollectiveLinkWidget(wxWindow* parent, int id, wxString linkName, ParameterLink* parameterLink);
 	~CollectiveLinkWidget();
 
 private:
 	// event handlers
 	void OnLeftMouseUp(wxMouseEvent& event);
-
+	ParameterLink* m_parameterLink;
 	DECLARE_EVENT_TABLE()
 };
 

@@ -165,7 +165,10 @@ Resound::ParameterLink& Resound::ParameterLink::operator=(const ParameterLink& p
 	if(&p == this) {
 		return *this; // ignore self assignment
 	}
+	
+	m_scalingFactor = p.m_scalingFactor;
 	set_target(p.m_targetAddress); // get the new target
+	
 	return *this;
 }
 

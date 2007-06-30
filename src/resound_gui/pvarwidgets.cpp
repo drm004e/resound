@@ -281,7 +281,7 @@ void Resound::CollectiveEditor::UpdateFromCollective()
 			for (int c = 0; c < numLinks; c++) {
 				// get reference to each link in the element and pass to CollectiveLinkWidget
 				wxString linkName(wxConvertMB2WX(col[r][c].get_target_address().get_address().c_str())); // FIXME string conversion
-				CollectiveLinkWidget* linkW = new CollectiveLinkWidget(scWin, c, linkName); // notice ID is c !!
+				CollectiveLinkWidget* linkW = new CollectiveLinkWidget(scWin, c, linkName, &col[r][c]); // notice ID is c !!
 				elementSizer->Add(linkW, wxSizerFlags(0).Centre());
 			}
 			mainSizer->Add(elementSizer);
@@ -400,8 +400,9 @@ BEGIN_EVENT_TABLE(Resound::CollectiveLinkWidget, wxWindow)
 EVT_LEFT_UP(Resound::CollectiveLinkWidget::OnLeftMouseUp)
 END_EVENT_TABLE()
 
-Resound::CollectiveLinkWidget::CollectiveLinkWidget(wxWindow* parent, int id, wxString linkName)
-		: wxWindow(parent, id, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER) // size used to be (15,8)
+Resound::CollectiveLinkWidget::CollectiveLinkWidget(wxWindow* parent, int id, wxString linkName, ParameterLink* parameterLink)
+		: wxWindow(parent, id, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER), // size used to be (15,8)
+		m_parameterLink(parameterLink)
 {
 	SetFont(*wxSMALL_FONT);
 
@@ -418,8 +419,14 @@ Resound::CollectiveLinkWidget::~CollectiveLinkWidget()
 {}
 
 void Resound::CollectiveLinkWidget::OnLeftMouseUp(wxMouseEvent& event)
-{
-	//wxMessageBox(_T("Clicked on CollectiveLinkWidget"));
+{	
+	if(m_parameterLink){
+		wxString s = wxGetTextFromUser( _("Set scaling factor"), _("Scaling"),wxString::Format(_("%f"), m_parameterLink->get_scaling_factor()),this);
+		float f = atof(wxConvertWX2MB(s));
+		if(f >= -10.0f && f <= 10.0f){
+			 m_parameterLink->set_scaling_factor(f);
+		}
+	}
 }
 
 
