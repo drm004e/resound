@@ -27,29 +27,12 @@
 // ----------------------------------------- Registration function -----------
 void Resound::register_base_behaviours(BehaviourManager* theManager)
 {
-	theManager->register_behaviour_class_factory(BehaviourClassFactory("bpgr", "Proportional Group", BPGroup::Factory));
 	theManager->register_behaviour_class_factory(BehaviourClassFactory("mpcr", "Multipoint Crossfade", BMultiCrossfade::Factory));
 	theManager->register_behaviour_class_factory(BehaviourClassFactory("wave", "Sinusoidal Wave", BWave::Factory));
 	theManager->register_behaviour_class_factory(BehaviourClassFactory("mwve", "Mexican Wave", BMexicanWave::Factory));
 	theManager->register_behaviour_class_factory(BehaviourClassFactory("rand", "Random", BRandom::Factory));
 }
 
-// ----------------------------------------- Proportinal group ---------------
-
-// class constructor
-Resound::BPGroup::BPGroup(std::string name) :
-Resound::Behaviour(name)
-{
-	register_parameter(ParameterPtr(new BehaviourParameter("level", this)));
-	register_parameter(ParameterPtr(new BehaviourParameter("min", this)));
-	register_parameter(ParameterPtr(new BehaviourParameter("max", this)));
-}
-
-// class destructor
-Resound::BPGroup::~BPGroup()
-{
-	// insert your code here
-}
 
 // ---------------------------------------- Multicrossfade ------------------
 

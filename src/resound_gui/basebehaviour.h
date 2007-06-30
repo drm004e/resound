@@ -28,20 +28,7 @@ namespace Resound
 // function to register the behaviours in this file
 void register_base_behaviours(BehaviourManager* theManager);
 
-// basic group behaviour
-// uses first set of collective
-class BPGroup : public Behaviour
-{
-public:
-	static BehaviourPtr Factory()
-	{
-		return BehaviourPtr(new BPGroup("pgroup"));
-	};
-	// class constructor
-	BPGroup(std::string name);
-	// class destructor
-	~BPGroup();
-};
+
 
 // multi cross fade
 // uses first set of collective
