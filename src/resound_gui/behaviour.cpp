@@ -25,6 +25,10 @@
 #include "behaviour.h" // class's header file
 
 #include <sstream>
+// -------------------------------- Behaviour Parameter ----------------------
+void Resound::BehaviourParameter::on_value_changed(){
+	m_parentBehaviour->on_parameter_changed();
+}
 // -------------------------------- Behaviour --------------------------------
 int Resound::Behaviour::s_globalId=0;
 

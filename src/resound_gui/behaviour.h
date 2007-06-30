@@ -37,6 +37,28 @@ typedef BehaviourPtr (*BehaviourFactory)();
 /// a class identifier used by the behaviour factory
 typedef std::string BehaviourClassId;
 
+class BehaviourParameter : public Parameter{
+public:
+	BehaviourParameter(){};
+	BehaviourParameter(const EntityName& name, Behaviour* parentBehaviour) : 
+		Parameter(name),
+		m_parentBehaviour(parentBehaviour)
+		{}
+	virtual void on_value_changed();
+	virtual void dummy(){};
+private:
+	Behaviour* m_parentBehaviour;
+
+	friend class boost::serialization::access; ///< allow serialization access at low level
+	/// serialization definition
+	template<class Archive>
+   	 void serialize(Archive & ar, const unsigned int version)
+   	 {
+		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(Parameter);
+		ar & BOOST_SERIALIZATION_NVP(m_parentBehaviour);
+    	 }
+};
+
 /// behaviours form the system for grouping and automation
 /// automation is via the sa_automation core
 /// behaviour is a base class for a pluginable SDK
@@ -69,6 +91,11 @@ public:
 	ParameterPtr get_parameter(int index){ return m_parameters.at(index); }
 	/// return the number of parameters in this behaviour
 	int get_num_parameters(){ return m_parameters.size(); }
+
+	/// one of the behaviours parameters has altered
+	/// overload with behaviour algorithm
+	virtual void on_parameter_changed(){};
+
 protected:
 	/// register a parameter addressable by the global system
 	void register_parameter(ParameterPtr param); // add a new Parameter, auto register it with the global namespace

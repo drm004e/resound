@@ -40,9 +40,9 @@ void Resound::register_base_behaviours(BehaviourManager* theManager)
 Resound::BPGroup::BPGroup(std::string name) :
 Resound::Behaviour(name)
 {
-	register_parameter(ParameterPtr(new BasicParameter("level")));
-	register_parameter(ParameterPtr(new BasicParameter("min")));
-	register_parameter(ParameterPtr(new BasicParameter("max")));
+	register_parameter(ParameterPtr(new BehaviourParameter("level", this)));
+	register_parameter(ParameterPtr(new BehaviourParameter("min", this)));
+	register_parameter(ParameterPtr(new BehaviourParameter("max", this)));
 }
 
 // class destructor
@@ -55,9 +55,12 @@ Resound::BPGroup::~BPGroup()
 
 // class constructor
 Resound::BMultiCrossfade::BMultiCrossfade(std::string name) :
-Resound::Behaviour(name)
+Resound::Behaviour(name),
+m_amp(new BehaviourParameter("amp", this)),
+m_pos(new BehaviourParameter("pos", this))
 {
-	register_parameter(ParameterPtr(new BasicParameter("position")));
+	register_parameter(m_amp);
+	register_parameter(m_pos);
 	// this 
 }
 
@@ -67,12 +70,26 @@ Resound::BMultiCrossfade::~BMultiCrossfade()
 	// insert your code here
 }
 
+void Resound::BMultiCrossfade::on_parameter_changed(){
+	// get pvars and range adjust
+	int amp = m_amp->get_value();
+	//float pos = (float)m_pos->get_value() * (1.0f/128.0f);
+
+	// get the target collective
+	Collective& rCol = get_collective();
+	int num_elements = rCol.get_num_elements();
+
+		// apply to collective.Set(n)
+	for(int n = 0; n < rCol.get_num_elements(); n++) {
+		rCol[n].set_value(amp);
+	}
+}
 // ---------------------------------------- Wave ----------------------------
 // class constructor
 Resound::BWave::BWave(std::string name) :
 Resound::Behaviour(name),
-m_amp(new BasicParameter("amp")),
-m_freq(new BasicParameter("freq"))
+m_amp(new BehaviourParameter("amp", this)),
+m_freq(new BehaviourParameter("freq", this))
 {
 	register_parameter(m_amp);
 	register_parameter(m_freq);
@@ -112,8 +129,8 @@ void Resound::BWave::tick(float dT)
 // class constructor
 Resound::BMexicanWave::BMexicanWave(std::string name) :
 Resound::Behaviour(name),
-m_amp(new BasicParameter("amp")),
-m_freq(new BasicParameter("freq"))
+m_amp(new BehaviourParameter("amp", this)),
+m_freq(new BehaviourParameter("freq", this))
 {
 	register_parameter(m_amp);
 	register_parameter(m_freq);
@@ -152,8 +169,8 @@ void Resound::BMexicanWave::tick(float dT)
 // class constructor
 Resound::BRandom::BRandom(std::string name) :
 Resound::Behaviour(name),
-m_amp(new BasicParameter("amp")),
-m_freq(new BasicParameter("freq"))
+m_amp(new BehaviourParameter("amp", this)),
+m_freq(new BehaviourParameter("freq", this))
 {
 	register_parameter(m_amp);
 	register_parameter(m_freq);
@@ -175,8 +192,9 @@ void Resound::BRandom::tick(float dT)
 
 	// apply to collective
 	for(int r = 0; r < rCol.get_num_elements(); r++) {
+		int val = (int)((float)((rand() % 256) - 128) * amp);
 		for(int c = 0; c < rCol[r].get_num_links(); c++) {
-			int val = (int)((float)((rand() % 256) - 128) * amp);
+			
 			rCol[r][c].set_value(val);
 		}
 	}

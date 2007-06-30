@@ -56,6 +56,11 @@ public:
 	BMultiCrossfade(std::string name);
 	// class destructor
 	~BMultiCrossfade();
+
+	void on_parameter_changed();
+private:
+	ParameterPtr m_amp;
+	ParameterPtr m_pos;
 };
 
 // wave behaviour
