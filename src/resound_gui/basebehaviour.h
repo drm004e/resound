@@ -40,6 +40,7 @@ public:
 		return BehaviourPtr(new BMultiCrossfade("mp_crossfade"));
 	};
 	// class constructor
+	BMultiCrossfade(){}
 	BMultiCrossfade(std::string name);
 	// class destructor
 	~BMultiCrossfade();
@@ -48,6 +49,15 @@ public:
 private:
 	ParameterPtr m_amp;
 	ParameterPtr m_pos;
+	friend class boost::serialization::access; ///< allow serialization access at low level
+	/// serialization definition
+	template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+	ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(Behaviour);
+        ar & BOOST_SERIALIZATION_NVP(m_amp);
+    	ar & BOOST_SERIALIZATION_NVP(m_pos);
+	}
 };
 
 // wave behaviour
@@ -59,6 +69,7 @@ public:
 		return BehaviourPtr(new BWave("wave"));
 	};
 	// class constructor
+	BWave(){}
 	BWave(std::string name);
 	// class destructor
 	~BWave();
@@ -71,6 +82,15 @@ private:
 	ParameterPtr m_amp;
 	ParameterPtr m_freq;
 
+	friend class boost::serialization::access; ///< allow serialization access at low level
+	/// serialization definition
+	template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+	ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(Behaviour);
+        ar & BOOST_SERIALIZATION_NVP(m_amp);
+    	ar & BOOST_SERIALIZATION_NVP(m_freq);
+	}
 };
 
 // wave behaviour
@@ -82,6 +102,7 @@ public:
 		return BehaviourPtr(new BMexicanWave("mexican_wave"));
 	};
 	// class constructor
+	BMexicanWave(){}
 	BMexicanWave(std::string name);
 	// class destructor
 	~BMexicanWave();
@@ -94,6 +115,15 @@ private:
 	ParameterPtr m_amp;
 	ParameterPtr m_freq;
 
+	friend class boost::serialization::access; ///< allow serialization access at low level
+	/// serialization definition
+	template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+	ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(Behaviour);
+        ar & BOOST_SERIALIZATION_NVP(m_amp);
+    	ar & BOOST_SERIALIZATION_NVP(m_freq);
+	}
 };
 
 // wave behaviour
@@ -107,12 +137,24 @@ public:
 		return BehaviourPtr(new BRandom("random"));
 	};
 	// class constructor
+	BRandom(){}
 	BRandom(std::string name);
 	// class destructor
 	~BRandom();
 
 	// overloaded
 	virtual void tick(float dT);
+
+private:
+
+	friend class boost::serialization::access; ///< allow serialization access at low level
+	/// serialization definition
+	template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+	ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(Behaviour);
+        }
+
 };
 
 }

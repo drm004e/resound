@@ -175,13 +175,30 @@ public:
 class ParameterNamespace : public Entity
 {
 public:
+	ParameterNamespace(){}
 	ParameterNamespace(EntityName name) : Entity(name) {}
 
 	/// register a parameter at the sub address specified,
 	/// the sub system address will be prepended to the address specified
 	/// and the parameter will be registered with the global system
 	void register_parameter(std::string address, ParameterPtr param);
+	virtual void dummy()=0;
+
+private:
+	std::string m_name;
+
+	friend class boost::serialization::access; ///< allow serialization access at low level
+	/// serialization definition
+	template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+	ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(Entity);
+       // ar & BOOST_SERIALIZATION_NVP(m_address);
+    }
 };
+}
+BOOST_IS_ABSTRACT(Resound::ParameterNamespace)
+namespace Resound {
 /// smart pointer for namespaces
 typedef boost::shared_ptr<ParameterNamespace> ParameterNamespacePtr;
 
@@ -222,7 +239,8 @@ private:
 	/// serialization definition
 	template<class Archive>
     void serialize(Archive & ar, const unsigned int version)
-    {
+    {	
+	ar & BOOST_SERIALIZATION_NVP(m_parameterNamespaceList);
         ar & BOOST_SERIALIZATION_NVP(m_parameterAddressMap);
     }
 };

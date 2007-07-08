@@ -65,6 +65,7 @@ private:
 class Behaviour
 {
 public:
+	Behaviour(){};
 	Behaviour(std::string name); ///< construction must have a name
 	virtual ~Behaviour(); ///< destruct
 
@@ -109,6 +110,14 @@ private:
 	/// return the next global behaviour id
 	static int get_global_id(){return s_globalId++;}
 	static int s_globalId; 
+
+	friend class boost::serialization::access; ///< allow serialization access at low level
+	/// serialization definition
+	template<class Archive>
+   	 void serialize(Archive & ar, const unsigned int version)
+  	  {
+      	  ar & BOOST_SERIALIZATION_NVP(m_name); //
+   	 }
 };
 
 // TODO consider possible template implementation for behaviour factory?
@@ -128,6 +137,16 @@ private:
 	BehaviourClassId m_classId; // a unique identifier for a behaviour class // see similar to vst plugin 4 char id
 	std::string m_classNiceName;
 	BehaviourFactory m_factory;
+
+	friend class boost::serialization::access; ///< allow serialization access at low level
+	/// serialization definition
+	template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & BOOST_SERIALIZATION_NVP(m_classId);
+	ar & BOOST_SERIALIZATION_NVP(m_classNiceName);
+	//ar & BOOST_SERIALIZATION_NVP(m_factory); //FIXME consider is it even nessersary to serialize the behaviour factories
+    }
 };
 
 // behaviour map
@@ -175,11 +194,24 @@ public:
 
 	/// return the behaviour map
 	BehaviourMap& get_behaviour_map(){return m_behaviourMap;} //TODO consider a more secure way of doing this
+
+	virtual void dummy(){};
 private:
 
 	int m_nextId; ///< id specified to the map as its created
 	BehaviourClassFactoryMap m_classMap; ///< a list of all registered creatable types
 	BehaviourMap m_behaviourMap; ///< maps behaiours to int id's // id's used to look up
+
+	friend class boost::serialization::access; ///< allow serialization access at low level
+	/// serialization definition
+	template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+	ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(ParameterNamespace);
+        ar & BOOST_SERIALIZATION_NVP(m_nextId);
+	ar & BOOST_SERIALIZATION_NVP(m_classMap);
+	ar & BOOST_SERIALIZATION_NVP(m_behaviourMap);
+    }
 };
 
 // Behaviour selection panel //TODO move this out of behaviour

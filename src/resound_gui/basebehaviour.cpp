@@ -36,6 +36,8 @@ void Resound::register_base_behaviours(BehaviourManager* theManager)
 
 // ---------------------------------------- Multicrossfade ------------------
 
+BOOST_CLASS_EXPORT(Resound::BMultiCrossfade);
+
 // class constructor
 Resound::BMultiCrossfade::BMultiCrossfade(std::string name) :
 Resound::Behaviour(name),
@@ -73,6 +75,9 @@ void Resound::BMultiCrossfade::on_parameter_changed(){
 	}
 }
 // ---------------------------------------- Wave ----------------------------
+
+BOOST_CLASS_EXPORT(Resound::BWave);
+
 // class constructor
 Resound::BWave::BWave(std::string name) :
 Resound::Behaviour(name),
@@ -114,6 +119,9 @@ void Resound::BWave::tick(float dT)
 	rCol.set_value(val);
 }
 // ---------------------------------------- Mexican Wave ----------------------------
+
+BOOST_CLASS_EXPORT(Resound::BMexicanWave);
+
 // class constructor
 Resound::BMexicanWave::BMexicanWave(std::string name) :
 Resound::Behaviour(name),
@@ -154,6 +162,9 @@ void Resound::BMexicanWave::tick(float dT)
 }
 
 // ---------------------------------------- Random ----------------------------
+
+BOOST_CLASS_EXPORT(Resound::BRandom);
+
 // class constructor
 Resound::BRandom::BRandom(std::string name) :
 Resound::Behaviour(name),

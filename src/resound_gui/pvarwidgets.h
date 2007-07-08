@@ -166,6 +166,9 @@ public:
 	~CollectiveLinkWidget();
 
 private:
+	wxStaticText* m_name;
+	wxStaticText* m_scale;
+	
 	// event handlers
 	void OnLeftMouseUp(wxMouseEvent& event);
 	ParameterLink* m_parameterLink;

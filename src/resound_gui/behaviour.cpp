@@ -26,6 +26,9 @@
 
 #include <sstream>
 // -------------------------------- Behaviour Parameter ----------------------
+
+BOOST_CLASS_EXPORT(Resound::BehaviourParameter);
+
 void Resound::BehaviourParameter::on_value_changed(){
 	m_parentBehaviour->on_parameter_changed();
 }
@@ -103,6 +106,9 @@ Resound::BehaviourPtr Resound::BehaviourClassFactory::create()
 }
 
 // -------------------------------- Behaviour manager ----------------------------
+
+BOOST_CLASS_EXPORT(Resound::BehaviourManager);
+
 
 Resound::BehaviourManager::BehaviourManager() :
 ParameterNamespace("bm")

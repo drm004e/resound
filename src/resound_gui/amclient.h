@@ -80,6 +80,7 @@ class AMClient : public Resound::OSCManager, public ParameterNamespace, public A
 {
 public:
 	/// Constructor
+	AMClient();
 	/// @param _log : a pointer to a wxTextCtrl that can be used to log events
 	AMClient(int inputs, int outputs);
 	~AMClient(); ///< Destructor
@@ -99,7 +100,7 @@ public:
 	/// Overriden from AutomatedObject,
 	/// Causes the audiomatrix to be scanned, any changed matrix nodes are transmitted to the server.
 	virtual void tick(float dT);
-
+	virtual void dummy(){};
 private:
 
 	// AudioMatrix
@@ -113,6 +114,17 @@ private:
 	void build_parameter_matrix(int numInputs, int numOutputs);
 
 //	Array2<AMParameterPtr> m_parameterMatrix; ///< AMParameters controlled by user
+
+
+	friend class boost::serialization::access; ///< allow serialization access at low level
+	/// serialization definition
+	template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+	ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(ParameterNamespace);
+        ar & BOOST_SERIALIZATION_NVP(m_numInputs);
+    	ar & BOOST_SERIALIZATION_NVP(m_numOutputs);
+	}
 };
 
 
