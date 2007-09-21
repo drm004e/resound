@@ -19,10 +19,18 @@
 
 # resound_server
 # includes
+include(FindBoost)
+
 include_directories (
 ${RESOUND_SOURCE_DIR}/
 /usr/include/jack
+${Boost_INCLUDE_DIRS}
 )
+
+link_directories(
+${Boost_LIBRARY_DIRS}
+)
+
 SET(CMAKE_CXX_FLAGS -g)
 # build the excecutable
 add_executable (resound_server
