@@ -23,7 +23,7 @@
 include(FindBoost)
 
 # includes
-IF(LINUX)
+IF(UNIX)
 	INCLUDE_DIRECTORIES(
 		${RESOUND_SOURCE_DIR}/
 		${Boost_INCLUDE_DIRS}
@@ -35,25 +35,25 @@ ELSEIF(APPLE)
 		/opt/local/lib/wx/include/mac-unicode-release-2.8 
 		/opt/local/include/wx-2.8
 	)
-ELSE(LINUX)
-ENDIF(LINUX)
+ELSE(UNIX)
+ENDIF(UNIX)
 
 LINK_DIRECTORIES(
 	${Boost_LIBRARY_DIRS}
 )
 
 # use dbuggin flags
-IF(LINUX)
+IF(UNIX)
 	SET(CMAKE_CXX_FLAGS "-g")
 ELSEIF(APPLE)
 	SET(CMAKE_CXX_FLAGS "-g -D__WXMAC__")
-ELSE(LINUX)
-ENDIF(LINUX)
+ELSE(UNIX)
+ENDIF(UNIX)
 
-IF(LINUX)
+IF(UNIX)
 	FIND_PACKAGE(wxWidgets)
 	INCLUDE(UsewxWidgets)
-ENDIF(LINUX)
+ENDIF(UNIX)
 
 # build the excecutable
 SET(sourcefiles 
@@ -104,7 +104,7 @@ SET(sourcefiles
 	util.h
 )
 
-IF(LINUX)
+IF(UNIX)
 	add_executable (resound_gui ${sourcefiles})
 ELSEIF(APPLE)
 	FILE(MAKE_DIRECTORY resound_gui.app)
@@ -112,13 +112,13 @@ ELSEIF(APPLE)
 	FILE(MAKE_DIRECTORY resound_gui.app/Contents/MacOS)
 	FILE(MAKE_DIRECTORY resound_gui.app/Resources)
 	add_executable (resound_gui MACOSX_BUNDLE ${sourcefiles})
-ELSE(LINUX)
-ENDIF(LINUX)
+ELSE(UNIX)
+ENDIF(UNIX)
 
 #link with libs
-IF(LINUX)
+IF(UNIX)
 	target_link_libraries (resound_gui resound_common boost_serialization asound ${wxWidgets_LIBRARIES})
 ELSEIF(APPLE)
 	target_link_libraries (resound_gui resound_common boost_serialization wx_macu-2.8)
-ELSE(LINUX)
-ENDIF(LINUX)
+ELSE(UNIX)
+ENDIF(UNIX)

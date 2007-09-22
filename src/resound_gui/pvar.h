@@ -417,6 +417,9 @@ public:
 	void set_last(); // move to the last element
 };
 
+
+
+
 }
 
 #endif // SA_PVAR_H

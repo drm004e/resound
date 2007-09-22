@@ -19,7 +19,7 @@
  *   
 */
 
-#ifdef __LINUX
+#ifdef __linux__
 
 #include "mmanager_alsa.h"
 #include <iostream>

@@ -23,12 +23,12 @@ include_directories (
 ${RESOUND_SOURCE_DIR}/
 #/usr/include/wx-2.6/
 )
-IF(LINUX)
+IF(UNIX)
 	SET(CMAKE_CXX_FLAGS "-g")
 ELSEIF(APPLE)
 	SET(CMAKE_CXX_FLAGS "-g")
-ELSE(LINUX)
-ENDIF(LINUX)
+ELSE(UNIX)
+ENDIF(UNIX)
 # now include the wx_script, must be done after setting cxx_flags because it adds to them
 #INCLUDE(Use_wxWindows)
 
