@@ -57,7 +57,7 @@ Resound::PerformanceView::PerformanceView(wxWindow* parent)
 		}
 		upperTierSizer->Add(grp, wxSizerFlags(1).Align(0).Border(wxALL,5));
 	}
-	fId = 0;
+
 	for(n = 0; n < 4; n++) // create bottom row of MasterFaders
 	{
 		wxBoxSizer* grp = new wxBoxSizer(wxHORIZONTAL);
@@ -97,6 +97,17 @@ void Resound::PerformanceView::Init()
 {
 	for (int n = 0; n < masterFaderArray.size(); n++) {
 		masterFaderArray[n]->SetValue(0);
+	}
+}
+
+void Resound::PerformanceView::store_to_preset(int index){
+	for (int n = 0; n < masterFaderArray.size(); n++) {
+		masterFaderArray[n]->store_to_preset(index);
+	}
+}
+void Resound::PerformanceView::recall_from_preset(int index){
+	for (int n = 0; n < masterFaderArray.size(); n++) {
+		masterFaderArray[n]->recall_from_preset(index);
 	}
 }
 

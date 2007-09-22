@@ -37,8 +37,8 @@ public:
 	void OnFaderMove(wxCommandEvent& event);
 	void Init(); // set all MasterFader values to zero
 
-
-
+	void store_to_preset(int index);
+	void recall_from_preset(int index);
 private:
 	std::vector<MasterFader*> masterFaderArray; // array to store MasterFaders (VPCs)
 

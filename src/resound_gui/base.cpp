@@ -137,6 +137,7 @@ void MainFrame::OnSave(wxCommandEvent& event)
 	wxFileDialog dlg(this, _T("Save Performance to File"), _T(""), _T(""), _T("*.rpf"), wxSAVE);
 	if (dlg.ShowModal() == wxID_OK) {
 		// create file output stream from dialog box path
+		perfView->store_to_preset(0);
 		Resound::PerformanceManager::get_instance().save_performance_xml((const char*)wxConvertWX2MB(dlg.GetPath()));
 	}
 
@@ -148,6 +149,7 @@ void MainFrame::OnLoad(wxCommandEvent& event)
 	if (dlg.ShowModal() == wxID_OK) {
 		// create file output stream from dialog box path
 		Resound::PerformanceManager::get_instance().load_performance_xml((const char*)wxConvertWX2MB(dlg.GetPath()));
+		perfView->recall_from_preset(0);
 	}
 }
 

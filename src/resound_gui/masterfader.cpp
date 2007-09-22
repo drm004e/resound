@@ -34,8 +34,8 @@ END_EVENT_TABLE()
 // class constructor
 Resound::MasterFader::MasterFader(wxWindow* parent, int id, int cc)
 : wxPanel(parent,id),
-parameter(cc)
-
+parameter(cc),
+m_id(id)
 {
 	SetWindowStyle(wxSIMPLE_BORDER );
 	// construct the sub objects and sizer
@@ -54,7 +54,7 @@ parameter(cc)
 
 	// buttons
 	collectiveWidget = new Resound::CollectiveWidget(this,MFG_ASSIGN1,_T("Assign"),
-	                   &collective, true, 16); // show max of 16 VU meters...
+	                   preset.get_collective(), true, 16); // show max of 16 VU meters...
 	bottomTierSizer->Add(collectiveWidget, wxSizerFlags(0).Align(0).Expand().Border(wxALL,0));
 
 	// sizers
@@ -80,10 +80,11 @@ Resound::MasterFader::~MasterFader()
 void Resound::MasterFader::OnFaderChanged(wxCommandEvent &event)
 {
 	int val = event.GetInt();
-	collective.set_value(val);
+	preset.set_value(val);
 
 	// send midi message
 	//MManager::GetSingleton().SendMidiMessage(1,MakeStatusByte(MIDI_CONTROL_CHANGE,GetId()),7,val); // FIXME midi fix for linux
+	// FIXME note that the fader id was previously used for channel and now isnt
 }
 
 void Resound::MasterFader::SetValue(int value)
@@ -99,9 +100,19 @@ void Resound::MasterFader::OnMidiMessage(MIDI_BYTE status, MIDI_BYTE dataA, MIDI
 	int channel = MIDIStatusToChannel(status);
 	switch(type) {
 	case MIDI_CONTROL_CHANGE:
-		if(channel == GetId() && parameter == dataA) {
+		if(channel == GetId() && parameter == dataA) {// FIXME note that the fader id was previously used for channel and now isnt
 			SetValue((int) dataB);
 		}
 		break;
 	}
 }
+void Resound::MasterFader::store_to_preset(int index){
+	MasterFaderPreset& p = PerformanceManager::get_instance().get_performance()->get_preset(index).get_master_fader_preset(m_id);
+	p = preset;
+}
+void Resound::MasterFader::recall_from_preset(int index){
+	MasterFaderPreset& p = PerformanceManager::get_instance().get_performance()->get_preset(index).get_master_fader_preset(m_id);
+	preset = p;
+	collectiveWidget->SetCollective(preset.get_collective());
+}
+

@@ -24,6 +24,7 @@
 #ifndef __MManager__
     #include "mmanager.h"
 #endif
+#include "performance.h"
 
 namespace Resound
 {
@@ -48,7 +49,8 @@ public:
 	void OnFaderChanged(wxCommandEvent &event);
 	void SetValue(int value);
 
-
+	void store_to_preset(int index);
+	void recall_from_preset(int index);
 private:
 
 	void OnMidiMessage(MIDI_BYTE status, MIDI_BYTE dataA, MIDI_BYTE dataB, MIDI_TIME_STAMP timeStamp);
@@ -56,9 +58,12 @@ private:
 	FaderWidget *fader1;
 	StaticVUMeterWidget *meter1; // no saving implemented
 	VUMeterWidget *meter2; // no saving implemented
-	Collective collective;
+	MasterFaderPreset preset;
+
 	CollectiveWidget* collectiveWidget;
 	int parameter;
+
+	int m_id;
 	// event handling macro
 	DECLARE_EVENT_TABLE()
 };

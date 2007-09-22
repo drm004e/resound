@@ -55,7 +55,9 @@ class MasterFaderPreset
 public:
 	MasterFaderPreset();
 	virtual ~MasterFaderPreset();
-
+	void set_value(int v){m_target.set_value(v); m_value=v;}
+	int get_value(){return m_value;}
+	Collective* get_collective(){return &m_target;}
 private:
 	int m_value;
 	Collective m_target;
@@ -70,6 +72,7 @@ private:
     }
 };
 
+
 /// A single preset contained in a given performance
 /// It will store: Fader Positions, Assignments, Lock status for all subsystem Parameters.
 class PerformancePreset
@@ -77,11 +80,12 @@ class PerformancePreset
 public:
 	// class constructor
 	PerformancePreset();
+
 	// class destructor
 	virtual ~PerformancePreset();
-
+	MasterFaderPreset& get_master_fader_preset(int index){ return m_masterFaderPresetArray[index];}
 private:
-	std::vector<MasterFaderPreset> m_masterFaderPresetArray;
+	MasterFaderPreset m_masterFaderPresetArray[32];
 	std::vector<ParameterLockPreset> m_parameterLockPresetArray;
 
 	friend class boost::serialization::access; ///< allow serialization access at low level
@@ -89,8 +93,8 @@ private:
 	template<class Archive>
     void serialize(Archive & ar, const unsigned int version)
     {
-        ar & BOOST_SERIALIZATION_NVP(m_masterFaderPresetArray);
-		ar & BOOST_SERIALIZATION_NVP(m_parameterLockPresetArray);
+        	ar & BOOST_SERIALIZATION_NVP(m_masterFaderPresetArray);
+		//ar & BOOST_SERIALIZATION_NVP(m_parameterLockPresetArray);
     }
 };
 
@@ -104,8 +108,10 @@ public:
 	// class destructor
 	virtual ~Performance();
 	ParameterNamespaceManagerPtr get_parameter_global_namespace(){return m_parameterNamespaceManager;}
+
+	PerformancePreset& get_preset(int index){return m_presetArray[index];}
 private:
-	std::vector<PerformancePreset> m_presetArray;
+	PerformancePreset m_presetArray[1];
 	ParameterNamespaceManagerPtr m_parameterNamespaceManager;
 
 	friend class boost::serialization::access; ///< allow serialization access at low level
@@ -113,7 +119,7 @@ private:
 	template<class Archive>
     void serialize(Archive & ar, const unsigned int version)
     {
-        ar & BOOST_SERIALIZATION_NVP(m_presetArray);
+        	ar & BOOST_SERIALIZATION_NVP(m_presetArray);
 		ar & BOOST_SERIALIZATION_NVP(m_parameterNamespaceManager);
     }
 };
