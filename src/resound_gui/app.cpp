@@ -41,6 +41,8 @@
 
 #include "app.h" // class's header file
 
+#include <wx/image.h>
+
 IMPLEMENT_APP(ResoundClientApp)
 
 bool ResoundClientApp::OnInit()

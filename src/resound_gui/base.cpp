@@ -98,7 +98,7 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 
 	// setup midi system
 
-	MManager::get_instance().OpenInputDevice(1);
+	//MManager::get_instance().OpenInputDevice(1);
 
 	// add any behaviours
 	// eventually load plugins!

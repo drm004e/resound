@@ -35,13 +35,13 @@
 MListener::MListener()
 {
 	// Construct
-	MManager::get_instance().RegisterMListener(this); 
+//	MManager::get_instance().RegisterMListener(this); 
 }
 
 MListener::~MListener()
 {
 	// Destruct
-	MManager::get_instance().UnregisterMListener(this);
+//	MManager::get_instance().UnregisterMListener(this);
 }
 
 // ------------------------------------ Functions -----------------------------

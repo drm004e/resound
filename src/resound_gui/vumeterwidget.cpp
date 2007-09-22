@@ -66,7 +66,7 @@ void Resound::StaticVUMeterWidget::OnPaint(wxPaintEvent& event)
 
 	// range adjust for val
 	int y = RANGEMAP(val,min,max,0,sizeY);
-
+	y = CLAMP(y,0,sizeY);
 	// blit off portion // top bit
 	dc.Blit(wxPoint(0,0),wxSize(sizeX,sizeY - y),&dcMeterOff,wxPoint(0,0));
 	// blit on portion // bottom bit

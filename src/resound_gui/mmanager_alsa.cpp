@@ -19,6 +19,8 @@
  *   
 */
 
+#ifdef __LINUX
+
 #include "mmanager_alsa.h"
 #include <iostream>
 #include <sstream>
@@ -129,3 +131,5 @@ snd_seq_t* MManagerALSA::open_seq(const std::string name) {
     }
     return(seq_handle);
 }
+
+#endif

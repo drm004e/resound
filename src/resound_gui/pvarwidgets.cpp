@@ -27,6 +27,7 @@
 #include "pvarwidgets.h" // class's header file
 #include <cstring>
 #include "behaviour.h"
+#include <iostream>
 // -------------------------------- ParameterAddressWidgetBase --------------------
 Resound::ParameterAddressWidgetBase::ParameterAddressWidgetBase(wxWindow* parent, int id, ParameterAddress _addr)
 		: wxWindow(parent,id)
@@ -512,11 +513,11 @@ Resound::CollectiveBuilder::CollectiveBuilder(wxWindow* parent, Collective* _col
 
 
 	// add notebook to topsizer
-	wxStaticBox* noteBookBox = new wxStaticBox(this,-1,_T("Add Parameters to Collective"));
-	wxStaticBoxSizer* noteBookSizer = new wxStaticBoxSizer(noteBookBox, wxHORIZONTAL);
-	noteBookSizer->Add(noteBook, wxSizerFlags(0).Expand().Border(wxALL,10));
-	topSizer->Add(noteBookSizer,wxSizerFlags(0).Center().Expand().Border(wxLEFT|wxRIGHT|wxTOP,10));
-	//topSizer->Add(noteBook,wxSizerFlags(0).Center().Expand().Border(wxLEFT|wxRIGHT|wxTOP,10));
+	//wxStaticBox* noteBookBox = new wxStaticBox(this,-1,_T("Add Parameters to Collective"));
+	//wxStaticBoxSizer* noteBookSizer = new wxStaticBoxSizer(noteBookBox, wxHORIZONTAL);
+	//noteBookSizer->Add(noteBook, wxSizerFlags(0).Expand().Border(wxALL,10));
+	//topSizer->Add(noteBookSizer,wxSizerFlags(0).Center().Expand().Border(wxLEFT|wxRIGHT|wxTOP,10));
+	topSizer->Add(noteBook,wxSizerFlags(0).Center().Expand().Border(wxLEFT|wxRIGHT|wxTOP,10));
 
 	// layout
 	SetSizer(topSizer);
@@ -544,6 +545,7 @@ void Resound::CollectiveBuilder::OnClearSelection(wxCommandEvent &event)
 
 void Resound::CollectiveBuilder::OnAddressSelected(wxCommandEvent &event)
 {
+	std::cout << "OnAddressSelected" << std::endl;
 	// get the originating object
 	Resound::AddressSelectWidget* widget = (Resound::AddressSelectWidget*)event.GetEventObject();
 	// add selected link to temporary ParameterLink
@@ -569,6 +571,7 @@ void Resound::CollectiveBuilder::OnAddressSelected(wxCommandEvent &event)
 
 void Resound::CollectiveBuilder::OnElementSelected(wxCommandEvent &event)
 {
+	std::cout << "OnElementSelected" << std::endl;
 	collectiveWrapper->set_cursor_position(event.GetId()); // just set cursor position
 	int action = event.GetInt(); // get the action to be performed on the collective from the event
 	// -- see CollectiveElementWidget::SendElementSelectedEvent(CEW_CM action)

@@ -20,20 +20,26 @@
 # resound_gui
 
 
+include(FindBoost)
 
 # includes
 INCLUDE_DIRECTORIES(
 ${RESOUND_SOURCE_DIR}/
-/usr/include/wx-2.6/
+${Boost_INCLUDE_DIRS}
+/opt/local/lib/wx/include/mac-unicode-release-2.8 
+/opt/local/include/wx-2.8
 )
 
+LINK_DIRECTORIES(
+${Boost_LIBRARY_DIRS}
+)
 
 # use dbuggin flags
-SET(CMAKE_CXX_FLAGS -g )
+SET(CMAKE_CXX_FLAGS "-g -D__WXMAC__")
 
 
-FIND_PACKAGE(wxWidgets)
-INCLUDE(UsewxWidgets)
+#FIND_PACKAGE(wxWidgets)
+#INCLUDE(UsewxWidgets)
 
 # build the excecutable
 add_executable (resound_gui
@@ -84,4 +90,7 @@ add_executable (resound_gui
 	util.h
 )
 #link with libs
-target_link_libraries (resound_gui resound_common boost_serialization asound ${wxWidgets_LIBRARIES})
+#target_link_libraries (resound_gui resound_common boost_serialization asound ${wxWidgets_LIBRARIES})
+#message("TEST TEST TEST TEST TEST${wxWidgets_LIBRARIES}")
+target_link_libraries (resound_gui resound_common boost_serialization wx_macu-2.8)
+
