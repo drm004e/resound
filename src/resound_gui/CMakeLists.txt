@@ -23,26 +23,40 @@
 include(FindBoost)
 
 # includes
-INCLUDE_DIRECTORIES(
-${RESOUND_SOURCE_DIR}/
-${Boost_INCLUDE_DIRS}
-/opt/local/lib/wx/include/mac-unicode-release-2.8 
-/opt/local/include/wx-2.8
-)
+IF(LINUX)
+	INCLUDE_DIRECTORIES(
+		${RESOUND_SOURCE_DIR}/
+		${Boost_INCLUDE_DIRS}
+	)
+ELSEIF(APPLE)
+	INCLUDE_DIRECTORIES(
+		${RESOUND_SOURCE_DIR}/
+		${Boost_INCLUDE_DIRS}
+		/opt/local/lib/wx/include/mac-unicode-release-2.8 
+		/opt/local/include/wx-2.8
+	)
+ELSE(LINUX)
+ENDIF(LINUX)
 
 LINK_DIRECTORIES(
-${Boost_LIBRARY_DIRS}
+	${Boost_LIBRARY_DIRS}
 )
 
 # use dbuggin flags
-SET(CMAKE_CXX_FLAGS "-g -D__WXMAC__")
+IF(LINUX)
+	SET(CMAKE_CXX_FLAGS "-g")
+ELSEIF(APPLE)
+	SET(CMAKE_CXX_FLAGS "-g -D__WXMAC__")
+ELSE(LINUX)
+ENDIF(LINUX)
 
-
-#FIND_PACKAGE(wxWidgets)
-#INCLUDE(UsewxWidgets)
+IF(LINUX)
+	FIND_PACKAGE(wxWidgets)
+	INCLUDE(UsewxWidgets)
+ENDIF(LINUX)
 
 # build the excecutable
-add_executable (resound_gui
+SET(sourcefiles 
 	amclient.cpp
 	amclient.h
 	amclient_widgets.h
@@ -89,8 +103,22 @@ add_executable (resound_gui
 	vumeterwidget.h
 	util.h
 )
-#link with libs
-#target_link_libraries (resound_gui resound_common boost_serialization asound ${wxWidgets_LIBRARIES})
-#message("TEST TEST TEST TEST TEST${wxWidgets_LIBRARIES}")
-target_link_libraries (resound_gui resound_common boost_serialization wx_macu-2.8)
 
+IF(LINUX)
+	add_executable (resound_gui ${sourcefiles})
+ELSEIF(APPLE)
+	FILE(MAKE_DIRECTORY resound_gui.app)
+	FILE(MAKE_DIRECTORY resound_gui.app/Contents)
+	FILE(MAKE_DIRECTORY resound_gui.app/Contents/MacOS)
+	FILE(MAKE_DIRECTORY resound_gui.app/Resources)
+	add_executable (resound_gui MACOSX_BUNDLE ${sourcefiles})
+ELSE(LINUX)
+ENDIF(LINUX)
+
+#link with libs
+IF(LINUX)
+	target_link_libraries (resound_gui resound_common boost_serialization asound ${wxWidgets_LIBRARIES})
+ELSEIF(APPLE)
+	target_link_libraries (resound_gui resound_common boost_serialization wx_macu-2.8)
+ELSE(LINUX)
+ENDIF(LINUX)

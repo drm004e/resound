@@ -31,12 +31,29 @@ link_directories(
 ${Boost_LIBRARY_DIRS}
 )
 
-SET(CMAKE_CXX_FLAGS -g)
+# use dbuggin flags
+IF(LINUX)
+	SET(CMAKE_CXX_FLAGS "-g")
+ELSEIF(APPLE)
+	SET(CMAKE_CXX_FLAGS "-g")
+ELSE(LINUX)
+ENDIF(LINUX)
+
 # build the excecutable
-add_executable (resound_server
+SET(sourcefiles 
 resound_server.cpp
 dsp_manager.cpp
 audio_buffer.cpp
 )
+IF(LINUX)
+	add_executable (resound_server ${sourcefiles})
+ELSEIF(APPLE)
+	FILE(MAKE_DIRECTORY resound_server.app)
+	FILE(MAKE_DIRECTORY resound_server.app/Contents)
+	FILE(MAKE_DIRECTORY resound_server.app/Contents/MacOS)
+	FILE(MAKE_DIRECTORY resound_server.app/Resources)
+	add_executable (resound_server MACOSX_BUNDLE ${sourcefiles})
+ELSE(LINUX)
+ENDIF(LINUX)
 #link with libs
 target_link_libraries (resound_server resound_common jack boost_program_options)
