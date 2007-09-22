@@ -76,7 +76,7 @@ private:
 namespace Resound{
 /// The client side Audio Matrix Server.
 /// This class deals with the socket event handling for network communication
-class AMClient : public Resound::OSCManager, public ParameterNamespace, public AutomatedObject
+class AMClient : public ParameterNamespace, public AutomatedObject
 {
 public:
 	/// Constructor

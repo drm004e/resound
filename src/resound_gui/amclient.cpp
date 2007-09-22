@@ -61,13 +61,13 @@ BOOST_CLASS_EXPORT(Resound::AMParameter);
 
 BOOST_CLASS_EXPORT(Resound::AMClient);
 
-Resound::AMClient::AMClient() :
-Resound::OSCManager("8765") // FIXME allow this to be option in command line and dynamically altered at run time
+Resound::AMClient::AMClient()
+//Resound::OSCManager("8765") // FIXME allow this to be option in command line and dynamically altered at run time
 {
 }
 
 Resound::AMClient::AMClient(int inputs, int outputs) :
-Resound::OSCManager("8765"), // FIXME
+//Resound::OSCManager("8765"), // FIXME
 Resound::ParameterNamespace("am") // FIXME
 {
 	build_parameter_matrix(inputs,outputs); // fake matrix
