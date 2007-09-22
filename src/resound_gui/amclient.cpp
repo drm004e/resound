@@ -31,6 +31,7 @@
 #include "amclient.h" // classes header
 #include <sstream>
 
+lo_address global_host_address = 0; 
 
 // AMParameter -------------------------------------------------------------------------------------
 
@@ -46,12 +47,11 @@ void Resound::AMParameter::on_value_changed()
 {
 	// update the target value
 	float v = CLAMPF((float)get_value() * (1.0f/128.0f), 0.0f, 1.0f); // set the value of the node and clamp it
-	lo_send(m_hostAddress, m_oscAddress.c_str(), "f", v);
+	lo_send(global_host_address, m_oscAddress.c_str(), "f", v);
 	m_needsUpdate = false;
 }
 
-void Resound::AMParameter::set_osc_target(lo_address host, std::string path){
-	m_hostAddress = host;
+void Resound::AMParameter::set_osc_target(std::string path){
 	m_oscAddress = path;
 }
 
@@ -62,14 +62,15 @@ BOOST_CLASS_EXPORT(Resound::AMParameter);
 BOOST_CLASS_EXPORT(Resound::AMClient);
 
 Resound::AMClient::AMClient()
-//Resound::OSCManager("8765") // FIXME allow this to be option in command line and dynamically altered at run time
 {
+	global_host_address = lo_address_new(NULL, "5678");
 }
 
 Resound::AMClient::AMClient(int inputs, int outputs) :
-//Resound::OSCManager("8765"), // FIXME
+
 Resound::ParameterNamespace("am") // FIXME
 {
+	global_host_address = lo_address_new(NULL, "5678");
 	build_parameter_matrix(inputs,outputs); // fake matrix
 }
 Resound::AMClient::~AMClient()
@@ -84,7 +85,7 @@ void Resound::AMClient::build_parameter_matrix(int numInputs, int numOutputs)
 	m_numInputs = numInputs;
 	m_numOutputs = numOutputs;
 
-	lo_address host = lo_address_new(NULL, "5678");
+	
 
 	// fill in pvar details
 	int r,c;
@@ -95,7 +96,7 @@ void Resound::AMClient::build_parameter_matrix(int numInputs, int numOutputs)
 			std::stringstream s;
 			s << "/att/" << r << "/" << c; // generate the name
 			AMParameter* node = new AMParameter(s.str()); // make the node
-			node->set_osc_target(host, std::string("/matrix") + s.str()); // set the external osc method address
+			node->set_osc_target(std::string("/matrix") + s.str()); // set the external osc method address
 			register_parameter(s.str(), ParameterPtr(node));
 		}
 	}

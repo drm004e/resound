@@ -51,13 +51,12 @@ public:
 	void update_osc_target();
 
 	/// set the OSC target of this node
-	void set_osc_target(lo_address host, std::string path);
+	void set_osc_target(std::string path);
 
 	virtual void dummy(){};
 
 private:
 	bool m_needsUpdate; // resound_server needs update
-	lo_address m_hostAddress; ///< the host address for this server
 	std::string m_oscAddress; ///< the osc path for this node
 
 	friend class boost::serialization::access; ///< allow serialization access at low level
@@ -66,8 +65,7 @@ private:
     void serialize(Archive & ar, const unsigned int version)
     {
 		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(Parameter);
-        ar & BOOST_SERIALIZATION_NVP(m_needsUpdate);
-		//ar & BOOST_SERIALIZATION_NVP(m_hostAddress); FIXME this wont go beacuse its a liblo class
+        	ar & BOOST_SERIALIZATION_NVP(m_needsUpdate);
 		ar & BOOST_SERIALIZATION_NVP(m_oscAddress);
     }
 };
