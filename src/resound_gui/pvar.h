@@ -292,8 +292,8 @@ private:
     void serialize(Archive & ar, const unsigned int version)
     {
         ar & BOOST_SERIALIZATION_NVP(m_targetAddress);
-		ar & BOOST_SERIALIZATION_NVP(m_lastValue);
-		ar & BOOST_SERIALIZATION_NVP(m_lastScaledValue);
+		//ar & BOOST_SERIALIZATION_NVP(m_lastValue);
+		//ar & BOOST_SERIALIZATION_NVP(m_lastScaledValue);
 		ar & BOOST_SERIALIZATION_NVP(m_scalingFactor);
 		ar & BOOST_SERIALIZATION_NVP(m_targetPtr);
     }
