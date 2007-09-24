@@ -27,6 +27,8 @@
 #include "masterfader.h"
 #include "performanceview.h" // class's header file
 
+#include <sstream>
+
 // event table
 BEGIN_EVENT_TABLE(Resound::PerformanceView, wxScrolledWindow)
 EVT_COMMAND_RANGE(0,127,saEVT_FADER_CHANGED, Resound::PerformanceView::OnFaderMove)
@@ -34,7 +36,8 @@ END_EVENT_TABLE()
 
 // class constructor
 Resound::PerformanceView::PerformanceView(wxWindow* parent)
-		: wxScrolledWindow(parent, wxID_ANY, wxPoint(0,0), wxSize(320,240))
+		: wxScrolledWindow(parent, wxID_ANY, wxPoint(0,0), wxSize(320,240)),
+		  OSCManager("8000")
 {
 	// insert your code here
 
@@ -64,6 +67,11 @@ Resound::PerformanceView::PerformanceView(wxWindow* parent)
 		for(g = 0; g < 4; g++)
 		{
 			temp = new Resound::MasterFader(this,fId++, 10); // create new MasterFader
+			// register with osc
+			std::stringstream s;
+			s << "/fader/" << fId;
+			add_method(s.str(),"f",Resound::PerformanceView::lo_cb_att, (void*)temp);
+			
 			masterFaderArray.push_back(temp); // store in array
 			grp->Add(temp, wxSizerFlags(1).Align(0).Border(wxALL,1)); // add to GUI
 		}
@@ -109,6 +117,12 @@ void Resound::PerformanceView::recall_from_preset(int index){
 	for (int n = 0; n < masterFaderArray.size(); n++) {
 		masterFaderArray[n]->recall_from_preset(index);
 	}
+}
+
+int Resound::PerformanceView::lo_cb_att(const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data){
+	Resound::MasterFader* f = (Resound::MasterFader*)user_data; 
+	f->SetValue(argv[0]->f);
+    return 1;
 }
 
 

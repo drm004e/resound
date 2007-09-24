@@ -20,12 +20,12 @@
 
 #ifndef PERFORMANCEVIEW_H
 #define PERFORMANCEVIEW_H
-
+#include <resound_common/osc_manager.h>
 namespace Resound
 {
 // Main performance area sub window
 //  - contains main faders and preset selection
-class PerformanceView : public wxScrolledWindow
+class PerformanceView : public wxScrolledWindow, public OSCManager
 {
 public:
 	// class constructor
@@ -41,6 +41,9 @@ public:
 	void recall_from_preset(int index);
 private:
 	std::vector<MasterFader*> masterFaderArray; // array to store MasterFaders (VPCs)
+
+	/// callback from osc att methods
+	static int lo_cb_att(const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data);
 
 	// event handling macro
 	DECLARE_EVENT_TABLE()
