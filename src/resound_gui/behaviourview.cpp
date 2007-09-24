@@ -32,6 +32,8 @@
 
 #include "behaviourview.h" // class's header file
 #include <sstream>
+
+#include "performance.h"
 //------------------------------------------ BehaviourViewItem ----------------------------
 //events
 BEGIN_EVENT_TABLE(Resound::BehaviourViewItem, wxPanel)
@@ -94,10 +96,9 @@ EVT_BUTTON( BSID_CREATE, Resound::BehaviourView::OnCreateBehaviour)
 END_EVENT_TABLE()
 
 // class constructor
-Resound::BehaviourView::BehaviourView(wxWindow* parent, int id, BehaviourManager* manager)
+Resound::BehaviourView::BehaviourView(wxWindow* parent, int id)
 		: wxScrolledWindow(parent, id, wxPoint(0,0), wxSize(320,240))
 {
-	behaviourManager = manager;
 	// construct the sub objects and sizer
 	topSizer = new wxBoxSizer( wxVERTICAL );
 
@@ -124,6 +125,7 @@ Resound::BehaviourView::~BehaviourView()
 
 void Resound::BehaviourView::BuildPanel()
 {
+	Resound::BehaviourManager* behaviourManager = dynamic_cast<Resound::BehaviourManager*>(&RESOUND_NAMESPACE()->get_parameter_namespace(1));
 	// build of the panel
 	behaviourSizer->Remove(0); // remove old sizer
 	wxBoxSizer* sizer = new wxBoxSizer( wxVERTICAL );
@@ -139,6 +141,7 @@ void Resound::BehaviourView::BuildPanel()
 
 void Resound::BehaviourView::OnCreateBehaviour(wxCommandEvent &event)
 {
+	Resound::BehaviourManager* behaviourManager = dynamic_cast<Resound::BehaviourManager*>(&RESOUND_NAMESPACE()->get_parameter_namespace(1));
 	try {
 		behaviourManager->create_behaviour();
 	} catch(Resound::CreateBehaviourException& e) {

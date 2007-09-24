@@ -107,7 +107,7 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 	perfView = new Resound::PerformanceView(leftBook);
 	monitorView = new Resound::MonitorView(leftBook,-1);
 	monitorView->Rebuild(dynamic_cast<Resound::AMClient*>(m_audioMatrix.get()));
-	behaviourView = new Resound::BehaviourView(leftBook,-1,dynamic_cast<Resound::BehaviourManager*>(m_behaviourManager.get()));
+	behaviourView = new Resound::BehaviourView(leftBook,-1);
 	leftBook->AddPage(perfView,_T("Master"),true);
 	leftBook->AddPage(monitorView,_T("Matrix"),false);
 	leftBook->AddPage(behaviourView,_T("Behaviour"),false);
@@ -152,7 +152,7 @@ void MainFrame::OnLoad(wxCommandEvent& event)
 		Resound::PerformanceManager::get_instance().load_performance_xml((const char*)wxConvertWX2MB(dlg.GetPath()));
 		perfView->recall_from_preset(0);
 		monitorView->Rebuild(dynamic_cast<Resound::AMClient*>(&RESOUND_NAMESPACE()->get_parameter_namespace(0)));
-		//behaviourView->BuildPanel();
+		behaviourView->BuildPanel();
 	}
 }
 

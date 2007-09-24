@@ -45,14 +45,13 @@ class BehaviourView : public wxScrolledWindow
 {
 public:
 	// class constructor
-	BehaviourView(wxWindow* parent, int id, BehaviourManager* manager);
+	BehaviourView(wxWindow* parent, int id);
 	// class destructor
 	~BehaviourView();	
 	// build view
 	void BuildPanel();
 private:
 
-	BehaviourManager *behaviourManager;
 	wxSizer* behaviourSizer;
 	wxSizer* topSizer;
 

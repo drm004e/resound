@@ -109,14 +109,19 @@ private:
 	friend class BehaviourManager;
 	/// return the next global behaviour id
 	static int get_global_id(){return s_globalId++;}
-	static int s_globalId; 
+	static int s_globalId;  // FIXME may need to reset s_global id static at load time???
 
 	friend class boost::serialization::access; ///< allow serialization access at low level
 	/// serialization definition
 	template<class Archive>
    	 void serialize(Archive & ar, const unsigned int version)
-  	  {
-      	  ar & BOOST_SERIALIZATION_NVP(m_name); //
+  	 {
+      	  	ar & BOOST_SERIALIZATION_NVP(m_name);
+		ar & BOOST_SERIALIZATION_NVP(m_collective);
+		ar & BOOST_SERIALIZATION_NVP(m_id);
+		ar & BOOST_SERIALIZATION_NVP(m_classId);
+		ar & BOOST_SERIALIZATION_NVP(m_parameters);
+		// FIXME may need to reset s_global id static at load time???
    	 }
 };
 

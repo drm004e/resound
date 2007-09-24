@@ -114,6 +114,7 @@ void Resound::MasterFader::recall_from_preset(int index){
 	MasterFaderPreset& p = PerformanceManager::get_instance().get_performance()->get_preset(index).get_master_fader_preset(m_id);
 	preset = p;
 	collectiveWidget->SetCollective(preset.get_collective());
+	preset.set_value(p.get_value());
 	SetValue(p.get_value());
 }
 
