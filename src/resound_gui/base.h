@@ -20,13 +20,21 @@
 #define __BASE_H
 
 #include "automation.h"
-
+#include<sys/time.h>
 class AutomationDriver : public wxTimer{
+	double prevT;
 public:
+	AutomationDriver(): prevT(gettime()){}
 	void Notify(){
 		//MManager::get_instance().tick();
-		Resound::AutomationManager::get_instance().tick(0.005); // FIXME pass actual time
-		
+		double t = gettime();
+		Resound::AutomationManager::get_instance().tick(t-prevT); 
+		prevT = t;
+	}
+	double gettime(){		
+		timeval tv;
+		gettimeofday(&tv, 0 );
+		return double(tv.tv_sec) + double(tv.tv_usec) / 1000000.;
 	}
 };
 
