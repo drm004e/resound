@@ -36,7 +36,7 @@ END_EVENT_TABLE()
 Resound::MonitorFrame::MonitorFrame(wxWindow* parent, int id, const wxPoint &pos, const wxSize &size)
 		: wxFrame(parent, id, _("Monitor"), pos, size)
 {
-	monitorView = new Resound::MonitorView(this,-1,0); ///FIXME passing a null pointer her to make it compile
+	monitorView = new Resound::MonitorView(this,-1);
 	// create top sizer and fill with stuff
 	wxBoxSizer *topSizer = new wxBoxSizer( wxVERTICAL );
 	topSizer->Add(monitorView,wxSizerFlags(0).Center().Border(wxALL,0));

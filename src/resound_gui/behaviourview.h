@@ -47,7 +47,9 @@ public:
 	// class constructor
 	BehaviourView(wxWindow* parent, int id, BehaviourManager* manager);
 	// class destructor
-	~BehaviourView();
+	~BehaviourView();	
+	// build view
+	void BuildPanel();
 private:
 
 	BehaviourManager *behaviourManager;
@@ -56,8 +58,7 @@ private:
 
 
 
-	// build view
-	void BuildPanel();
+
 	// event handling macro
 	void OnCreateBehaviour(wxCommandEvent &event);
 	DECLARE_EVENT_TABLE()

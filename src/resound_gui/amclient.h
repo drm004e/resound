@@ -117,13 +117,14 @@ private:
 	friend class boost::serialization::access; ///< allow serialization access at low level
 	/// serialization definition
 	template<class Archive>
-    void serialize(Archive & ar, const unsigned int version)
-    {
-	ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(ParameterNamespace);
-        ar & BOOST_SERIALIZATION_NVP(m_numInputs);
-    	ar & BOOST_SERIALIZATION_NVP(m_numOutputs);
+    	void serialize(Archive & ar, const unsigned int version)
+    	{
+		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(ParameterNamespace);
+		ar & BOOST_SERIALIZATION_NVP(m_numInputs);
+		ar & BOOST_SERIALIZATION_NVP(m_numOutputs);
 	}
 };
+
 
 
 

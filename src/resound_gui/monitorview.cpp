@@ -37,13 +37,13 @@ BEGIN_EVENT_TABLE(Resound::MonitorView, wxScrolledWindow)
 END_EVENT_TABLE()
 
 // class constructor
-Resound::MonitorView::MonitorView(wxWindow* parent, int id, AMClient* _amClient)
+Resound::MonitorView::MonitorView(wxWindow* parent, int id)
 		: wxScrolledWindow(parent, id, wxPoint(0,0), wxSize(320,240))/* TODO (dave#1#): not sure this should be a scrolled window */
 {
-	amClient = _amClient;
+
 	scroll = 0;
 	SetWindowStyle(wxCLIP_CHILDREN);
-	Rebuild();
+
 }
 
 // class destructor
@@ -53,7 +53,7 @@ Resound::MonitorView::~MonitorView()
 
 }
 
-void Resound::MonitorView::Rebuild()
+void Resound::MonitorView::Rebuild(AMClient* amClient)
 {
 	wxSizer* oldSizer = GetSizer();
 	if(scroll) {

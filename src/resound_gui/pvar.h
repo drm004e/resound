@@ -95,7 +95,7 @@ private:
     void serialize(Archive & ar, const unsigned int version)
     {
 		ar & BOOST_SERIALIZATION_NVP(m_name);
-        ar & BOOST_SERIALIZATION_NVP(m_value);
+        	//ar & BOOST_SERIALIZATION_NVP(m_value); // this doesnt want saving
 		ar & BOOST_SERIALIZATION_NVP(m_lockedValue);
 		ar & BOOST_SERIALIZATION_NVP(m_isLocked);
     }

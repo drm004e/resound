@@ -38,7 +38,8 @@ ParameterLockPreset::~ParameterLockPreset()
 
 //-------------------- MasterFaderPreset ------------------------------
 
-MasterFaderPreset::MasterFaderPreset()
+MasterFaderPreset::MasterFaderPreset() :
+m_value(0)
 {}
 MasterFaderPreset::~MasterFaderPreset()
 {}

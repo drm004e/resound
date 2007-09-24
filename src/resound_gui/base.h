@@ -51,9 +51,6 @@ private:
 	Resound::MonitorView* monitorView; // VIEWER - NOTHING TO SAVE/LOAD
 	Resound::BehaviourView* behaviourView; // VIEWER - NOTHING TO SAVE/LOAD
 
-	Resound::AMClient *m_audioMatrix; // NETWORK SUB-SYSTEM - NOTHING TO SAVE/LOAD
-	Resound::BehaviourManager *m_behaviourManager; // REQUIRES SAVING
-
 	DECLARE_EVENT_TABLE()
 };
 

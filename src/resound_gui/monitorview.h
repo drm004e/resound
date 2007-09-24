@@ -31,11 +31,11 @@ class MonitorView : public wxScrolledWindow
 {
 public:
 	// class constructor
-	MonitorView(wxWindow* parent, int id, AMClient* _amClient);
+	MonitorView(wxWindow* parent, int id);
 	// class destructor
 	~MonitorView();
 
-	void Rebuild();
+	void Rebuild(AMClient* amClient);
 
 private:
 	wxScrolledWindow* scroll;

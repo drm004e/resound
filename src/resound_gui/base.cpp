@@ -86,15 +86,15 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 	//wxMessageBox(_T("ok"));
 
 	// make the network client
-	m_audioMatrix = new Resound::AMClient(8,8);
+	Resound::ParameterNamespacePtr m_audioMatrix = Resound::ParameterNamespacePtr(new Resound::AMClient(8,8));
 
 	// make the behaviour sub system
-	m_behaviourManager = new Resound::BehaviourManager();
+	Resound::ParameterNamespacePtr m_behaviourManager = Resound::ParameterNamespacePtr(new Resound::BehaviourManager());
 
 	// register sub systems
 
-	RESOUND_NAMESPACE()->register_parameter_namespace(Resound::ParameterNamespacePtr(m_audioMatrix));
-	RESOUND_NAMESPACE()->register_parameter_namespace(Resound::ParameterNamespacePtr(m_behaviourManager));
+	RESOUND_NAMESPACE()->register_parameter_namespace(m_audioMatrix);
+	RESOUND_NAMESPACE()->register_parameter_namespace(m_behaviourManager);
 
 	// setup midi system
 
@@ -102,11 +102,12 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 
 	// add any behaviours
 	// eventually load plugins!
-	register_base_behaviours(m_behaviourManager);
+	register_base_behaviours(dynamic_cast<Resound::BehaviourManager*>(m_behaviourManager.get()));
 
 	perfView = new Resound::PerformanceView(leftBook);
-	monitorView = new Resound::MonitorView(leftBook,-1,m_audioMatrix);
-	behaviourView = new Resound::BehaviourView(leftBook,-1,m_behaviourManager);
+	monitorView = new Resound::MonitorView(leftBook,-1);
+	monitorView->Rebuild(dynamic_cast<Resound::AMClient*>(m_audioMatrix.get()));
+	behaviourView = new Resound::BehaviourView(leftBook,-1,dynamic_cast<Resound::BehaviourManager*>(m_behaviourManager.get()));
 	leftBook->AddPage(perfView,_T("Master"),true);
 	leftBook->AddPage(monitorView,_T("Matrix"),false);
 	leftBook->AddPage(behaviourView,_T("Behaviour"),false);
@@ -150,6 +151,8 @@ void MainFrame::OnLoad(wxCommandEvent& event)
 		// create file output stream from dialog box path
 		Resound::PerformanceManager::get_instance().load_performance_xml((const char*)wxConvertWX2MB(dlg.GetPath()));
 		perfView->recall_from_preset(0);
+		monitorView->Rebuild(dynamic_cast<Resound::AMClient*>(&RESOUND_NAMESPACE()->get_parameter_namespace(0)));
+		//behaviourView->BuildPanel();
 	}
 }
 
@@ -180,5 +183,5 @@ MA 02111-1307 USA\n\
 void MainFrame::RebuildGUI()
 {
 	// force a gui rebuild
-	monitorView->Rebuild();
+	//monitorView->Rebuild();
 }
