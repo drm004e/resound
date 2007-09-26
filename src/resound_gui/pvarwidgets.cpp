@@ -545,7 +545,6 @@ void Resound::CollectiveBuilder::OnClearSelection(wxCommandEvent &event)
 
 void Resound::CollectiveBuilder::OnAddressSelected(wxCommandEvent &event)
 {
-	std::cout << "OnAddressSelected" << std::endl;
 	// get the originating object
 	Resound::AddressSelectWidget* widget = (Resound::AddressSelectWidget*)event.GetEventObject();
 	// add selected link to temporary ParameterLink
