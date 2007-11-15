@@ -36,13 +36,14 @@ public:
 	
 	int get_inputs(){return inputs;}
 	int get_outputs(){return outputs;}
-	std::string get_port(){return port;}
+	std::string get_client_port(){return clientPort;}
+	std::string get_server_port(){return serverPort;}
 private:
 	// private app data
 	int inputs;
 	int outputs;
-	std::string port;
-
+	std::string clientPort;
+	std::string serverPort;
 
 };
 

@@ -37,7 +37,7 @@ END_EVENT_TABLE()
 // class constructor
 Resound::PerformanceView::PerformanceView(wxWindow* parent)
 		: wxScrolledWindow(parent, wxID_ANY, wxPoint(0,0), wxSize(320,240)),
-		  OSCManager(wxGetApp().get_port().c_str())
+		  OSCManager(wxGetApp().get_client_port().c_str())
 {
 	// insert your code here
 

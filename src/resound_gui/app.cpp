@@ -55,9 +55,10 @@ bool ResoundClientApp::parse(int argc, char** argv){
 	po::options_description desc("Allowed options");
 	desc.add_options()
 		("help", "produce help message")
-		("inputs", po::value<int>()->default_value(8), "set number of audio inputs")
+		("inputs", po::value<int>()->default_value(2), "set number of audio inputs")
 		("outputs", po::value<int>()->default_value(8), "set number of audio outputs")
-		("port", po::value<std::string>()->default_value("8000"), "set number OSC server port")
+		("clientport", po::value<std::string>()->default_value("8000"), "set the client gui fader osc port")
+		("serverport", po::value<std::string>()->default_value("4567"), "set the server osc port")
 	;
 	
 	po::variables_map vm;
@@ -78,10 +79,12 @@ bool ResoundClientApp::parse(int argc, char** argv){
 	if(inputs < 0 || inputs > 128) { std::cout << "Inputs should be in the range 1-128\n"; return 1;}
 	if(outputs < 0 || outputs > 128) { std::cout << "Outputs should be in the range 1-128\n"; return 1;}
 
-	if (vm.count("port")) {
-		port = vm["port"].as<std::string>();
+	if (vm.count("clientport")) {
+		clientPort = vm["clientport"].as<std::string>();
 	}
-
+	if (vm.count("serverport")) {
+		serverPort = vm["serverport"].as<std::string>();
+	}
 	return 0;
 }
 
@@ -94,7 +97,7 @@ bool ResoundClientApp::OnInit()
 		strcpy(nargv[n],wxConvertWX2MB(argv[n]));
 	}	
 	if(parse(argc,nargv)) return false;
-	std::cout << "Starting client: Inputs " << inputs << " Outputs " << outputs << " OSC Port " << port << std::endl;
+	std::cout << "Starting client: Inputs " << inputs << " Outputs " << outputs << " Client OSC Port " << clientPort << " Server OSC Port " << serverPort<< std::endl;
 	wxInitAllImageHandlers();
 	try {
 		MainFrame *win = new MainFrame(_T("Resound Client"), wxPoint (100, 100),wxSize(0, 0));
