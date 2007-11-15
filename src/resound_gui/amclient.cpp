@@ -63,14 +63,14 @@ BOOST_CLASS_EXPORT(Resound::AMClient);
 
 Resound::AMClient::AMClient()
 {
-	global_host_address = lo_address_new(NULL, wxGetApp().get_server_port().c_str());
+	global_host_address = lo_address_new(wxGetApp().get_server_ip().c_str(), wxGetApp().get_server_port().c_str());
 }
 
 Resound::AMClient::AMClient(int inputs, int outputs) :
 
 Resound::ParameterNamespace("am") // FIXME
 {
-	global_host_address = lo_address_new(NULL, wxGetApp().get_server_port().c_str());
+	global_host_address = lo_address_new(wxGetApp().get_server_ip().c_str(), wxGetApp().get_server_port().c_str());
 	build_parameter_matrix(inputs,outputs); // fake matrix
 }
 Resound::AMClient::~AMClient()

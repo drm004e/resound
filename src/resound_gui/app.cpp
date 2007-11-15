@@ -58,6 +58,7 @@ bool ResoundClientApp::parse(int argc, char** argv){
 		("inputs", po::value<int>()->default_value(2), "set number of audio inputs")
 		("outputs", po::value<int>()->default_value(8), "set number of audio outputs")
 		("clientport", po::value<std::string>()->default_value("8000"), "set the client gui fader osc port")
+		("serverip", po::value<std::string>()->default_value("127.0.0.1"), "set the server osc ip address")
 		("serverport", po::value<std::string>()->default_value("4567"), "set the server osc port")
 	;
 	
@@ -85,6 +86,9 @@ bool ResoundClientApp::parse(int argc, char** argv){
 	if (vm.count("serverport")) {
 		serverPort = vm["serverport"].as<std::string>();
 	}
+	if (vm.count("serverip")) {
+		serverIp = vm["serverip"].as<std::string>();
+	}
 	return 0;
 }
 
@@ -97,7 +101,7 @@ bool ResoundClientApp::OnInit()
 		strcpy(nargv[n],wxConvertWX2MB(argv[n]));
 	}	
 	if(parse(argc,nargv)) return false;
-	std::cout << "Starting client: Inputs " << inputs << " Outputs " << outputs << " Client OSC Port " << clientPort << " Server OSC Port " << serverPort<< std::endl;
+	std::cout << "Starting client:\nInputs " << inputs << "\nOutputs " << outputs << "\nClient OSC Port " << clientPort << "\nServer OSC IP " << serverIp << "\nServer OSC Port " << serverPort<< std::endl;
 	wxInitAllImageHandlers();
 	try {
 		MainFrame *win = new MainFrame(_T("Resound Client"), wxPoint (100, 100),wxSize(0, 0));
