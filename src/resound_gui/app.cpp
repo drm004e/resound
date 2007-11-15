@@ -43,10 +43,58 @@
 
 #include <wx/image.h>
 
+#include <boost/program_options.hpp>
 IMPLEMENT_APP(ResoundClientApp)
+
+
+
+/// command line options
+bool ResoundClientApp::parse(int argc, char** argv){
+	namespace po = boost::program_options;
+	// Declare the supported options.
+	po::options_description desc("Allowed options");
+	desc.add_options()
+		("help", "produce help message")
+		("inputs", po::value<int>()->default_value(8), "set number of audio inputs")
+		("outputs", po::value<int>()->default_value(8), "set number of audio outputs")
+		("port", po::value<std::string>()->default_value("8000"), "set number OSC server port")
+	;
+	
+	po::variables_map vm;
+	po::store(po::parse_command_line(argc, argv, desc), vm);
+	po::notify(vm);    
+	
+	if (vm.count("help")) {
+		std::cout << desc << "\n";
+		return 1;
+	}
+
+	if (vm.count("inputs")) {
+		inputs = vm["inputs"].as<int>();
+	}
+	if (vm.count("outputs")) {
+		outputs = vm["outputs"].as<int>();
+	}
+	if(inputs < 0 || inputs > 128) { std::cout << "Inputs should be in the range 1-128\n"; return 1;}
+	if(outputs < 0 || outputs > 128) { std::cout << "Outputs should be in the range 1-128\n"; return 1;}
+
+	if (vm.count("port")) {
+		port = vm["port"].as<std::string>();
+	}
+
+	return 0;
+}
 
 bool ResoundClientApp::OnInit()
 {
+	char** nargv = new char*[argc];
+	int nargc = argc;
+	for(int n=0; n < nargc; n++){
+		nargv[n] = new char[strlen(wxConvertWX2MB(argv[n]))];
+		strcpy(nargv[n],wxConvertWX2MB(argv[n]));
+	}	
+	if(parse(argc,nargv)) return false;
+	std::cout << "Starting client: Inputs " << inputs << " Outputs " << outputs << " OSC Port " << port << std::endl;
 	wxInitAllImageHandlers();
 	try {
 		MainFrame *win = new MainFrame(_T("Resound Client"), wxPoint (100, 100),wxSize(0, 0));

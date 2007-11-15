@@ -117,8 +117,8 @@ ENDIF(UNIX)
 
 #link with libs
 IF(UNIX)
-	target_link_libraries (resound_gui resound_common boost_serialization asound ${wxWidgets_LIBRARIES})
+	target_link_libraries (resound_gui boost_program_options resound_common boost_serialization asound ${wxWidgets_LIBRARIES})
 ELSEIF(APPLE)
-	target_link_libraries (resound_gui resound_common boost_serialization wx_macu-2.8)
+	target_link_libraries (resound_gui boost_program_options resound_common boost_serialization wx_macu-2.8)
 ELSE(UNIX)
 ENDIF(UNIX)

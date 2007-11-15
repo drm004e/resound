@@ -18,8 +18,9 @@
  *   MA 02111-1307 USA
  *   
 */
-#include "pch.h" // precompiler header
 
+#include "pch.h" // precompiler header
+#include "app.h"
 #include "automation.h"
 #include "pvar.h"
 #include "behaviour.h"
@@ -72,8 +73,8 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 
 	SetMenuBar(MenuBar);
 
-	CreateStatusBar(2);
-	SetStatusText(_T("Resound - The State of the Art in Live Sound Diffusion"));
+	//CreateStatusBar(2);
+	//SetStatusText(_T("Resound"));
 
 
 	// create the notebook pane left side
@@ -86,7 +87,7 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 	//wxMessageBox(_T("ok"));
 
 	// make the network client
-	Resound::ParameterNamespacePtr m_audioMatrix = Resound::ParameterNamespacePtr(new Resound::AMClient(8,8));
+	Resound::ParameterNamespacePtr m_audioMatrix = Resound::ParameterNamespacePtr(new Resound::AMClient(wxGetApp().get_inputs(),wxGetApp().get_outputs()));
 
 	// make the behaviour sub system
 	Resound::ParameterNamespacePtr m_behaviourManager = Resound::ParameterNamespacePtr(new Resound::BehaviourManager());
