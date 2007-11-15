@@ -89,7 +89,8 @@ void Resound::MasterFader::OnFaderChanged(wxCommandEvent &event)
 
 void Resound::MasterFader::SetValue(int value)
 {
-	fader1->SetValue(value);
+	fader1->SetValueNoEvent(value);
+	preset.set_value(value);
 }
 
 
@@ -115,6 +116,6 @@ void Resound::MasterFader::recall_from_preset(int index){
 	preset = p;
 	collectiveWidget->SetCollective(preset.get_collective());
 	preset.set_value(p.get_value());
-	SetValue(p.get_value());
+	fader1->SetValueNoEvent(p.get_value());
 }
 

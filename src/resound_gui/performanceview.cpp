@@ -55,6 +55,11 @@ Resound::PerformanceView::PerformanceView(wxWindow* parent)
 		for(g = 0; g < 4; g++)
 		{
 			temp = new Resound::MasterFader(this,fId++, 7); // create new MasterFader
+			// register with OSC /// NOTE this is in two blocks see below
+			std::stringstream s;
+			s << "/fader/" << fId;
+			add_method(s.str(),"f",Resound::PerformanceView::lo_cb_att, (void*)temp);
+			/// end of block OSC
 			masterFaderArray.push_back(temp); // store in array
 			grp->Add(temp, wxSizerFlags(1).Align(0).Border(wxALL,1)); // add to GUI
 		}
@@ -67,11 +72,11 @@ Resound::PerformanceView::PerformanceView(wxWindow* parent)
 		for(g = 0; g < 4; g++)
 		{
 			temp = new Resound::MasterFader(this,fId++, 10); // create new MasterFader
-			// register with osc
+			// register with OSC /// NOTE this is in two blocks see above
 			std::stringstream s;
 			s << "/fader/" << fId;
 			add_method(s.str(),"f",Resound::PerformanceView::lo_cb_att, (void*)temp);
-			
+			///// end of block OSC
 			masterFaderArray.push_back(temp); // store in array
 			grp->Add(temp, wxSizerFlags(1).Align(0).Border(wxALL,1)); // add to GUI
 		}
@@ -121,7 +126,9 @@ void Resound::PerformanceView::recall_from_preset(int index){
 
 int Resound::PerformanceView::lo_cb_att(const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data){
 	Resound::MasterFader* f = (Resound::MasterFader*)user_data; 
-	f->SetValue(argv[0]->f);
+	if(f && argv[0]){
+		f->SetValue(int(argv[0]->f));
+	}
     return 1;
 }
 

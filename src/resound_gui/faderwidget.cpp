@@ -134,6 +134,14 @@ void Resound::FaderWidget::SetValue(int _val)
 	}
 };
 
+void Resound::FaderWidget::SetValueNoEvent(int _val)
+{
+	if(val != _val) {
+		val = _val;
+		// refresh screen
+		Refresh(false);
+	}
+}
 int Resound::FaderWidget::GetValue()
 {
 	return val;

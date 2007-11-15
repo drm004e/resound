@@ -31,7 +31,9 @@ Resound::OSCManager::OSCManager(const char* port){
 
 	// add the generic handler
 	std::cout << "Adding OSC methods... \n";
-    lo_server_thread_add_method(m_loServerThread, NULL, NULL, lo_cb_generic, this);
+#ifdef __DEBUG_OSC__
+        lo_server_thread_add_method(m_loServerThread, NULL, NULL, lo_cb_generic, this); /// GENERIC HANDLER METHOD
+#endif
 	lo_server_thread_add_method(m_loServerThread, "/syn", NULL, lo_cb_syn, this);
 	lo_server_thread_add_method(m_loServerThread, "/ack", NULL, lo_cb_ack, this);
 	// start
@@ -53,17 +55,15 @@ void Resound::OSCManager::lo_cb_error(int num, const char *msg, const char *path
     std::fflush(stdout);
 }
 int Resound::OSCManager::lo_cb_generic(const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data){
-    int i;
-	std::cout<< "OSC recvfrom " << lo_address_get_url(lo_message_get_source(data))
-			 << " to " << path << " Args(";
 
-    for (i=0; i<argc; i++) {
+std::cout<< "OSC recvfrom " << lo_address_get_url(lo_message_get_source(data)) << " to " << path << " Args(";
+
+    for (int i=0; i<argc; i++) {
 	std::cout << "[";
 	lo_arg_pp((lo_type)types[i], argv[i]);
 	std::cout << "] ";
     }
     std::cout << ")\n";
-
     return 1;
 }
 int Resound::OSCManager::lo_cb_syn(const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data){

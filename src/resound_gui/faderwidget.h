@@ -38,6 +38,7 @@ public:
 
 
 	void SetValue(int _val);
+	void SetValueNoEvent(int _val); ///< set the value without causing an event
 	int GetValue();
 	void SetRange(int _min, int _max);
 
