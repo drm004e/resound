@@ -25,6 +25,7 @@
 #include <iostream>
 #include <sstream>
 #include <resound_common/exception.h>
+#include <resound_common/verbose.h>
 // ------------------------- MInputDeviceALSA
 MInputDeviceALSA::MInputDeviceALSA(int deviceId) :
 m_seq_handle(0),
@@ -32,7 +33,7 @@ m_decoder(0)
 {	
 	std::stringstream s;
 	s << "Port_" <<  deviceId;
-	std::cout << "Creating ALSA Midi input device " << s.str() << std::endl;
+	VERBOSE(std::cout << "Creating ALSA Midi input device " << s.str() << std::endl;)
 	m_seq_handle = MManagerALSA::open_seq(s.str());
 	if(!m_seq_handle) throw Resound::Exception();
 	m_npfd = snd_seq_poll_descriptors_count(m_seq_handle, POLLIN);
@@ -53,7 +54,7 @@ void MInputDeviceALSA::tick(){
 			//OnMidiMessage(buf[0], buf[1], buf[2], 0);
 			switch (ev->type) {
       				case SND_SEQ_EVENT_CONTROLLER: 
-        				std::cout << "MIDI Control" << int(ev->data.control.channel) << " " << ev->data.control.param << " " << ev->data.control.value << std::endl;
+        				VERBOSE(std::cout << "MIDI Control: " << int(ev->data.control.channel) << " " << ev->data.control.param << " " << ev->data.control.value << std::endl;)
 					OnMidiMessage(MakeStatusByte(MIDI_CONTROL_CHANGE, ev->data.control.channel), ev->data.control.param, ev->data.control.value, 0);
         			break;
 			}
@@ -70,7 +71,7 @@ seq_handle(0)
 {
 	std::stringstream s;
 	s << "Port_" << deviceId;
-	std::cout << "Creating ALSA Midi output device " << s.str() << "...\n";
+	VERBOSE(std::cout << "Creating ALSA Midi output device " << s.str() << "...\n";)
 	seq_handle = MManagerALSA::open_seq(s.str());
 	if(!seq_handle) throw Resound::Exception();
 }
