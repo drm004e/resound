@@ -411,7 +411,7 @@ Resound::CollectiveLinkWidget::CollectiveLinkWidget(wxWindow* parent, int id, wx
 
 	wxBoxSizer* topSizer = new wxBoxSizer(wxVERTICAL);
 	m_name = new wxStaticText (this, -1, linkName);
-	m_scale = new wxStaticText (this, -1, _("1.0"));
+	m_scale = new wxStaticText (this, -1, wxString::Format(_("%f"), m_parameterLink->get_scaling_factor()));
 	topSizer->Add(m_name, wxSizerFlags(0).Border(wxALL,3));
 	topSizer->Add(m_scale, wxSizerFlags(0).Border(wxALL,3));
 	SetSizer(topSizer);
@@ -426,10 +426,12 @@ void Resound::CollectiveLinkWidget::OnLeftMouseUp(wxMouseEvent& event)
 {	
 	if(m_parameterLink){
 		wxString s = wxGetTextFromUser( _("Set scaling factor"), _("Scaling"),wxString::Format(_("%f"), m_parameterLink->get_scaling_factor()),this);
-		float f = atof(wxConvertWX2MB(s));
-		if(f >= -10.0f && f <= 10.0f){
-			 m_scale->SetLabel(s);
-			 m_parameterLink->set_scaling_factor(f);
+		if(s.Len() > 0){
+			float f = atof(wxConvertWX2MB(s));
+			if(f >= -10.0f && f <= 10.0f){
+				m_scale->SetLabel(s);
+				m_parameterLink->set_scaling_factor(f);
+			}
 		}
 	}
 }
