@@ -20,9 +20,31 @@
 
 #ifndef BEHAVIOURVIEW_H
 #define BEHAVIOURVIEW_H
-
+#include "behaviour.h"
 namespace Resound
 {
+
+// Behaviour selection panel 
+enum BSID
+{
+    BSID_CREATE = 1,
+    BSID_EDITOR,
+    BSID_RENAME,
+    BSID_REMOVE
+};
+class BehaviourSelectPanel : public PVSSelectPanel
+{
+public:
+	BehaviourSelectPanel(wxWindow* parent, ParameterNamespace* _subSystem);
+	void BuildPanel();
+private:
+	wxBoxSizer *topSizer;
+	wxBoxSizer *behaviourSizer;
+	// events
+	void OnCreateBehaviour(wxCommandEvent &event);
+	DECLARE_EVENT_TABLE()
+};
+
 // item class used in behaviour view
 class BehaviourViewItem : public wxPanel
 {
@@ -36,7 +58,7 @@ private:
 	CollectiveWidget* collectiveWidget; // a collective widget for this behaviour view
 	BehaviourPtr behaviour;
 	wxStaticText* label;
-	void OnRename(wxCommandEvent &event);
+	void OnRemove(wxCommandEvent &event);
 	DECLARE_EVENT_TABLE()
 };
 

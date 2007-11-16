@@ -231,6 +231,9 @@ public:
 
 	/// register a given parameter at the global osc/url path specified
 	void register_parameter(std::string address, ParameterPtr param);
+
+	/// remove a given parameter at the global osc/url path specified
+	void remove_parameter(std::string address);
 private:
 	ParameterNamespaceList m_parameterNamespaceList; ///< the namespace list
 	ParameterAddressMap m_parameterAddressMap; ///< the global address space
@@ -280,7 +283,12 @@ public:
 	/// return a pointer to the targeted parameter
 	ParameterPtr get_parameter(); // get the target pvar
 
+	/// cause the link to reacquire a new smartptr to the original address, if the address is now null (removed) null ptr and handle parameter setting
+	void reacquire();
+	/// scan all parameter links in system
+	static void reacquire_all();
 private:
+	static std::list<ParameterLink*> s_links; ///< static containing all links created 
 	ParameterAddress m_targetAddress; /// the global address to the parameter
 	int m_lastValue; ///< the last value set
 	int m_lastScaledValue; ///< the last value sent to the target Parameter

@@ -34,10 +34,73 @@
 #include <sstream>
 
 #include "performance.h"
+
+// ------------------------------------ Behaviour Select Panel -----------------------
+BEGIN_EVENT_TABLE(Resound::BehaviourSelectPanel, PVSSelectPanel)
+EVT_BUTTON( BSID_CREATE, Resound::BehaviourSelectPanel::OnCreateBehaviour)
+END_EVENT_TABLE()
+
+Resound::BehaviourSelectPanel::BehaviourSelectPanel(wxWindow* parent, ParameterNamespace* _subSystem)
+		: PVSSelectPanel(parent,_subSystem)
+{
+	// construct the sub objects and sizer
+	topSizer = new wxBoxSizer( wxVERTICAL );
+
+	topSizer->Add(new wxStaticText(this,-1,_T("Behaviour panel")));
+	//topSizer->Add(new wxButton(this,BSID_CREATE,_T("Create Behaviour")));
+
+
+	// build the dynamic section of the panel
+	behaviourSizer = new wxBoxSizer( wxVERTICAL );
+	topSizer->Add(behaviourSizer);
+
+	// causes rebuild of the panel
+	BuildPanel();
+
+	// layout
+	SetSizer(topSizer);
+	topSizer->SetSizeHints(this);   // set size hints to honour minimum size
+	topSizer->Layout();
+}
+
+void Resound::BehaviourSelectPanel::BuildPanel()
+{
+	// cast sub system to known type
+	BehaviourManager* behaviourManager = (BehaviourManager*) subSystem;
+	behaviourSizer->Remove(0); // remove old sizer
+	wxBoxSizer* sizer = new wxBoxSizer( wxVERTICAL );
+	behaviourSizer->Add(sizer);
+
+	for(BehaviourMap::iterator i = behaviourManager->get_behaviour_map().begin(); i !=  behaviourManager->get_behaviour_map().end(); i++) {
+		int id = (*i).first;
+		BehaviourPtr b = (*i).second;
+		wxGridSizer* gridSizer = new wxGridSizer(1,0,1,1);
+		
+		for(int n = 0; n < b->get_num_parameters() ; n++) {
+			std::stringstream s;
+			s << "/" << behaviourManager->get_name() << "/" << b->get_name() << "/" << b->get_parameter(n)->get_name(); // generate the name
+			gridSizer->Add(new Resound::AddressSelectWidget(this,-1,ParameterAddress(s.str()))); 
+		}
+		sizer->Add(new wxStaticText(this,-1,wxConvertMB2WX(b->get_name().c_str()))); 
+		sizer->Add(gridSizer);
+	}
+
+	topSizer->SetSizeHints(this);   // set size hints to honour minimum size
+	topSizer->Layout();
+
+}
+void Resound::BehaviourSelectPanel::OnCreateBehaviour(wxCommandEvent &event)
+{
+	// cast sub system to known type
+	BehaviourManager* behaviourManager = (BehaviourManager*) subSystem;
+	behaviourManager->create_behaviour();
+	BuildPanel();
+}
+
 //------------------------------------------ BehaviourViewItem ----------------------------
 //events
 BEGIN_EVENT_TABLE(Resound::BehaviourViewItem, wxPanel)
-EVT_BUTTON(BSID_RENAME, Resound::BehaviourViewItem::OnRename)
+EVT_BUTTON(BSID_REMOVE, Resound::BehaviourViewItem::OnRemove)
 END_EVENT_TABLE()
 
 // class constructor
@@ -57,8 +120,7 @@ Resound::BehaviourViewItem::BehaviourViewItem(wxWindow* parent, int id, Behaviou
 
 	wxSizer* sizer = new wxBoxSizer( wxHORIZONTAL );
 
-	//sizer->Add(new wxButton(this,BSID_EDITOR,_("Editor")));
-	//sizer->Add(new wxButton(this,BSID_RENAME,_("Rename")));
+	sizer->Add(new wxButton(this,BSID_REMOVE,_("Remove")));
 	collectiveWidget = new Resound::CollectiveWidget(this,-1,_T("Assign"), &behaviour->get_collective(), true);
 	sizer->Add(collectiveWidget);
 
@@ -83,11 +145,13 @@ Resound::BehaviourViewItem::~BehaviourViewItem()
 {
 	// insert your code here
 }
-void Resound::BehaviourViewItem::OnRename(wxCommandEvent &event)
+void Resound::BehaviourViewItem::OnRemove(wxCommandEvent &event)
 {
-	wxString nm(wxConvertMB2WX(behaviour->get_name().c_str()));
-	behaviour->set_name((const char*)wxConvertWX2MB(wxGetTextFromUser(_("Enter a new name for this behaviour"),_("Name Behaviour"),nm))); // FIXME string conversion FIXED
-	label->SetLabel(nm); // FIXME string conversion FIXED
+	Resound::BehaviourManager* behaviourManager = dynamic_cast<Resound::BehaviourManager*>(&RESOUND_NAMESPACE()->get_parameter_namespace(1));
+	behaviourManager->remove_behaviour(behaviour->get_id());
+	behaviour.reset(); // dereference the smart ptr
+	Resound::BehaviourView* p = dynamic_cast<Resound::BehaviourView*>(GetParent());
+	p->BuildPanel();	
 }
 //----------------------------------------- BehaviourView ---------------------------------
 //events
@@ -114,6 +178,9 @@ Resound::BehaviourView::BehaviourView(wxWindow* parent, int id)
 	SetSizer(topSizer);
 	topSizer->SetSizeHints(this);   // set size hints to honour minimum size
 	topSizer->Layout();
+
+	
+
 }
 
 
@@ -137,6 +204,7 @@ void Resound::BehaviourView::BuildPanel()
 	}
 	topSizer->SetSizeHints(this);   // set size hints to honour minimum size
 	topSizer->Layout();
+
 }
 
 void Resound::BehaviourView::OnCreateBehaviour(wxCommandEvent &event)

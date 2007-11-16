@@ -110,6 +110,7 @@ void Resound::ParameterNamespaceManager::register_parameter_namespace(ParameterN
 	//subSystem->SetId(subSystemList.size()); // sets the global id of this sub system // FIXME sub system ids no longer exist
 	m_parameterNamespaceList.push_back(parameterNamespace);
 }
+
 Resound::ParameterPtr Resound::ParameterNamespaceManager::get_parameter(const ParameterAddress &addr)
 {
 	
@@ -133,12 +134,21 @@ void Resound::ParameterNamespaceManager::register_parameter(std::string address,
 		std::cout << "Registered Parameter: " << address << std::endl;
 	}
 }
+void Resound::ParameterNamespaceManager::remove_parameter(std::string address){
+	ParameterAddressMap::iterator it = m_parameterAddressMap.find(address);
+	assert(it != m_parameterAddressMap.end());
+	m_parameterAddressMap.erase(it);
+	std::cout << "Remove Parameter: " << address << std::endl;
+	ParameterLink::reacquire_all();
+}
 // -------------------------------- Parameter link --------------------------------
 Resound::ParameterLink::ParameterLink() :
 m_lastValue(0),
 m_lastScaledValue(0),
 m_scalingFactor(1.0f)
-{}
+{
+	s_links.push_back(this);
+}
 
 Resound::ParameterLink::ParameterLink(const ParameterAddress &t) :
 m_lastValue(0),
@@ -146,7 +156,9 @@ m_lastScaledValue(0),
 m_scalingFactor(1.0f),
 m_targetAddress(t),
 m_targetPtr(RESOUND_NAMESPACE()->get_parameter(m_targetAddress))
-{}
+{
+	s_links.push_back(this);
+}
 
 // copy construct
 // each ParameterLink must operat successfully on targets so
@@ -158,7 +170,9 @@ m_lastScaledValue(0),
 m_scalingFactor(p.m_scalingFactor),
 m_targetAddress(p.m_targetAddress),
 m_targetPtr(p.m_targetPtr)
-{}
+{
+	s_links.push_back(this);
+}
 
 //assignemtnPtr
 Resound::ParameterLink& Resound::ParameterLink::operator=(const ParameterLink& p){
@@ -175,6 +189,7 @@ Resound::ParameterLink& Resound::ParameterLink::operator=(const ParameterLink& p
 
 Resound::ParameterLink::~ParameterLink(){
 	set_value(0); // get rid of influence before destroying
+	s_links.remove(this);
 }
 
 void Resound::ParameterLink::set_target(const ParameterAddress &addr){
@@ -222,6 +237,25 @@ Resound::ParameterPtr Resound::ParameterLink::get_parameter()
 	return m_targetPtr;
 }
 
+std::list<Resound::ParameterLink*> Resound::ParameterLink::s_links; ///< static containing all links created 
+
+void Resound::ParameterLink::reacquire(){
+	try{
+	m_targetPtr = RESOUND_NAMESPACE()->get_parameter(m_targetAddress);
+	} catch(ParameterAddressException& e){
+		std::cout << "Address has been removed: " << m_targetAddress.get_address() << std::endl;
+		m_targetAddress = ParameterAddress();
+		m_targetPtr.reset();
+	}
+}
+
+void Resound::ParameterLink::reacquire_all(){
+	std::list<Resound::ParameterLink*>::iterator it;
+	for(it = s_links.begin(); it != s_links.end(); it++){
+		assert(*it);
+		(*it)->reacquire();
+	}
+}
 
 // -------------------------------- Element ------------------------------------------
 

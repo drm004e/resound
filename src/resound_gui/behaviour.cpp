@@ -38,14 +38,16 @@ int Resound::Behaviour::s_globalId=0;
 // class constructor
 Resound::Behaviour::Behaviour(std::string name)
 {
+
 	// tag on the unique global id
 	std::stringstream s;
 	s << name << "_" << get_global_id();
 	m_name = s.str();
 }
 // class destructor
-Resound::Behaviour::~Behaviour()
-{}
+Resound::Behaviour::~Behaviour(){
+	std::cout<<"Behaviour~ "<< m_name <<std::endl;
+}
 
 
 // operations used in construction
@@ -79,6 +81,14 @@ Resound::Collective& Resound::Behaviour::get_collective()
 	return m_collective;
 }
 
+void Resound::Behaviour::unregister_parameters(){
+	// remove registered parameters
+	for(ParameterArray::iterator it = m_parameters.begin(); it != m_parameters.end(); it++){
+		std::stringstream s;
+		s << "/bm/" << m_name << "/" << (*it)->get_name(); // generate the name // FIXME building the address like this is bad
+		RESOUND_NAMESPACE()->remove_parameter(s.str());
+	}
+}
 
 
 // --------------------------------Behaviour Class--------------------------------
@@ -178,7 +188,6 @@ Resound::BehaviourPtr Resound::BehaviourManager::create_behaviour(BehaviourClass
 			throw Resound::CreateBehaviourException();
 		}
 	}
-	// create a behaviour and add it to the manager
 
 	// first search for the class id
 	BehaviourClassFactoryMap::iterator i = m_classMap.find(classId);
@@ -205,66 +214,14 @@ Resound::BehaviourPtr Resound::BehaviourManager::create_behaviour(BehaviourClass
 
 }
 
-
-// ------------------------------------ Behaviour Select Panel -----------------------
-BEGIN_EVENT_TABLE(Resound::BehaviourSelectPanel, PVSSelectPanel)
-EVT_BUTTON( BSID_CREATE, Resound::BehaviourSelectPanel::OnCreateBehaviour)
-END_EVENT_TABLE()
-
-Resound::BehaviourSelectPanel::BehaviourSelectPanel(wxWindow* parent, ParameterNamespace* _subSystem)
-		: PVSSelectPanel(parent,_subSystem)
-{
-	// construct the sub objects and sizer
-	topSizer = new wxBoxSizer( wxVERTICAL );
-
-	topSizer->Add(new wxStaticText(this,-1,_T("Behaviour panel")));
-	//topSizer->Add(new wxButton(this,BSID_CREATE,_T("Create Behaviour")));
-
-
-	// build the dynamic section of the panel
-	behaviourSizer = new wxBoxSizer( wxVERTICAL );
-	topSizer->Add(behaviourSizer);
-
-	// causes rebuild of the panel
-	BuildPanel();
-
-	// layout
-	SetSizer(topSizer);
-	topSizer->SetSizeHints(this);   // set size hints to honour minimum size
-	topSizer->Layout();
-}
-
-void Resound::BehaviourSelectPanel::BuildPanel()
-{
-	// cast sub system to known type
-	BehaviourManager* behaviourManager = (BehaviourManager*) subSystem;
-	behaviourSizer->Remove(0); // remove old sizer
-	wxBoxSizer* sizer = new wxBoxSizer( wxVERTICAL );
-	behaviourSizer->Add(sizer);
-
-	for(BehaviourMap::iterator i = behaviourManager->get_behaviour_map().begin(); i !=  behaviourManager->get_behaviour_map().end(); i++) {
-		int id = (*i).first;
-		BehaviourPtr b = (*i).second;
-		wxGridSizer* gridSizer = new wxGridSizer(1,0,1,1);
-		
-		for(int n = 0; n < b->get_num_parameters() ; n++) {
-			std::stringstream s;
-			s << "/" << behaviourManager->get_name() << "/" << b->get_name() << "/" << b->get_parameter(n)->get_name(); // generate the name
-			gridSizer->Add(new Resound::AddressSelectWidget(this,-1,ParameterAddress(s.str()))); 
-		}
-		sizer->Add(new wxStaticText(this,-1,wxConvertMB2WX(b->get_name().c_str()))); 
-		sizer->Add(gridSizer);
+void Resound::BehaviourManager::remove_behaviour(int id){
+	BehaviourMap::iterator it = m_behaviourMap.find(id);
+	if(it != m_behaviourMap.end()){
+		it->second->unregister_parameters();
+		m_behaviourMap.erase(it);
 	}
-
-	topSizer->SetSizeHints(this);   // set size hints to honour minimum size
-	topSizer->Layout();
-
 }
-void Resound::BehaviourSelectPanel::OnCreateBehaviour(wxCommandEvent &event)
-{
-	// cast sub system to known type
-	BehaviourManager* behaviourManager = (BehaviourManager*) subSystem;
-	behaviourManager->create_behaviour();
-	BuildPanel();
-}
+
+
+
 

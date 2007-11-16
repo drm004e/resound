@@ -26,7 +26,7 @@
 
 #include "pvarwidgets.h" // class's header file
 #include <cstring>
-#include "behaviour.h"
+#include "behaviourview.h"
 #include <iostream>
 // -------------------------------- ParameterAddressWidgetBase --------------------
 Resound::ParameterAddressWidgetBase::ParameterAddressWidgetBase(wxWindow* parent, int id, ParameterAddress _addr)

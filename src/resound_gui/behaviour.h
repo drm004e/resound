@@ -97,6 +97,9 @@ public:
 	/// overload with behaviour algorithm
 	virtual void on_parameter_changed(){};
 
+	/// de registers all parameters 
+	void unregister_parameters();
+
 protected:
 	/// register a parameter addressable by the global system
 	void register_parameter(ParameterPtr param); // add a new Parameter, auto register it with the global namespace
@@ -116,7 +119,7 @@ private:
 	template<class Archive>
    	 void serialize(Archive & ar, const unsigned int version)
   	 {
-      	  	ar & BOOST_SERIALIZATION_NVP(m_name);
+      	  	ar & BOOST_SERIALIZATION_NVP(m_name);	
 		ar & BOOST_SERIALIZATION_NVP(m_collective);
 		ar & BOOST_SERIALIZATION_NVP(m_id);
 		ar & BOOST_SERIALIZATION_NVP(m_classId);
@@ -196,6 +199,9 @@ public:
 	/// create a behaviour and manage it
 	/// if a class id is not specified this will pop up a selection dialog // TODO consider other options remove GUI from behaviour manager
 	BehaviourPtr create_behaviour(BehaviourClassId classId = "");
+	
+	/// remove behaviours
+	void remove_behaviour(int id);
 
 	/// return the behaviour map
 	BehaviourMap& get_behaviour_map(){return m_behaviourMap;} //TODO consider a more secure way of doing this
@@ -219,25 +225,7 @@ private:
     }
 };
 
-// Behaviour selection panel //TODO move this out of behaviour
-enum BSID
-{
-    BSID_CREATE = 1,
-    BSID_EDITOR,
-    BSID_RENAME
-};
-class BehaviourSelectPanel : public PVSSelectPanel
-{
-public:
-	BehaviourSelectPanel(wxWindow* parent, ParameterNamespace* _subSystem);
-	void BuildPanel();
-private:
-	wxBoxSizer *topSizer;
-	wxBoxSizer *behaviourSizer;
-	// events
-	void OnCreateBehaviour(wxCommandEvent &event);
-	DECLARE_EVENT_TABLE()
-};
+
 
 }
 #endif // __BEHAVIOUR_H
