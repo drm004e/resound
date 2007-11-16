@@ -178,7 +178,7 @@ int Resound::DSPManager::process(jack_nframes_t nframes)
 int Resound::DSPManager::lo_cb_att(const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data){
 	float* f = (float*)user_data; // the user data should be a pointer to the newattmatrix element
 	*f = argv[0]->f; // the argument should be a float
-	std::cout << path << " " << *f << std::endl;
+	VERBOSE(std::cout << path << " " << *f << std::endl;)
     return 1;
 }
 
