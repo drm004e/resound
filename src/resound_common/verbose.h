@@ -25,7 +25,7 @@
 
 namespace Resound {
 extern bool useVerbose;
-#define VERBOSE(x) if(useVerbose) {x}
+#define VERBOSE(x) if(Resound::useVerbose) {x}
 }
 
 #endif

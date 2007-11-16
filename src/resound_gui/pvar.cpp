@@ -20,6 +20,8 @@
 #include "performance.h" // class's header file
 #include <iostream>
 
+#include <resound_common/verbose.h>
+
 // ------------------------------- Entity ----------------------------------
 Resound::Entity::Entity(const EntityName& name) :
 m_name(name)
@@ -131,7 +133,7 @@ void Resound::ParameterNamespaceManager::register_parameter(std::string address,
 		throw ParameterAddressException(address); // non unique address registered
 	} else {
 		m_parameterAddressMap[address]=param;
-		std::cout << "Registered Parameter: " << address << std::endl;
+		VERBOSE(std::cout << "Registered Parameter: " << address << std::endl;)
 	}
 }
 void Resound::ParameterNamespaceManager::remove_parameter(std::string address){

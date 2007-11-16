@@ -124,7 +124,7 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 
 	// start the automation driver
 	m_automationDriver.Start(5);
-
+	std::cout << "\n---- Resound Client Running ----" << std::endl;
 }
 
 void MainFrame::OnQuit(wxCommandEvent & WXUNUSED(event)) // THIS SEEMS TO CAUSE AN EXCEPTION!

@@ -105,7 +105,7 @@ bool ResoundClientApp::OnInit()
 		strcpy(nargv[n],wxConvertWX2MB(argv[n]));
 	}	
 	if(parse(argc,nargv)) return false;
-	std::cout << "Starting client:\nInputs " << inputs << "\nOutputs " << outputs << "\nClient OSC Port " << clientPort << "\nServer OSC IP " << serverIp << "\nServer OSC Port " << serverPort<< std::endl;
+	VERBOSE(std::cout << "Starting Resound Client... \nInputs " << inputs << "\nOutputs " << outputs << "\nClient OSC Port " << clientPort << "\nServer OSC IP " << serverIp << "\nServer OSC Port " << serverPort<< std::endl;)
 	wxInitAllImageHandlers();
 	try {
 		MainFrame *win = new MainFrame(_T("Resound Client"), wxPoint (100, 100),wxSize(0, 0));
