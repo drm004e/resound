@@ -65,11 +65,11 @@ void Resound::BMultiCrossfade::on_parameter_changed(){
 	float offset = TWOPI / (float)rCol.get_num_elements();
 
 	// calculate wave function
-	float angle = pos;
+	float angle = -pos;
 
 	// apply to collective.Set(n)
 	for(int n = 0; n < rCol.get_num_elements(); n++) {
-		float s = sinf(angle + (offset*n)) * amp;
+		float s = cosf(angle + (offset*n)) * amp;
 		int val = (int)(s * 128.0f);
 		rCol[n].set_value(val);
 	}
