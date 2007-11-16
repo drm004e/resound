@@ -98,6 +98,7 @@ private:
     }
 };
 
+const int MAX_PRESETS = 128;
 /// The bottom level of a saved performance file.
 /// This can be considered the main document of the Resound system.
 class Performance
@@ -111,7 +112,7 @@ public:
 
 	PerformancePreset& get_preset(int index){return m_presetArray[index];}
 private:
-	PerformancePreset m_presetArray[1];
+	PerformancePreset m_presetArray[MAX_PRESETS];
 	ParameterNamespaceManagerPtr m_parameterNamespaceManager;
 
 	friend class boost::serialization::access; ///< allow serialization access at low level

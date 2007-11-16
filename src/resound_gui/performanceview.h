@@ -37,7 +37,10 @@ public:
 	void OnFaderMove(wxCommandEvent& event);
 	void Init(); // set all MasterFader values to zero
 
+	void on_select_preset(wxCommandEvent& evt);
+	void on_store_preset(wxCommandEvent& evt);
 	void store_to_preset(int index);
+	void on_key(wxKeyEvent& evt);
 	void recall_from_preset(int index);
 private:
 	std::vector<MasterFader*> masterFaderArray; // array to store MasterFaders (VPCs)
@@ -45,6 +48,7 @@ private:
 	/// callback from osc att methods
 	static int lo_cb_att(const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data);
 
+	wxComboBox* m_presetCombo;
 	// event handling macro
 	DECLARE_EVENT_TABLE()
 };

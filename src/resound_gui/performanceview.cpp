@@ -29,9 +29,20 @@
 
 #include <sstream>
 
+#include <wx/numdlg.h>
+
 // event table
+
+enum{
+PRESET_COMBO = 0,
+PRESET_BUTTON
+};
+
 BEGIN_EVENT_TABLE(Resound::PerformanceView, wxScrolledWindow)
 EVT_COMMAND_RANGE(0,127,saEVT_FADER_CHANGED, Resound::PerformanceView::OnFaderMove)
+EVT_COMBOBOX(PRESET_COMBO, Resound::PerformanceView::on_select_preset)
+EVT_BUTTON(PRESET_BUTTON, Resound::PerformanceView::on_store_preset)
+EVT_KEY_DOWN(Resound::PerformanceView::on_key)
 END_EVENT_TABLE()
 
 // class constructor
@@ -62,7 +73,7 @@ Resound::PerformanceView::PerformanceView(wxWindow* parent)
 			/// end of block OSC
 			masterFaderArray.push_back(temp); // store in array
 			grp->Add(temp, wxSizerFlags(1).Align(0).Border(wxALL,1)); // add to GUI
-		}
+		}void on_select_preset(wxCommandEvent& evt);
 		upperTierSizer->Add(grp, wxSizerFlags(1).Align(0).Border(wxALL,5));
 	}
 
@@ -82,6 +93,13 @@ Resound::PerformanceView::PerformanceView(wxWindow* parent)
 		}
 		lowerTierSizer->Add(grp, wxSizerFlags(1).Align(0).Border(wxALL,5));
 	}
+
+	m_presetCombo = new wxComboBox(this, PRESET_COMBO, _("1:"));
+	for(int n = 0; n < Resound::MAX_PRESETS; n++){
+		m_presetCombo->Append(wxString::Format(_("%d:"),n));
+	}
+	topSizer->Add(m_presetCombo);
+	topSizer->Add(new wxButton(this, PRESET_BUTTON, _("Store Preset")));
 	topSizer->Add(upperTierSizer);
 	topSizer->Add(lowerTierSizer);
 
@@ -123,7 +141,28 @@ void Resound::PerformanceView::recall_from_preset(int index){
 		masterFaderArray[n]->recall_from_preset(index);
 	}
 }
+void Resound::PerformanceView::on_select_preset(wxCommandEvent& evt){
+	recall_from_preset(m_presetCombo->GetCurrentSelection());
+}
+void Resound::PerformanceView::on_store_preset(wxCommandEvent& evt){
+	store_to_preset(wxGetNumberFromUser(_("Enter preset number"),_("Preset"),_("Store Preset"),m_presetCombo->GetCurrentSelection(),0,Resound::MAX_PRESETS-1));
+}
+void Resound::PerformanceView::on_key(wxKeyEvent& evt){
 
+	switch(evt.GetKeyCode()){
+		case '1': m_presetCombo->Select(1); recall_from_preset(1); break;
+		case '2': m_presetCombo->Select(2); recall_from_preset(2);break;
+		case '3': m_presetCombo->Select(3); recall_from_preset(3);break;
+		case '4': m_presetCombo->Select(4); recall_from_preset(4);break;
+		case '5': m_presetCombo->Select(5); recall_from_preset(5);break;
+		case '6': m_presetCombo->Select(6); recall_from_preset(6);break;
+		case '7': m_presetCombo->Select(7); recall_from_preset(7);break;
+		case '8': m_presetCombo->Select(8); recall_from_preset(8);break;
+		case '9': m_presetCombo->Select(9); recall_from_preset(9);break;
+		case '0': m_presetCombo->Select(0); recall_from_preset(0);break;
+	}
+
+}
 int Resound::PerformanceView::lo_cb_att(const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data){
 	Resound::MasterFader* f = (Resound::MasterFader*)user_data; 
 	if(f && argv[0]){
