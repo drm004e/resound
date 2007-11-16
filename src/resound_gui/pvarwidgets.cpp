@@ -397,46 +397,75 @@ void Resound::CollectiveElementWidget::SendElementSelectedEvent(CEW_CM action)
 
 // ----------------------------------- CollectiveLinkWidget -------------------------------------------
 
-BEGIN_EVENT_TABLE(Resound::CollectiveLinkWidget, wxWindow)
+BEGIN_EVENT_TABLE(Resound::CollectiveLinkWidget, wxControl)
+EVT_LEFT_DOWN(Resound::CollectiveLinkWidget::OnLeftMouseDown)
+EVT_MOTION(Resound::CollectiveLinkWidget::OnLeftMouseMove)
 EVT_LEFT_UP(Resound::CollectiveLinkWidget::OnLeftMouseUp)
+EVT_PAINT(Resound::CollectiveLinkWidget::OnPaint)
 END_EVENT_TABLE()
 
 Resound::CollectiveLinkWidget::CollectiveLinkWidget(wxWindow* parent, int id, wxString linkName, ParameterLink* parameterLink)
-		: wxWindow(parent, id, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER), // size used to be (15,8)
-		m_parameterLink(parameterLink),
-		m_name(0),
-		m_scale(0)
+		: wxControl(parent, id, wxDefaultPosition, wxSize(75,40), wxSUNKEN_BORDER), // size used to be (15,8)
+		m_parameterLink(parameterLink)
 {
-	SetFont(*wxSMALL_FONT);
-
-	wxBoxSizer* topSizer = new wxBoxSizer(wxVERTICAL);
-	m_name = new wxStaticText (this, -1, linkName);
-	m_scale = new wxStaticText (this, -1, wxString::Format(_("%f"), m_parameterLink->get_scaling_factor()));
-	topSizer->Add(m_name, wxSizerFlags(0).Border(wxALL,3));
-	topSizer->Add(m_scale, wxSizerFlags(0).Border(wxALL,3));
-	SetSizer(topSizer);
-	topSizer->SetSizeHints(this);
-	topSizer->Layout();
+	SetWindowStyleFlag(wxNO_BORDER);
+	wxSize size(80,40);
+	SetSize(size);
+	SetMinSize(size);
+	SetMaxSize(size);
 }
 
 Resound::CollectiveLinkWidget::~CollectiveLinkWidget()
 {}
 
+void Resound::CollectiveLinkWidget::OnLeftMouseDown(wxMouseEvent& event)
+{	
+	
+	m_lastY = event.GetY();
+	CaptureMouse();
+	if(m_parameterLink){
+		m_lastS = m_parameterLink->get_scaling_factor();
+	}
+	event.Skip();
+}
+void Resound::CollectiveLinkWidget::OnLeftMouseMove(wxMouseEvent& event)
+{	
+	if(m_parameterLink && event.LeftIsDown()){
+		
+		int dY = event.GetY() - m_lastY;
+		float f = m_lastS + float(dY) * -0.01;
+		if(f > 2.) f = 2.;
+		if(f < -2.) f = -2;
+		m_parameterLink->set_scaling_factor(f);
+		Refresh();
+	}
+		
+}
 void Resound::CollectiveLinkWidget::OnLeftMouseUp(wxMouseEvent& event)
 {	
+	ReleaseMouse();
+}
+// paint handling
+void Resound::CollectiveLinkWidget::OnPaint(wxPaintEvent& event)
+{
+	wxBufferedPaintDC dc(this);
 	if(m_parameterLink){
-		wxString s = wxGetTextFromUser( _("Set scaling factor"), _("Scaling"),wxString::Format(_("%f"), m_parameterLink->get_scaling_factor()),this);
-		if(s.Len() > 0){
-			float f = atof(wxConvertWX2MB(s));
-			if(f >= -10.0f && f <= 10.0f){
-				m_scale->SetLabel(s);
-				m_parameterLink->set_scaling_factor(f);
-			}
+		wxSize size = GetSize();
+		dc.SetBrush(wxBrush(GetBackgroundColour()));
+		dc.SetTextForeground(GetForegroundColour());
+		dc.DrawRectangle(0,0,size.x,size.y);
+		float f = m_parameterLink->get_scaling_factor();
+		if(f >= 0){
+			dc.SetBrush(wxBrush(wxColour(0,200,0)));
+		} else {
+			dc.SetBrush(wxBrush(wxColour(200,0,0)));
 		}
+		dc.DrawRectangle(0,size.y/2,4,-f*10);
+		dc.SetFont(*wxSMALL_FONT);
+		dc.DrawText(wxConvertMB2WX(m_parameterLink->get_target_address().get_address().c_str()),6,3);
+		dc.DrawText(wxString::Format(_("%.2f"),m_parameterLink->get_scaling_factor()),6,20);
 	}
 }
-
-
 
 
 // ------------------------------------ CBDialog ------------------------------------------

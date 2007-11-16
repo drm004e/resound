@@ -159,18 +159,20 @@ private:
 
 // ----------------------------------- CollectiveLinkWidget -------------------------------------------
 
-class CollectiveLinkWidget : public wxWindow
+class CollectiveLinkWidget : public wxControl
 {
 public:
 	CollectiveLinkWidget(wxWindow* parent, int id, wxString linkName, ParameterLink* parameterLink);
 	~CollectiveLinkWidget();
 
 private:
-	wxStaticText* m_name;
-	wxStaticText* m_scale;
-	
+	int m_lastY;
+	float m_lastS;
 	// event handlers
+	void OnLeftMouseDown(wxMouseEvent& event);
+	void OnLeftMouseMove(wxMouseEvent& event);
 	void OnLeftMouseUp(wxMouseEvent& event);
+	void OnPaint(wxPaintEvent& event);
 	ParameterLink* m_parameterLink;
 	DECLARE_EVENT_TABLE()
 };
