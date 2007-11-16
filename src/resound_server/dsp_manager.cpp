@@ -28,6 +28,8 @@
 #include <sstream>
 #include <iostream>
 
+#include <resound_common/verbose.h>
+
 Resound::DSPManager::DSPManager(const std::string& name, int inputs, int outputs, const char* port) :
 m_name(name),
 m_numInputs(inputs),
@@ -36,16 +38,16 @@ m_audioMatrix(new AudioMatrix(inputs, outputs)),
 
 OSCManager(port)
 {
-	std::cout << "Initialising I/O matrix... \n";
+	VERBOSE(std::cout << "Initialising I/O matrix... \n";)
 	m_nAttMatrix.Create(m_numInputs+1, m_numOutputs+1);
 	m_iAttMatrix.Create(m_numInputs+1, m_numOutputs+1);
 
 	// jack initialisation
-	std::cout << "Connecting to jackd... \n";
+	VERBOSE(std::cout << "Connecting to jackd... \n";)
 	m_jc = jack_client_open(m_name.c_str(),JackNullOption,0);
 
 	// register ports
-	std::cout << "Registering I/O ports... \n";
+	VERBOSE(std::cout << "Registering I/O ports... \n";)
 	for(int n = 0; n < m_numInputs; n++){
 		std::stringstream s;
 		s << "Input" << n;
@@ -58,7 +60,7 @@ OSCManager(port)
 	}
 
 	// register callbacks
-	std::cout << "Registering callbacks... \n";
+	VERBOSE(std::cout << "Registering callbacks... \n";)
 	jack_set_process_callback(m_jc,Resound::DSPManager::jack_process_callback,this);
 	for(int r = 0; r < m_numInputs+1; r++){
 		for(int c = 0; c < m_numOutputs+1; c++){
@@ -83,7 +85,7 @@ OSCManager(port)
 	}
 
 	// now activate the callback
-	std::cout << "Activating DSP... \n";
+	VERBOSE(std::cout << "Activating DSP... \n";)
 	jack_activate(m_jc);
 
 	std::cout << "\n---- Resound Server Running ----\n";
