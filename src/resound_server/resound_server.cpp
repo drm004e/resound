@@ -31,6 +31,7 @@ Resound::DSPManager* s_dsp = 0;
 int inputs;
 int outputs;
 std::string port;
+bool verbose = false;
 
 /// command line options
 bool parse(int argc, char** argv){
@@ -38,10 +39,11 @@ bool parse(int argc, char** argv){
 	// Declare the supported options.
 	po::options_description desc("Allowed options");
 	desc.add_options()
-		("help", "produce help message")
-		("inputs", po::value<int>()->default_value(2), "set number of audio inputs")
-		("outputs", po::value<int>()->default_value(8), "set number of audio outputs")
-		("port", po::value<std::string>()->default_value("4567"), "set number OSC server port")
+		("help,h", "produce help message")
+		("inputs,i", po::value<int>()->default_value(2), "set number of audio inputs")
+		("outputs,o", po::value<int>()->default_value(8), "set number of audio outputs")
+		("port,p", po::value<std::string>()->default_value("4567"), "set number OSC server port")
+		("verbose,v", "verbose output")
 	;
 	
 	po::variables_map vm;
@@ -64,6 +66,10 @@ bool parse(int argc, char** argv){
 
 	if (vm.count("port")) {
 		port = vm["port"].as<std::string>();
+	}
+	
+	if(vm.count("verbose")) {
+		verbose = true;
 	}
 
 	return 0;

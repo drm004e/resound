@@ -46,7 +46,7 @@ private:
 	std::string clientPort;
 	std::string serverIp;
 	std::string serverPort;
-
+	bool verbose;
 };
 
 DECLARE_APP(ResoundClientApp)

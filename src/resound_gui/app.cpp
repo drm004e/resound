@@ -54,12 +54,13 @@ bool ResoundClientApp::parse(int argc, char** argv){
 	// Declare the supported options.
 	po::options_description desc("Allowed options");
 	desc.add_options()
-		("help", "produce help message")
-		("inputs", po::value<int>()->default_value(2), "set number of audio inputs")
-		("outputs", po::value<int>()->default_value(8), "set number of audio outputs")
-		("clientport", po::value<std::string>()->default_value("8000"), "set the client gui fader osc port")
-		("serverip", po::value<std::string>()->default_value("127.0.0.1"), "set the server osc ip address")
-		("serverport", po::value<std::string>()->default_value("4567"), "set the server osc port")
+		("help,h", "produce help message")
+		("inputs,i", po::value<int>()->default_value(2), "set number of audio inputs")
+		("outputs,o", po::value<int>()->default_value(8), "set number of audio outputs")
+		("clientport,c", po::value<std::string>()->default_value("8000"), "set the client gui fader osc port")
+		("serverip,s", po::value<std::string>()->default_value("127.0.0.1"), "set the server osc ip address")
+		("serverport,p", po::value<std::string>()->default_value("4567"), "set the server osc port")
+		("verbose,v", "verbose output")
 	;
 	
 	po::variables_map vm;
@@ -89,11 +90,15 @@ bool ResoundClientApp::parse(int argc, char** argv){
 	if (vm.count("serverip")) {
 		serverIp = vm["serverip"].as<std::string>();
 	}
+	if(vm.count("verbose")) {
+	verbose = true;
+	}
 	return 0;
 }
 
 bool ResoundClientApp::OnInit()
 {
+	verbose = false; // initialise
 	char** nargv = new char*[argc];
 	int nargc = argc;
 	for(int n=0; n < nargc; n++){
