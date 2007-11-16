@@ -67,9 +67,13 @@ void Resound::MonitorNodeWidget::OnLockToggle(wxCommandEvent& event)
 {
 
 	bool isSelected = event.IsChecked();
-	if(isSelected) {
-		RESOUND_NAMESPACE()->get_parameter(GetAddress())->lock(128); //FIXME note use of 128 constant here?
-	} else {
-		RESOUND_NAMESPACE()->get_parameter(GetAddress())->unlock();
+	try{
+		if(isSelected) {
+			RESOUND_NAMESPACE()->get_parameter(GetAddress())->lock(128); //FIXME note use of 128 constant here?
+		} else {
+			RESOUND_NAMESPACE()->get_parameter(GetAddress())->unlock();
+		}
+	} catch(ParameterAddressException& e){
+		
 	}
 }
