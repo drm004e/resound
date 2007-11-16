@@ -77,7 +77,9 @@ void Resound::FaderWidget::OnPaint(wxPaintEvent& event)
 {
 	wxBufferedPaintDC dc(this);
 
-	int y = (sizeY - (kSizeY/2)) - RANGEMAP(val,min,max,0,sizeY);
+	//int y = (sizeY - (kSizeY/2)) - RANGEMAP(val,min,max,0,sizeY);
+	//This keeps the graphical fader cap 'inside' the track
+	int y = (sizeY - (kSizeY/2)) - RANGEMAP(val,min,max,0+(kSizeY/2),sizeY-(kSizeY/2));
 	// blit back portion // top bit
 	dc.Blit(wxPoint(0,0),wxSize(sizeX,sizeY),&dcFaderBack,wxPoint(0,0));
 	// blit on portion // bottom bit

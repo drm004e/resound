@@ -685,9 +685,9 @@ void Resound::AddressSelectWidget::OnPaint(wxPaintEvent& event)
 	wxSize size = GetSize();
 	dc.SetBrush(wxBrush(GetBackgroundColour()));
 	dc.SetTextForeground(GetForegroundColour());
-	dc.DrawRoundedRectangle(0,0,size.x,size.y,10);
-	dc.SetFont(wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT));
+	dc.DrawRectangle(0,0,size.x,size.y);
+	//dc.SetFont(wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT));
+	dc.SetFont(*wxSMALL_FONT);
 	dc.DrawText(name,5,5);
-	//dc.DrawText(addr.GetString(),3,20);
 }
 
