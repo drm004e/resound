@@ -100,7 +100,6 @@ void Resound::BehaviourSelectPanel::OnCreateBehaviour(wxCommandEvent &event)
 //------------------------------------------ BehaviourViewItem ----------------------------
 //events
 BEGIN_EVENT_TABLE(Resound::BehaviourViewItem, wxPanel)
-EVT_BUTTON(BSID_REMOVE, Resound::BehaviourViewItem::OnRemove)
 END_EVENT_TABLE()
 
 // class constructor
@@ -144,19 +143,14 @@ Resound::BehaviourViewItem::BehaviourViewItem(wxWindow* parent, int id, Behaviou
 Resound::BehaviourViewItem::~BehaviourViewItem()
 {
 	// insert your code here
+	std::cout << "~BehaviourViewItem\n";
 }
-void Resound::BehaviourViewItem::OnRemove(wxCommandEvent &event)
-{
-	Resound::BehaviourManager* behaviourManager = dynamic_cast<Resound::BehaviourManager*>(&RESOUND_NAMESPACE()->get_parameter_namespace(1));
-	behaviourManager->remove_behaviour(behaviour->get_id());
-	behaviour.reset(); // dereference the smart ptr
-	Resound::BehaviourView* p = dynamic_cast<Resound::BehaviourView*>(GetParent());
-	p->BuildPanel();	
-}
+
 //----------------------------------------- BehaviourView ---------------------------------
 //events
 BEGIN_EVENT_TABLE(Resound::BehaviourView, wxScrolledWindow)
 EVT_BUTTON( BSID_CREATE, Resound::BehaviourView::OnCreateBehaviour)
+EVT_BUTTON(BSID_REMOVE, Resound::BehaviourView::OnRemove)
 END_EVENT_TABLE()
 
 // class constructor
@@ -168,7 +162,6 @@ Resound::BehaviourView::BehaviourView(wxWindow* parent, int id)
 
 	topSizer->Add(new wxStaticText(this,-1,_("Behaviour panel")));
 	topSizer->Add(new wxButton(this,BSID_CREATE,_("Create Behaviour")));
-
 
 	// build the dynamic section of the panel
 	behaviourSizer = new wxBoxSizer( wxVERTICAL );
@@ -194,13 +187,23 @@ void Resound::BehaviourView::BuildPanel()
 {
 	Resound::BehaviourManager* behaviourManager = dynamic_cast<Resound::BehaviourManager*>(&RESOUND_NAMESPACE()->get_parameter_namespace(1));
 	// build of the panel
+	// destroy old windows
+	std::list<wxWindow*>::iterator it;
+	for(it = m_windowList.begin(); it != m_windowList.end(); it++)
+	{
+		(*it)->Destroy();
+	}
+	m_windowList.clear();
 	behaviourSizer->Remove(0); // remove old sizer
+	behaviourSizer->Layout();
 	wxBoxSizer* sizer = new wxBoxSizer( wxVERTICAL );
 	behaviourSizer->Add(sizer);
 	for(BehaviourMap::iterator i = behaviourManager->get_behaviour_map().begin(); i !=  behaviourManager->get_behaviour_map().end(); i++) {
 		int id = (*i).first;
 		BehaviourPtr b = (*i).second;
-		sizer->Add(new BehaviourViewItem(this,-1,b));
+		wxWindow* p = new BehaviourViewItem(this,id,b);
+		m_windowList.push_back(p);
+		sizer->Add(p);
 	}
 	topSizer->SetSizeHints(this);   // set size hints to honour minimum size
 	topSizer->Layout();
@@ -216,4 +219,12 @@ void Resound::BehaviourView::OnCreateBehaviour(wxCommandEvent &event)
 		//Cancel was pressed so ignore this exception here.
 	}
 	BuildPanel();
+}
+void Resound::BehaviourView::OnRemove(wxCommandEvent &event)
+{
+	BehaviourViewItem* p = (BehaviourViewItem*)((wxWindow*)event.GetEventObject())->GetParent();
+	Resound::BehaviourManager* behaviourManager = dynamic_cast<Resound::BehaviourManager*>(&RESOUND_NAMESPACE()->get_parameter_namespace(1));
+	behaviourManager->remove_behaviour(p->GetId());
+	std::cout << "Behaviour " << p->GetId();
+	BuildPanel();	
 }

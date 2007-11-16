@@ -58,7 +58,6 @@ private:
 	CollectiveWidget* collectiveWidget; // a collective widget for this behaviour view
 	BehaviourPtr behaviour;
 	wxStaticText* label;
-	void OnRemove(wxCommandEvent &event);
 	DECLARE_EVENT_TABLE()
 };
 
@@ -72,11 +71,12 @@ public:
 	~BehaviourView();	
 	// build view
 	void BuildPanel();
+	void OnRemove(wxCommandEvent &event);
 private:
 
 	wxSizer* behaviourSizer;
 	wxSizer* topSizer;
-
+	std::list<wxWindow*> m_windowList;
 
 
 
