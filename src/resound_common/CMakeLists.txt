@@ -35,6 +35,8 @@ ENDIF(UNIX)
 # build the excecutable
 add_library (resound_common
 osc_manager.cpp
+verbose.h
+verbose.cpp
 )
 #link with libs
 target_link_libraries (resound_common lo)

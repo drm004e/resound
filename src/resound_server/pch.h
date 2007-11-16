@@ -32,6 +32,6 @@
 
 // library headers
 #include <resound_common/array2.h>
-
+#include <resound_common/verbose.h>
 
 #endif

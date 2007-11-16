@@ -31,7 +31,6 @@ Resound::DSPManager* s_dsp = 0;
 int inputs;
 int outputs;
 std::string port;
-bool verbose = false;
 
 /// command line options
 bool parse(int argc, char** argv){
@@ -69,7 +68,7 @@ bool parse(int argc, char** argv){
 	}
 	
 	if(vm.count("verbose")) {
-		verbose = true;
+		Resound::useVerbose = true;
 	}
 
 	return 0;

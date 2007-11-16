@@ -91,14 +91,13 @@ bool ResoundClientApp::parse(int argc, char** argv){
 		serverIp = vm["serverip"].as<std::string>();
 	}
 	if(vm.count("verbose")) {
-	verbose = true;
+		Resound::useVerbose = true;
 	}
 	return 0;
 }
 
 bool ResoundClientApp::OnInit()
 {
-	verbose = false; // initialise
 	char** nargv = new char*[argc];
 	int nargc = argc;
 	for(int n=0; n < nargc; n++){

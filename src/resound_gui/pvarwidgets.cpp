@@ -601,7 +601,6 @@ void Resound::CollectiveBuilder::OnAddressSelected(wxCommandEvent &event)
 
 void Resound::CollectiveBuilder::OnElementSelected(wxCommandEvent &event)
 {
-	std::cout << "OnElementSelected" << std::endl;
 	collectiveWrapper->set_cursor_position(event.GetId()); // just set cursor position
 	int action = event.GetInt(); // get the action to be performed on the collective from the event
 	// -- see CollectiveElementWidget::SendElementSelectedEvent(CEW_CM action)
