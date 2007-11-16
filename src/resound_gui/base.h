@@ -26,7 +26,9 @@ class AutomationDriver : public wxTimer{
 public:
 	AutomationDriver(): prevT(gettime()){}
 	void Notify(){
-		//MManager::get_instance().tick();
+#ifdef USE_MIDI
+		MManager::get_instance().tick();
+#endif USE_MIDI
 		double t = gettime();
 		Resound::AutomationManager::get_instance().tick(t-prevT); 
 		prevT = t;

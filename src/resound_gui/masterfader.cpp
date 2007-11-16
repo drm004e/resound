@@ -101,7 +101,7 @@ void Resound::MasterFader::OnMidiMessage(MIDI_BYTE status, MIDI_BYTE dataA, MIDI
 	int channel = MIDIStatusToChannel(status);
 	switch(type) {
 	case MIDI_CONTROL_CHANGE:
-		if(channel == GetId() && parameter == dataA) {// FIXME note that the fader id was previously used for channel and now isnt
+		if(channel == (GetId()&15) && parameter == dataA) {// FIXME note that the fader id was previously used for channel and now isnt
 			SetValue((int) dataB);
 		}
 		break;

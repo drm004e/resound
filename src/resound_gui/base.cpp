@@ -98,9 +98,9 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 	RESOUND_NAMESPACE()->register_parameter_namespace(m_behaviourManager);
 
 	// setup midi system
-
-	//MManager::get_instance().OpenInputDevice(1);
-
+#ifdef USE_MIDI
+	MManager::get_instance().OpenInputDevice(1);
+#endif USE_MIDI
 	// add any behaviours
 	// eventually load plugins!
 	register_base_behaviours(dynamic_cast<Resound::BehaviourManager*>(m_behaviourManager.get()));

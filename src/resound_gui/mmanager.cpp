@@ -35,13 +35,17 @@
 MListener::MListener()
 {
 	// Construct
-//	MManager::get_instance().RegisterMListener(this); 
+#ifdef USE_MIDI
+	MManager::get_instance().RegisterMListener(this);
+#endif
 }
 
 MListener::~MListener()
 {
 	// Destruct
-//	MManager::get_instance().UnregisterMListener(this);
+#ifdef USE_MIDI
+	MManager::get_instance().UnregisterMListener(this);
+#endif
 }
 
 // ------------------------------------ Functions -----------------------------
