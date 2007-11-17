@@ -44,7 +44,7 @@ LINK_DIRECTORIES(
 
 # use dbuggin flags
 IF(UNIX)
-	SET(CMAKE_CXX_FLAGS "-g -DUSE_MIDI -DRESOURCE_DIR='\"/usr/local/share/resound_gui\"'")
+	SET(CMAKE_CXX_FLAGS "-g -DUSE_MIDI -DRESOURCE_DIR='\"${CMAKE_INSTALL_PREFIX}/share/resound_gui\"'")
 ELSEIF(APPLE)
 	SET(CMAKE_CXX_FLAGS "-g -D__WXMAC__")
 ELSE(UNIX)
