@@ -57,3 +57,5 @@ ELSE(UNIX)
 ENDIF(UNIX)
 #link with libs
 target_link_libraries (resound_server resound_common jack boost_program_options)
+
+INSTALL(TARGETS resound_server DESTINATION bin)

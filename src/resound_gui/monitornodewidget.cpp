@@ -49,7 +49,7 @@ Resound::MonitorNodeWidget::MonitorNodeWidget(wxWindow* parent, int id, Paramete
 	leftSizer->Add(new wxStaticText(this,MNW_LABEL,label, wxPoint(0,0),wxSize(40,18),wxALIGN_CENTRE),wxSizerFlags(0).Align(0).Border(wxALL,0));
 	leftSizer->Add(new wxToggleButton(this,MNW_LOCKBUTTON,_("L"), wxPoint(0,0),wxSize(20,20)),wxSizerFlags(0).Center().Border(wxALL,0));
 	topSizer->Add(leftSizer);
-	meter = new Resound::ParameterVUMeterWidget(this,MNW_METER,rand() % 128,0,128,_("image/smMeterOff.png"),_("image/smMeterOn.png"));
+	meter = new Resound::ParameterVUMeterWidget(this,MNW_METER,rand() % 128,0,128,_(RESOURCE_DIR "/image/smMeterOff.png"),_(RESOURCE_DIR "/image/smMeterOn.png"));
 	meter->SetTarget(addr);
 	topSizer->Add(meter,wxSizerFlags(0).Align(0).Border(wxALL,0)); //meter1
 	SetSizer(topSizer);

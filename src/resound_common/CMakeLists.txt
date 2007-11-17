@@ -40,3 +40,5 @@ verbose.cpp
 )
 #link with libs
 target_link_libraries (resound_common lo)
+
+INSTALL(TARGETS resound_common DESTINATION lib)

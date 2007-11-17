@@ -153,7 +153,7 @@ void Resound::CollectiveWidget::UpdateLink()
 
 		// Build the ParameterVUMeterWidget array
 		for(int n = 0; n < numMeters; n++) {
-			ParameterVUMeterWidget* widget = new ParameterVUMeterWidget(this,-1,0,0,128,_T("image/tinyMeterOff.png"), _T("image/tinyMeterOn.png"));
+			ParameterVUMeterWidget* widget = new ParameterVUMeterWidget(this,-1,0,0,128,_(RESOURCE_DIR "/image/tinyMeterOff.png"), _(RESOURCE_DIR "/image/tinyMeterOn.png"));
 			widget->SetTarget((*collective)[n][0].get_target_address()); // assuming always one link per element
 			sizer->Add(widget,wxSizerFlags(0).Align(0).Border(wxRIGHT|wxTOP|wxBOTTOM,1));
 			pVarVUMeterWidgetArray.push_back(widget);

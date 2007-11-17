@@ -36,8 +36,8 @@ class StaticVUMeterWidget  : public wxControl
 public:
 	// class constructor
 	StaticVUMeterWidget(wxWindow *parent,int id,int _val, int _min, int _max,
-	                    wxString offFilename = _("image/meterOff.bmp"),
-	                    wxString onFilename = _("image/meterOn.bmp"));
+	                    wxString offFilename = _(RESOURCE_DIR "/image/meterOff.png"),
+	                    wxString onFilename = _(RESOURCE_DIR "/image/meterOn.png"));
 	// class destructor
 	~StaticVUMeterWidget();
 
@@ -75,8 +75,8 @@ class VUMeterWidget  : public StaticVUMeterWidget, public AutomatedObject
 public:
 	// class constructor
 	VUMeterWidget(wxWindow *parent,int id,int _val, int _min, int _max,
-	              wxString offFilename = _("image/meterOff.png"),
-	              wxString onFilename = _("image/meterOn.png"));
+	              wxString offFilename = _(RESOURCE_DIR "/image/meterOff.png"),
+	              wxString onFilename = _(RESOURCE_DIR "/image/meterOn.png"));
 	void tick(float dT); // time elapsed function for decay
 };
 
@@ -86,8 +86,8 @@ class ParameterVUMeterWidget  : public StaticVUMeterWidget, public AutomatedObje
 public:
 	// class constructor
 	ParameterVUMeterWidget(wxWindow *parent,int id,int _val, int _min, int _max,
-	                  wxString offFilename = _("image/meterOff.png"),
-	                  wxString onFilename = _("image/meterOn.png"));
+	                  wxString offFilename = _(RESOURCE_DIR "/image/meterOff.png"),
+	                  wxString onFilename = _(RESOURCE_DIR "/image/meterOn.png"));
 	void tick(float dT); // time elapsed function for decay
 	void SetTarget(ParameterAddress addr);
 private:
