@@ -38,8 +38,8 @@ Resound::FaderWidget::FaderWidget(wxWindow *parent, int id, int _val, int _min, 
 		: wxControl(parent, id,wxPoint(0,0), wxSize(0,0))
 {
 	// insert your code here
-	bmFaderBack.LoadFile(_("image/faderBack.png"),wxBITMAP_TYPE_PNG);
-	bmFaderKnob.LoadFile(_("image/faderKnob.png"),wxBITMAP_TYPE_PNG);
+	bmFaderBack.LoadFile(_(RESOURCE_DIR "/image/faderBack.png"),wxBITMAP_TYPE_PNG);
+	bmFaderKnob.LoadFile(_(RESOURCE_DIR "/image/faderKnob.png"),wxBITMAP_TYPE_PNG);
 	dcFaderBack.SelectObject(bmFaderBack);
 	dcFaderKnob.SelectObject(bmFaderKnob);
 

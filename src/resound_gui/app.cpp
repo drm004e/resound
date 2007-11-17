@@ -106,6 +106,7 @@ bool ResoundClientApp::OnInit()
 	}	
 	if(parse(argc,nargv)) return false;
 	VERBOSE(std::cout << "Starting Resound Client... \nInputs " << inputs << "\nOutputs " << outputs << "\nClient OSC Port " << clientPort << "\nServer OSC IP " << serverIp << "\nServer OSC Port " << serverPort<< std::endl;)
+	VERBOSE(std::cout << "Resource files: " << RESOURCE_DIR << std::endl; )
 	wxInitAllImageHandlers();
 	try {
 		MainFrame *win = new MainFrame(_T("Resound Client"), wxPoint (100, 100),wxSize(0, 0));

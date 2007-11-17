@@ -44,7 +44,7 @@ LINK_DIRECTORIES(
 
 # use dbuggin flags
 IF(UNIX)
-	SET(CMAKE_CXX_FLAGS "-g -DUSE_MIDI")
+	SET(CMAKE_CXX_FLAGS "-g -DUSE_MIDI -DRESOURCE_DIR='\"/usr/local/share/resound_gui\"'")
 ELSEIF(APPLE)
 	SET(CMAKE_CXX_FLAGS "-g -D__WXMAC__")
 ELSE(UNIX)
@@ -122,3 +122,7 @@ ELSEIF(APPLE)
 	target_link_libraries (resound_gui boost_program_options resound_common boost_serialization wx_macu-2.8)
 ELSE(UNIX)
 ENDIF(UNIX)
+
+INSTALL(DIRECTORY image DESTINATION share/resound_gui)
+
+INSTALL(TARGETS resound_gui DESTINATION bin)
