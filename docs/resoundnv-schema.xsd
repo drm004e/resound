@@ -1,0 +1,134 @@
+<?xml version="1.0"?>
+<xs:schema
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="resound"
+	xmlns="resound"
+	elementFormDefault="qualified"
+>
+
+<xs:element name="resoundxml">
+  <xs:complexType>
+
+  </xs:complexType>
+</xs:element>
+
+<!-- audiostream (base), audiostreamfile (derived), audiostreamlive (derived) -->
+
+<xs:element name="audiostream">
+	<xs:complexType>
+		<xs:attribute name="id" type="xs:token"/>
+		<xs:attribute name="gain" type="xs:decimal"/>
+	</xs:complexType>
+</xs:element>
+
+<xs:complexType name="audiostreamfile">
+	<xs:complexContent>
+		<xs:extension base="audiostream">
+			<xs:attribute name="path" type="xs:string"/>
+			<xs:attribute name="channel" type="xs:integer"/>
+		</xs:extension>
+	</xs:complexContent>
+</xs:complexType>
+
+<xs:complexType name="audiostreamlive">
+	<xs:complexContent>
+		<xs:extension base="audiostream">
+			<xs:attribute name="port" type="xs:string"/>
+		</xs:extension>
+	</xs:complexContent>
+</xs:complexType>
+
+<!-- loudspeaker -->
+
+<xs:element name="loudspeaker">
+	<xs:complexType>
+		<xs:attribute name="id" type="xs:token"/>
+		<xs:attribute name="gain" type="xs:decimal"/>
+		<xs:attribute name="port" type="xs:string"/>
+		<xs:attribute name="x" type="xs:decimal"/>
+		<xs:attribute name="y" type="xs:decimal"/>
+		<xs:attribute name="z" type="xs:decimal"/>
+		<xs:attribute name="az" type="xs:decimal"/>
+		<xs:attribute name="el" type="xs:decimal"/>
+	</xs:complexType>
+</xs:element>
+
+<!-- Coherent set base, cass (derived), cls (derived) -->
+
+<xs:element name="csbase">
+	<xs:complexType>
+		<xs:attribute name="id" type="xs:token"/>
+		<xs:attribute name="gain" type="xs:decimal"/>
+	    	<xs:sequence>
+	 		<xs:element name="alias" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:token"/>
+					<xs:attribute name="ref" type="xs:token"/>
+					<xs:attribute name="gain" type="xs:decimal"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:element>
+
+<xs:complexType name="cass">
+	<xs:complexContent>
+		<xs:extension base="csbase"/>
+	</xs:complexContent>
+</xs:complexType>
+
+<xs:complexType name="cls">
+	<xs:complexContent>
+		<xs:extension base="csbase"/>
+	</xs:complexContent>
+</xs:complexType>
+
+<!-- Behaviour -->
+
+<xs:element name="behaviour">
+	<xs:complexType>
+		<xs:attribute name="id" type="xs:token"/>
+		<xs:attribute name="class" type="xs:token"/>
+	    	<xs:sequence>
+	 		<xs:element name="input" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:token"/>
+					<xs:attribute name="ref" type="xs:token"/>
+					<xs:attribute name="gain" type="xs:decimal"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	    	<xs:sequence>
+	 		<xs:element name="output" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:token"/>
+					<xs:attribute name="ref" type="xs:token"/>
+					<xs:attribute name="gain" type="xs:decimal"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	    	<xs:sequence>
+	 		<xs:element name="param" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:token"/>
+					<xs:attribute name="address" type="xs:string"/>
+					<xs:attribute name="value" type="xs:decimal"/>
+					<xs:attribute name="min" type="xs:decimal"/>
+					<xs:attribute name="max" type="xs:decimal"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:element>
+
+<!-- Preset -->
+
+<xs:element name="preset">
+	<xs:complexType>
+		<xs:simpleContent>
+			<xs:attribute name="id" type="xs:token"/>
+		</xs:simpleContent>
+	</xs:complexType>
+</xs:element>
+
+</xs:schema>

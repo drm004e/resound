@@ -37,65 +37,65 @@ specified inside behaviour <param> tag
 	<loudspeaker id="sp04" port="out4" x="" y="" z="" az="" el="" gain="1.0"/>
 	<loudspeaker id="sp05" port="out5" x="" y="" z="" az="" el="" gain="1.0"/>
 
-	<loudspeaker id="subs" port="out8" isArray="true" gain="0.3333">		<!-- Multiple speakers, one output channel -->
-		<element id="1" x="" y="" z="" az="" el=""/>
+	<loudspeaker id="subs" port="out8" isArray="true" gain="0.3333">	<!-- Multiple speakers, one output channel -->
+		<element id="1" x="" y="" z="" az="" el=""/>			<!-- If isArray="true" then loudspeaker can have aliass -->
 		<element id="2" x="" y="" z="" az="" el=""/>
 		<element id="3" x="" y="" z="" az="" el=""/>
 	</loudspeaker>
 
     <!-- CLS -->
 	<cls id="Main5-1">
-		<element id="L" speakerid="sp01"/>	<!-- element id is within 'scope' of object -->
-		<element id="C" speakerid="sp02"/>
-		<element id="R" speakerid="sp03"/>
-		<element id="Ls" speakerid="sp04"/>
-		<element id="Rs" speakerid="sp05"/>
-		<element id="LFE" speakerid="subs" gain="1.1"/>
+		<alias id="L" ref="sp01"/>	<!-- alias id is within 'scope' of object -->
+		<alias id="C" ref="sp02"/>
+		<alias id="R" ref="sp03"/>
+		<alias id="Ls" ref="sp04"/>
+		<alias id="Rs" ref="sp05"/>
+		<alias id="LFE" ref="subs" gain="1.1"/>
 	</cls>
 
 	<cls id="Main-Stereo-Front">
-		<element id="L" speakerid="sp01"/>
-		<element id="R" speakerid="sp03"/>
+		<alias id="L" ref="sp01"/>
+		<alias id="R" ref="sp03"/>
 	</cls>
 
 	<cls id="Main-Stereo-Rear">
-		<element id="L" speakerid="sp01"/>
-		<element id="R" speakerid="sp03"/>
+		<alias id="L" ref="sp01"/>
+		<alias id="R" ref="sp03"/>
 	</cls>
 
 	<cls id="Stereo-East-Pair">
-		<element id="L" speakerid="sp04"/>
-		<element id="R" speakerid="sp01"/>
+		<alias id="L" ref="sp04"/>
+		<alias id="R" ref="sp01"/>
 	</cls>
 
     <!-- CASS -->
 	<cass id="5.1-tape-mapping">
-		<element id="L" streamid="fch1"/>	<!-- see Audio Stream, above -->
-		<element id="C" streamid="fch5" gain="1.1"/>
-		<element id="R" streamid="fch2"/>
-		<element id="Ls" streamid="fch3"/>
-		<element id="Rs" streamid="fch4"/>
-		<element id="LFE" streamid="fch6"/>
+		<alias id="L" ref="fch1"/>	<!-- see Audio Stream, above -->
+		<alias id="C" ref="fch5" gain="1.1"/>
+		<alias id="R" ref="fch2"/>
+		<alias id="Ls" ref="fch3"/>
+		<alias id="Rs" ref="fch4"/>
+		<alias id="LFE" ref="fch6"/>
 	</cass>
 
 	<cass id="stereo-mic-pair">
-		<element id="L" streamid="live1"/>
-		<element id="R" streamid="live2"/>
+		<alias id="L" ref="live1"/>
+		<alias id="R" ref="live2"/>
 	</cass>
 
 	<cass id="stereo-tape-mapping">
-		<element id="L" streamid="fch1"/>
-		<element id="R" streamid="fch2"/>
+		<alias id="L" ref="fch1"/>
+		<alias id="R" ref="fch2"/>
 	</cass>
 
 	<preset id="remap-5-1-tape-mapping">			<!-- on demand remap of 5.1 routing -->
 		<cass id="5-1-tape-mapping">
-			<element id="L" streamid="fch1"/>
-			<element id="C" streamid="fch3"/>
-			<element id="R" streamid="fch2"/>
-			<element id="Ls" streamid="fch5"/>
-			<element id="Rs" streamid="fch6"/>
-			<element id="LFE" streamid="fch4"/>
+			<alias id="L" ref="fch1"/>
+			<alias id="C" ref="fch3"/>
+			<alias id="R" ref="fch2"/>
+			<alias id="Ls" ref="fch5"/>
+			<alias id="Rs" ref="fch6"/>
+			<alias id="LFE" ref="fch4"/>
 		</cass>
 	</preset>
 
@@ -131,7 +131,7 @@ specified inside behaviour <param> tag
 		<output id="5" ref="sp05"/>
 		<param id="amp" address="/joyleft1" value="1.1"/> <!-- value specifies default value-->
 		<param id="freq" address="/joyright1" value="1.1"/>
-		<param id="phase" value="1.0"/> <!--This one has no osc control assigned-->
+		<param id="phase" value="1.0"/> <!--This one has no osc control assigned and value is threrefore 'locked' at default -->
 	</behaviour>
 
 	<preset id="other-control">
