@@ -9,40 +9,57 @@ Address space for responding to generic incoming controllers
 specified inside behaviour <param> tag
 -->
 
-<resoundxml>
+<resoundxml 
+	xmlns="resound"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://resound.sourceforge.net resoundnv-schema.xsd"
+>
 
-    <!-- Fundamental objects (creates or modifies), delete -->
-	<audiostream id="ob01"></audiostream>	<!-- create if ID doesn't already exist -->
-	<audiostream id="ob01"></audiostream>	<!-- modify if ID does already exist-->
-	<delete id="ob01"/>			<!-- delete item with corresponding ID -->
-
-    <!-- preset defines a named block of XML that can be executed on demand -->
-	<preset id="pr01"></preset>
 
     <!-- Audio stream -->
-	<audiostream id="fch1" class="file" path="/home/njm79/media/str1.wav" channel="1" gain="1.2"/>
-	<audiostream id="fch2" class="file" path="/home/njm79/media/str1.wav" channel="2"/>
-	<audiostream id="fch3" class="file" path="/home/njm79/media/str1.wav" channel="3"/>
-	<audiostream id="fch4" class="file" path="/home/njm79/media/str1.wav" channel="4"/>
-	<audiostream id="fch5" class="file" path="/home/njm79/media/str1.wav" channel="5"/>
-	<audiostream id="fch6" class="file" path="/home/njm79/media/str1.wav" channel="6"/>
+	<audiostreamfile id="fch1" path="/home/njm79/media/str1.wav" channel="1" gain="1.2"/>
+	<audiostreamfile id="fch2" path="/home/njm79/media/str1.wav" channel="2"/>
+	<audiostreamfile id="fch3" path="/home/njm79/media/str1.wav" channel="3"/>
+	<audiostreamfile id="fch4" path="/home/njm79/media/str1.wav" channel="4"/>
+	<audiostreamfile id="fch5" path="/home/njm79/media/str1.wav" channel="5"/>
+	<audiostreamfile id="fch6" path="/home/njm79/media/str1.wav" channel="6"/>
 
-	<audiostream id="live1" class="live" port="in1"/>		<!-- JACK connections -->
-	<audiostream id="live2" class="live" port="in2" gain="0.2"/>	
+	<audiostreamlive id="live1" port="in1"/>		<!-- JACK connections -->
+	<audiostreamlive id="live2" port="in2" gain="0.2"/>	
 
     <!-- Loudspeaker -->
-	<loudspeaker id="sp01" port="out1" x="" y="" z="" az="" el="" gain="1.0"/>
-	<loudspeaker id="sp02" port="out2" x="" y="" z="" az="" el="" gain="1.0"/>
-	<loudspeaker id="sp03" port="out3" x="" y="" z="" az="" el="" gain="1.0"/>
-	<loudspeaker id="sp04" port="out4" x="" y="" z="" az="" el="" gain="1.0"/>
-	<loudspeaker id="sp05" port="out5" x="" y="" z="" az="" el="" gain="1.0"/>
+	<loudspeaker id="sp01" port="out1" x="0" y="0" z="0" az="0" el="0" gain="1.0"/>
+	<loudspeaker id="sp02" port="out2" x="0" y="0" z="0" az="0" el="0" gain="1.0"/>
+	<loudspeaker id="sp03" port="out3" x="0" y="0" z="0" az="0" el="0" gain="1.0"/>
+	<loudspeaker id="sp04" port="out4" x="0" y="0" z="0" az="0" el="0" gain="1.0"/>
+	<loudspeaker id="sp05" port="out5" x="0" y="0" z="0" az="0" el="0" gain="1.0"/>
 
-	<loudspeaker id="subs" port="out8" isArray="true" gain="0.3333">	<!-- Multiple speakers, one output channel -->
-		<element id="1" x="" y="" z="" az="" el=""/>			<!-- If isArray="true" then loudspeaker can have aliass -->
+<!--
+	<loudspeaker id="subs" port="out8" isArray="true" gain="0.3333">	
+		<element id="1" x="" y="" z="" az="" el=""/>			
 		<element id="2" x="" y="" z="" az="" el=""/>
 		<element id="3" x="" y="" z="" az="" el=""/>
 	</loudspeaker>
+-->
+    <!-- CASS -->
+	<cass id="5.1-tape-mapping">
+		<alias id="L" ref="fch1"/>	<!-- see Audio Stream, above -->
+		<alias id="C" ref="fch5" gain="1.1"/>
+		<alias id="R" ref="fch2"/>
+		<alias id="Ls" ref="fch3"/>
+		<alias id="Rs" ref="fch4"/>
+		<alias id="LFE" ref="fch6"/>
+	</cass>
 
+	<cass id="stereo-mic-pair">
+		<alias id="L" ref="live1"/>
+		<alias id="R" ref="live2"/>
+	</cass>
+
+	<cass id="stereo-tape-mapping">
+		<alias id="L" ref="fch1"/>
+		<alias id="R" ref="fch2"/>
+	</cass>
     <!-- CLS -->
 	<cls id="Main5-1">
 		<alias id="L" ref="sp01"/>	<!-- alias id is within 'scope' of object -->
@@ -68,27 +85,9 @@ specified inside behaviour <param> tag
 		<alias id="R" ref="sp01"/>
 	</cls>
 
-    <!-- CASS -->
-	<cass id="5.1-tape-mapping">
-		<alias id="L" ref="fch1"/>	<!-- see Audio Stream, above -->
-		<alias id="C" ref="fch5" gain="1.1"/>
-		<alias id="R" ref="fch2"/>
-		<alias id="Ls" ref="fch3"/>
-		<alias id="Rs" ref="fch4"/>
-		<alias id="LFE" ref="fch6"/>
-	</cass>
 
-	<cass id="stereo-mic-pair">
-		<alias id="L" ref="live1"/>
-		<alias id="R" ref="live2"/>
-	</cass>
-
-	<cass id="stereo-tape-mapping">
-		<alias id="L" ref="fch1"/>
-		<alias id="R" ref="fch2"/>
-	</cass>
-
-	<preset id="remap-5-1-tape-mapping">			<!-- on demand remap of 5.1 routing -->
+<!--
+	<preset id="remap-5-1-tape-mapping">			
 		<cass id="5-1-tape-mapping">
 			<alias id="L" ref="fch1"/>
 			<alias id="C" ref="fch3"/>
@@ -98,7 +97,7 @@ specified inside behaviour <param> tag
 			<alias id="LFE" ref="fch4"/>
 		</cass>
 	</preset>
-
+-->
     <!-- Behaviour -->
 	<behaviour id="behaviour1" class="attenuator">	<!-- One fader, one loudspeaker -->
 		<input id="1" ref="stereo-tape-mapping.L"/>
@@ -124,7 +123,7 @@ specified inside behaviour <param> tag
 
 	<behaviour id="mono-circle" class="chase">
 		<input id="1" ref="live2"/>
-		<output id="1" ref="sp01" gain="0.4" any-old-attribute="whatever"/>	<!-- attributes interpreted (or ignored) as appropriate by target behaviour algorithm -->
+		<output id="1" ref="sp01" gain="0.4" />	<!-- attributes interpreted (or ignored) as appropriate by target behaviour algorithm -->
 		<output id="2" ref="sp02"/>
 		<output id="3" ref="sp03"/>
 		<output id="4" ref="sp04"/>
@@ -133,11 +132,11 @@ specified inside behaviour <param> tag
 		<param id="freq" address="/joyright1" value="1.1"/>
 		<param id="phase" value="1.0"/> <!--This one has no osc control assigned and value is threrefore 'locked' at default -->
 	</behaviour>
-
+<!--
 	<preset id="other-control">
 		<behaviour id="mono-circle" class="chase">
-			<param id="phase" value="1.0" address="/joyright5"/> <!-- preset to remap control-->
+			<param id="phase" value="1.0" address="/joyright5"/> 
 		</behaviour>
 	</preset>
-
+-->
 </resoundxml>
