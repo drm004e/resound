@@ -55,6 +55,9 @@ public:
 	virtual void on_close();
 	virtual void on_sample_rate_changed();
 
+	/// start the tcp server and wait for xml requests	
+	int start_tcp_server();
+
 	/// load and then parse some xml config
 	void parse_xml(const char* path, bool isFile);
 private:

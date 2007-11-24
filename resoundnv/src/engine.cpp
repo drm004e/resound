@@ -21,6 +21,19 @@
 #include <iostream>
 #include "ugen_att.hpp"
 
+// Server code in C
+ 
+  #include <sys/types.h>
+  #include <sys/socket.h>
+  #include <netinet/in.h>
+  #include <arpa/inet.h>
+  #include <stdio.h>
+  #include <stdlib.h>
+  #include <strings.h>
+  #include <unistd.h>
+ 
+
+
 
 using namespace Resound;
 
@@ -30,7 +43,10 @@ OSCManager(port)
 	std::cout << "-Starting Resound-\n";
 	//init("Resoundnv");
 	std::cout << "Parsing initialisation script...\n";
-	parse_xml(initScript, true);
+	//parse_xml(initScript, true);
+	// start the xml tcp server
+	start_tcp_server();
+	
 }
 Engine::~Engine(){
 	std::cout << "-Shutdown complete-\n";
@@ -128,5 +144,59 @@ void Engine::parse_xml_node_ugen(const xmlpp::Element* node){
 		std::cout << "UGen:" << strId << " - " << strType << std::endl;
 		m_uGens[strId] = UGenPtr(new UGenAtt(this));
 	}
+}
+
+int Engine::start_tcp_server(){
+	int32_t listenSocket = ::socket(PF_INET, SOCK_STREAM, 0);
+
+	if(-1 == listenSocket){
+		printf("can not create socket");
+		exit(-1);
+	}
+
+	sockaddr_in stSockAddr;
+	bzero(&stSockAddr, sizeof(stSockAddr));
+
+	stSockAddr.sin_family = AF_INET;
+	stSockAddr.sin_port = htons(1100);
+	stSockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+
+	if(-1 == ::bind(listenSocket,(struct sockaddr*) &stSockAddr, sizeof(stSockAddr))){
+		printf("error bind failed");
+		exit(-1);
+	}
+
+	if(-1 == ::listen(listenSocket, 10)){
+		printf("error listen failed");
+		exit(-1);
+	}
+
+	for(;;){
+		int32_t clientSocket = ::accept(listenSocket, NULL, NULL);
+		sockaddr_in clientAddr;
+		socklen_t s = sizeof(sockaddr_in);
+		getpeername(clientSocket, (sockaddr*)&clientAddr, &s);
+		std::cout << "Accept socket from" << inet_ntoa(clientAddr.sin_addr) << std::endl;
+		if(0 > clientSocket)
+		{
+			printf("error accept failed");
+			exit(-1);
+		}
+
+		// perform read write operations ...
+		char buffer[256];
+		int n = recv(clientSocket,buffer,255,0);
+		buffer[n]='\0'; // null terminate the string
+		std::cout << "recv: "<< buffer << std::endl; 
+
+		// now send some stuff back
+		const char* str="<b>Server comms is ok</b>";
+		std::cout << "send: " << str << std::endl; 
+		::send(clientSocket,str,strlen(str),0);
+
+		::shutdown(clientSocket, 2);
+		::close(clientSocket);
+	}
+	return 0;
 }
 
