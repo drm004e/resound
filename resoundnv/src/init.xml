@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<resoundnvxml>
+	<!-- some input sources one per channel of each file we are using-->
+	<source id="mainfile_0" type="file" path="/audio/testaudio.wav" channel="0"/>
+	<source id="mainfile_1" type="file" path="/audio/testaudio.wav" channel="1"/>
+	<source id="mainfile_2" type="file" path="/audio/testaudio.wav" channel="2"/>
+	<source id="mainfile_3" type="file" path="/audio/testaudio.wav" channel="3"/>
+	<source id="mainfile_4" type="file" path="/audio/testaudio.wav" channel="4"/>
+	<source id="mainfile_5" type="file" path="/audio/testaudio.wav" channel="5"/>
+	<!-- live input source -->
+	<source id="soloist" type="live" port="pcm_1" gain="1.0"/>
+	
+	<!-- some spkrs, define the id of the speaker and its physical connection-->
+	<spkr id="ls0" port="1" gain="1.0"/>
+	<spkr id="ls1" port="1" gain="1.0"/>
+	<spkr id="ls2" port="2" gain="1.0"/>
+	<spkr id="ls3" port="3" gain="1.0"/>
+	<spkr id="ls4" port="4" gain="1.0"/>
+	<spkr id="ls5" port="7" gain="1.0"/>
+	<spkr id="ls6" port="10" gain="1.0"/>
+	<spkr id="ls7" port="11" gain="1.0"/>
+	<spkr id="ls8" port="12" gain="1.0"/>
+	<spkr id="ls9" port="13" gain="1.0"/>
+	<spkr id="ls10" port="14" gain="1.0"/>
+	<spkr id="ls11" port="17" gain="1.0"/>
+	<!-- This is defining a 5.1 coherency from some of the spkrs
+	     I.E under the context of main5.1 the speakers are tagged with certain names-->
+	<cset id="main5.1" type="spkr">
+		<ref id="ls0" tag="L" gain="1.0"/>
+		<ref id="ls1" tag="R" gain="1.0"/>
+		<ref id="ls2" tag="RL" gain="1.0"/>
+		<ref id="ls3" tag="RR" gain="1.0"/>
+		<ref id="ls4" tag="C" gain="1.0"/>
+		<ref id="ls5" tag="LFE" gain="1.0"/>
+	</cset>
+	<!--here we have a different taging. Under the content of mains we use ls0 and ls1 as a stereo left right pair-->
+	<cset id="mains" type="spkr">
+		<ref id="ls0" tag="L" gain="1.0"/>
+		<ref id="ls1" tag="R" gain="1.0"/>
+	</cset>
+	<!--here we have a different taging. Under the content of rears we use ls2 and ls3 as a stereo left right pair-->
+	<cset id="rears" type="spkr">
+		<ref id="ls2" tag="L" gain="1.0"/>
+		<ref id="ls3" tag="R" gain="1.0"/>
+	</cset>
+
+	<!-- now for some source sets-->
+	<cset id="mainfile_5.1" type="source">
+		<ref id="mainfile_0"  tag="L" gain="1.0"/>
+		<ref id="mainfile_1"  tag="R" gain="1.0"/>
+		<ref id="mainfile_2"  tag="RL" gain="1.0"/>
+		<ref id="mainfile_3"  tag="RR" gain="1.0"/>
+		<ref id="mainfile_4"  tag="C" gain="1.0"/>
+		<ref id="mainfile_5"  tag="LFE" gain="1.0"/>
+	</cset>
+	<cset id="mainfile_stereo" type="source">
+		<ref id="mainfile_0" channel="0" tag="L" gain="1.0"/>
+		<ref id="mainfile_1" channel="1" tag="R" gain="1.0"/>
+	</cset>
+	<!--this is a ugen that is going to map the 5.1 representation of the file onto the main 5.1 rig-->
+	<ugen id="ug1" type="att">
+		<input id="mainfile_5.1"/>
+		<output id="main5.1"/>
+		<arg id="level" osc="/fader1"/>
+	</ugen>
+	<!--this is a ugen that is going to map the stereo representation of the file onto 2 outputs with proportional values-->
+	<ugen id="ug2" type="att">
+		<input id="mainfile_stereo"/>
+		<output id="mains" gain="1.0"/>
+		<output id="rears" gain="0.5"/>
+		<arg id="level" osc="/fader2"/>
+	</ugen>
+	<!-- this is a setup for a stereo to main 8 configuration-->
+	<ugen id="ug_main8L" type="att">
+		<input id="mainfile_stereo" tag="L"/>
+		<output id="mains" tag="L"/>
+		<arg id="level" osc="/fader1"/>
+	</ugen>
+	<ugen id="ug_main8R" type="att">
+		<input id="mainfile_stereo" tag="R"/>
+		<output id="mains" tag="R"/>
+		<arg id="level" osc="/fader2"/>
+	</ugen>
+	<ugen id="ug_main8RL" type="att">
+		<input id="mainfile_stereo" tag="L"/>
+		<output id="rear" tag="L"/>
+		<arg id="level" osc="/fader3"/>
+	</ugen>
+	<ugen id="ug_main8RR" type="att">
+		<input id="mainfile_stereo" tag="R"/>
+		<output id="rear" tag="R"/>
+		<arg id="level" osc="/fader4"/>
+	</ugen>
+	<!--Patches can be used to specifiy modifications to the basic setup that can be switched between-->
+	<patch id="default">
+		<source id="mainfile_0" type="file" path="/audio/piece1.wav" channel="0"/>
+		<source id="mainfile_1" type="file" path="/audio/piece1.wav" channel="1"/>
+	</patch>
+	<patch id="piece1">
+		<source id="mainfile_0" type="file" path="/audio/piece2.wav" channel="0"/>
+		<source id="mainfile_1" type="file" path="/audio/piece2.wav" channel="1"/>
+	</patch>
+	<patch id="piece2">
+		<source id="mainfile_0" type="file" path="/audio/piece3.wav" channel="0"/>
+		<source id="mainfile_1" type="file" path="/audio/piece3.wav" channel="1"/>
+	</patch>
+	<patch id="piece3">
+		<source id="mainfile_0" type="file" path="/audio/piece4.wav" channel="0"/>
+		<source id="mainfile_1" type="file" path="/audio/piece4.wav" channel="1"/>
+	</patch>
+</resoundnvxml>
