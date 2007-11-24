@@ -29,45 +29,54 @@
 
 #include "jackengine.hpp"
 #include "oscmanager.hpp"
-#include "audiostream.hpp"
-#include "ugen.hpp"
+#include "core_objects.hpp"
 
 namespace Resound{
 
-typedef std::map<std::string, AudioSource> AudioSourceMap;
-typedef std::map<std::string, CoherentSet> CoherentSetMap;
-typedef std::map<std::string, UGenPtr > UGenMap;
-
-class Engine : public OSCManager, public JackEngine, public IUGenManager{
+/// the engine class is the main workhorse of the server. It sets up OSC, TCP comms, JACK and xml DOM parsing and brings them all together
+class Engine : public OSCManager, public JackEngine{
 private:
-	
-	AudioSourceMap m_audioSources;
-	CoherentSetMap m_coherentSets; 
-	UGenMap m_uGens; 
+	xmlpp::Document* m_doc; ///< the main DOM document object
 public:
+	/// constructor
 	Engine(const char* port, const char* initScript);
+
+	/// destructor	
 	virtual ~Engine();
-	// --------------------------- JackEngine callbacks
+
+	// JackEngine callbacks
+	/// The main dsp process callback	
 	virtual int process(jack_nframes_t nframes);
+	/// called on initikalisation of jackd
 	virtual void on_init();
+	/// called when dsp processing begins
 	virtual void on_start();
+	/// called when dsp processing stops
 	virtual void on_stop();
+	/// called when jack is closed
 	virtual void on_close();
+	/// called when the sample rate has changed
 	virtual void on_sample_rate_changed();
 
 	/// start the tcp server and wait for xml requests	
 	int start_tcp_server();
 
-	/// load and then parse some xml config
-	void parse_xml(const char* path, bool isFile);
-private:
-	/// recursive node parsing
-	void parse_xml_node(const xmlpp::Node* node); ///<entry
-	void parse_xml_node_source(const xmlpp::Element* node); ///<decode audioSource
-	void parse_xml_node_spkr(const xmlpp::Element* node); ///<decode audioSource
-	void parse_xml_node_cset(const xmlpp::Element* node); ///<decode audioSourceset
-	void parse_xml_node_ugen(const xmlpp::Element* node); ///<decode ugen
+	/// parse and merge xml data
+	/// merge an xml file into the current tree
+	/// form a temporary DOM and parse it importing nodes into the main tree
+	void parse_xml_file(const char* path);
+	
+	/// parse and merge xml data
+	/// merge an xml string into the current tree
+	/// form a temporary DOM and parse it importing nodes into the main tree
+	void parse_xml_string(const std::string &str);
 
+	/// get a string containing the current DOM in xml form
+	std::string get_xml_string();
+	
+private:
+	/// recursive node parsing function
+	void parse_xml_node(const xmlpp::Node* node);
 
 };
 }

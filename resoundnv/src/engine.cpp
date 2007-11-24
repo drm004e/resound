@@ -19,18 +19,16 @@
 
 #include "engine.hpp"
 #include <iostream>
-#include "ugen_att.hpp"
 
-// Server code in C
- 
-  #include <sys/types.h>
-  #include <sys/socket.h>
-  #include <netinet/in.h>
-  #include <arpa/inet.h>
-  #include <stdio.h>
-  #include <stdlib.h>
-  #include <strings.h>
-  #include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <strings.h>
+#include <unistd.h>
+#include <cstring>
  
 
 
@@ -38,17 +36,19 @@
 using namespace Resound;
 
 Engine::Engine(const char* port, const char* initScript) :
-OSCManager(port)
+OSCManager(port),
+m_doc(new xmlpp::Document()) // an empty document
 {
+	m_doc->create_root_node("resoundxml");
 	std::cout << "-Starting Resound-\n";
 	//init("Resoundnv");
 	std::cout << "Parsing initialisation script...\n";
-	//parse_xml(initScript, true);
+	parse_xml_file(initScript);
 	// start the xml tcp server
-	start_tcp_server();
-	
+	start_tcp_server(); // initialises a thread
 }
 Engine::~Engine(){
+	if(m_doc) delete m_doc;
 	std::cout << "-Shutdown complete-\n";
 }
 
@@ -68,17 +68,13 @@ void Engine::on_close(){
 void Engine::on_sample_rate_changed(){
 }
 
-void Engine::parse_xml(const char* path, bool isFile){
+void Engine::parse_xml_file(const char* path){
 	try
 	{
 		xmlpp::DomParser parser;
 		parser.set_validate(false);
 		parser.set_substitute_entities(); //We just want the text to be resolved/unescaped automatically.
-		if(isFile){
-			parser.parse_file(path);
-		} else {
-			parser.parse_memory(path);
-		}
+		parser.parse_file(path);
 		if(parser){
 			const xmlpp::Node* pNode = parser.get_document()->get_root_node(); //deleted by DomParser.
 			parse_xml_node(pNode);
@@ -86,6 +82,27 @@ void Engine::parse_xml(const char* path, bool isFile){
 	}catch(const std::exception& ex){
 		std::cout << "XML parsing exception: " << ex.what() << std::endl;
 	}
+}
+
+void Engine::parse_xml_string(const std::string &str){
+	try
+	{
+		xmlpp::DomParser parser;
+		parser.set_validate(false);
+		parser.set_substitute_entities(); //We just want the text to be resolved/unescaped automatically.
+		parser.parse_memory(str);
+		if(parser){
+			const xmlpp::Node* pNode = parser.get_document()->get_root_node(); //deleted by DomParser.
+			parse_xml_node(pNode);
+		}
+	}catch(const std::exception& ex){
+		std::cout << "XML parsing exception: " << ex.what() << std::endl;
+	}
+}
+
+std::string Engine::get_xml_string(){
+	assert(m_doc);
+	return m_doc->write_to_string();
 }
 
 void Engine::parse_xml_node(const xmlpp::Node* node){
@@ -103,48 +120,17 @@ void Engine::parse_xml_node(const xmlpp::Node* node){
 		for(xmlpp::Node::NodeList::iterator iter = list.begin(); iter != list.end(); ++iter){
 			Glib::ustring nodename = (*iter)->get_name();
 			if(nodename == "source"){
-				parse_xml_node_source(dynamic_cast<const xmlpp::Element*>(*iter));
+				//parse_xml_node_source(dynamic_cast<const xmlpp::Element*>(*iter));
 			} else if(nodename == "cset"){
-				parse_xml_node_cset(dynamic_cast<const xmlpp::Element*>(*iter));
+				//parse_xml_node_cset(dynamic_cast<const xmlpp::Element*>(*iter));
 			} else if(nodename == "ugen"){
-				parse_xml_node_ugen(dynamic_cast<const xmlpp::Element*>(*iter));
+				//parse_xml_node_ugen(dynamic_cast<const xmlpp::Element*>(*iter));
 			} else { // unknown
 			}
 		}
 	}
 }
-void Engine::parse_xml_node_source(const xmlpp::Element* node){
-	
-	// figure out the type of source, make one and set it up
-	const xmlpp::Attribute* id = node->get_attribute("id");
-	const xmlpp::Attribute* type = node->get_attribute("type");
-	if(id){
-		std::string strId = id->get_value();
-		std::string strType = type->get_value();
-		std::cout << "Source: " << strId << " - " << strType << std::endl;
-		m_audioSources[strId] = AudioSource(); 
-	}
-}
-void Engine::parse_xml_node_cset(const xmlpp::Element* node){
-	const xmlpp::Attribute* id = node->get_attribute("id");
-	const xmlpp::Attribute* type = node->get_attribute("type");
-	if(id){
-		std::string strId = id->get_value();
-		std::string strType = type->get_value();
-		std::cout << "CoherentSet: " << strId << " - " << strType << std::endl;
-		m_coherentSets[strId] = CoherentSet(); 
-	}
-}
-void Engine::parse_xml_node_ugen(const xmlpp::Element* node){
-	const xmlpp::Attribute* id = node->get_attribute("id");
-	const xmlpp::Attribute* type = node->get_attribute("type");
-	if(id){
-		std::string strId = id->get_value();
-		std::string strType = type->get_value();
-		std::cout << "UGen:" << strId << " - " << strType << std::endl;
-		m_uGens[strId] = UGenPtr(new UGenAtt(this));
-	}
-}
+
 
 int Engine::start_tcp_server(){
 	int32_t listenSocket = ::socket(PF_INET, SOCK_STREAM, 0);
@@ -176,7 +162,7 @@ int Engine::start_tcp_server(){
 		sockaddr_in clientAddr;
 		socklen_t s = sizeof(sockaddr_in);
 		getpeername(clientSocket, (sockaddr*)&clientAddr, &s);
-		std::cout << "Accept socket from" << inet_ntoa(clientAddr.sin_addr) << std::endl;
+		std::cout << "Accept socket from " << inet_ntoa(clientAddr.sin_addr) << std::endl;
 		if(0 > clientSocket)
 		{
 			printf("error accept failed");
@@ -188,11 +174,20 @@ int Engine::start_tcp_server(){
 		int n = recv(clientSocket,buffer,255,0);
 		buffer[n]='\0'; // null terminate the string
 		std::cout << "recv: "<< buffer << std::endl; 
+		if(std::strncmp(buffer,"GET ",4)==0){
+			const char* str="<html><head></head><body>Resound server is running</body></html>";
+			::send(clientSocket,str,strlen(str),0);
+		} else if (std::strncmp(buffer,"SETXML",6)==0){
+			std::cout << "SETXML: " << buffer << std::endl;
+			const char* str="OK"; // or we return FAIL Reason it failed
+			::send(clientSocket,str,strlen(str),0);
+		} else if (std::strncmp(buffer,"GETXML",6)==0){
+			std::string xml=m_doc->write_to_string();
+			::send(clientSocket,xml.c_str(),xml.size(),0);
+		} else {
+			std::cout << "Unknown header: " << buffer << std::endl; 
+		}
 
-		// now send some stuff back
-		const char* str="<b>Server comms is ok</b>";
-		std::cout << "send: " << str << std::endl; 
-		::send(clientSocket,str,strlen(str),0);
 
 		::shutdown(clientSocket, 2);
 		::close(clientSocket);

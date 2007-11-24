@@ -1,1 +1,14 @@
+==TCP communication:==
+The connection based server protocol:
+client sends header block containing command: GET XML or STATUS
+server parses the header block:
+GET then this is a standard http request and we respond with a complete http response containing a very basic web page about server status
+SETXML (Send resound xml) sends a block of resound xml which conforms to the resoundnv.xsd schema. this xml is merged into the current DOM
+GETXML (get resound xml) indicates that the client wants some of the current DOM in xml format the client can specify a base object name if it is only interested in one of the main object types
 
+==Parsing and merging the tree==
+The server contains a single DOM object that reflects the current system status
+LibXML++ does not seem to have a way of having your own object classes inheriting from xmlpp::nodes and getting created from factory methods. The exact creation and deletion model is unclear and we have very strict requirements due to audio threading etc. We are pairing DynamicObjects to nodes in the DOM. We use an abstract class to do this. It is the responsability of each DynamicObject to keep the DOM node up to date with live changes (i.e OSC or runtime related). During the merge stage any DynamicObject may be required to refresh its state from the DOM node. The merging system is responsable for creation and deletion of objects and maintaining consistancy between DOM and DynamicObjects.
+
+The method:
+All dynamic objects are child nodes of the main root node <resound>. For each node we find first we check for an id attribute. This attribute reffers to a named dynamic object instance and is a unique identifier for an object inside the engine. We can use the id to check for an object against a map of id against dynamic object. If we find an object under that name then we are updating an existing object. If we cant find one then we are creating a new dynamic object. If we can't find an id then we are creating a new node with an automatically generated unique id code. Once created from an automatic unique id then the client must update its xml reference to obtain the object name. If we find the <delete> eleement then we are expecting to delete an object from the DOM and its DynamicObject.

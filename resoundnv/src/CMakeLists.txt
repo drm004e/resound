@@ -50,10 +50,8 @@ ENDIF(UNIX)
 
 # build the excecutable
 SET(sourcefiles
-	ugen.hpp
-	ugen.cpp
-	ugen_att.hpp
-	ugen_att.cpp
+	core_objects.hpp
+	core_objects.cpp
 	engine.hpp
 	engine.cpp
 	jackengine.hpp
