@@ -46,7 +46,21 @@ public:
 	virtual const char* what() const throw() {return m_msg;}
 };
 
-
+inline std::string MAKE_ATTRIBUTE_STRING(const std::string& name, const std::string& value){
+	std::stringstream s;
+	s << " "<<name<<"=\""<<value<<"\"";
+	return s.str();
+}
+inline std::string MAKE_ATTRIBUTE_STRING(const std::string& name, float value){
+	std::stringstream s;
+	s << " "<<name<<"=\""<<value<<"\"";
+	return s.str();
+}
+inline std::string MAKE_ATTRIBUTE_STRING(const std::string& name, int value){
+	std::stringstream s;
+	s << " "<<name<<"=\""<<value<<"\"";
+	return s.str();
+}
 /// dynamic objects are objects that are configured and contructed from a libxml++ parser
 /// dynamic objects are stored by the engine against unique ids
 /// the dynamic object system acts as a factory for nested objects
@@ -95,6 +109,12 @@ public:
 
 	/// a static factory for empty DynamicObjects
 	static DynamicObjectPtr factory(const std::string& id, DynamicObject* parent);
+
+	/// overload for attribute handling
+	virtual void on_attribute_changed(const std::string& name, const std::string& value){};
+	
+	/// overload this for attribute printing
+	virtual void write_attributes(std::stringstream& xml);
 };
 
 

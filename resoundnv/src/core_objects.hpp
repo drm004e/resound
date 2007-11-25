@@ -26,8 +26,13 @@ namespace Resound{
 
 /// a base class for audio streams
 class AudioStream : public DynamicObject{
+	float m_gain;
 public:
 	AudioStream(const std::string& id, DynamicObject* parent) : DynamicObject(id,parent){}
+	/// overload for attribute handling
+	virtual void on_attribute_changed(const std::string& name, const std::string& value){if(name=="gain") m_gain = atof(value.c_str());}
+	/// overload this for attribute printing
+	virtual void write_attributes(std::stringstream& xml){DynamicObject::write_attributes(xml); xml << MAKE_ATTRIBUTE_STRING("gain",m_gain);};
 };
 
 /// a file stream
@@ -35,6 +40,7 @@ class AudioStreamFile : public AudioStream{
 public:
 	AudioStreamFile(const std::string& id, DynamicObject* parent) : AudioStream(id,parent){}
 	static DynamicObjectPtr factory(const std::string& id, DynamicObject* parent){ return DynamicObjectPtr(new AudioStreamFile(id,parent));}
+
 };
 
 /// a live audio stream

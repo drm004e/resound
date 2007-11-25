@@ -74,20 +74,21 @@ void DynamicObject::rename_child(const std::string& id, const std::string& newNa
 void DynamicObject::parse_xml(const xmlpp::Node* node){
 	// when we enter here the attributes and elements in the node should relate to this object
 
-	// inform the inheriting class about any attributes via the atribute virtual function
-	// for each attribute call the virtual function
-	//for(;;){
-		//this->set_attribute(attributeName, attributeValue);
-	//}
-  	const xmlpp::TextNode* nodeText = dynamic_cast<const xmlpp::TextNode*>(node);
-  	const xmlpp::CommentNode* nodeComment = dynamic_cast<const xmlpp::CommentNode*>(node);
- 	Glib::ustring nodename = node->get_name();
-	if(nodeText || nodeComment || nodename.empty()){ //ignore the indenting and comments
-		return;
-	}
-	const xmlpp::ContentNode* nodeContent = dynamic_cast<const xmlpp::ContentNode*>(node);
-	if(!nodeContent)
+	const xmlpp::Element* nodeElement = dynamic_cast<const xmlpp::Element*>(node);
+	if(nodeElement)
 	{
+		// inform the inheriting class about any attributes via the atribute virtual function
+		// for each attribute call the virtual function
+		const xmlpp::Element::AttributeList& atList( nodeElement->get_attributes()); 
+		for(xmlpp::Element::AttributeList::const_iterator it = atList.begin();
+			it != atList.end();
+			it++){
+			const xmlpp::Attribute* attribute = *it;
+			Glib::ustring attributeName = attribute->get_name();
+			Glib::ustring attributeValue = attribute->get_value();
+			this->on_attribute_changed(attributeName, attributeValue);
+		}
+		
 		//Recurse through child nodes:
 		xmlpp::Node::NodeList list = node->get_children();
 		for(xmlpp::Node::NodeList::iterator iter = list.begin(); iter != list.end(); ++iter){
@@ -149,7 +150,9 @@ DynamicObjectPtr DynamicObject::get_object_by_id(const std::string& id){
 void  DynamicObject::get_xml_string(std::stringstream& xml,int indentation){
 	for(int i = 0; i < indentation; ++i)
     		xml << " ";
-	xml << "<" << m_id << " class=\""<< m_classId <<"\">\n";
+	xml << "<" << m_id;
+	this->write_attributes(xml);
+	xml << ">\n";
 	// foreach child
 	DynamicObjectMap::iterator it = m_children.begin();
 	for(;it!= m_children.end(); it++){
@@ -169,4 +172,9 @@ void DynamicObject::register_factory(const std::string& classId, DynamicObjectFa
 
 /*static*/DynamicObjectPtr DynamicObject::factory(const std::string& id, DynamicObject* parent){
 	return DynamicObjectPtr(new DynamicObject(id,parent));
+}
+
+void DynamicObject::write_attributes(std::stringstream& xml){
+	// write the class
+	xml << MAKE_ATTRIBUTE_STRING("class",m_classId);
 }
