@@ -31,7 +31,7 @@ class DynamicObject;
 typedef boost::shared_ptr<DynamicObject> DynamicObjectPtr;
 
 /// a factory function pointer
-typedef DynamicObjectPtr (*DynamicObjectFactory)(const std::string& id);
+typedef DynamicObjectPtr (*DynamicObjectFactory)(const std::string& id, DynamicObject* parent);
 
 /// a map of factory ptrs again class ids
 typedef std::map<std::string, DynamicObjectFactory> DynamicObjectFactoryMap;
@@ -39,19 +39,13 @@ typedef std::map<std::string, DynamicObjectFactory> DynamicObjectFactoryMap;
 /// a map of ids against object ptrs
 typedef std::map<std::string, DynamicObjectPtr> DynamicObjectMap;
 
-class DynamicObjectUnknownClassException : public std::exception{
-	public: const char* what(){return "An object class was specified that doesnt exist in the current scope";}
+class DynamicObjectException : public std::exception{
+	const char* m_msg;
+public:
+	DynamicObjectException(const char* msg="Unspecified DynamicObjectException") : m_msg(msg){}
+	virtual const char* what() const throw() {return m_msg;}
 };
-class DynamicObjectDuplicateClassException : public std::exception{
-	public: const char* what(){return "A factory name with this name already exists";}
-};
-class DynamicObjectDuplicateObjectException : public std::exception{
-	public: const char* what(){return "An object with this name already exists";}
-};
-class DynamicObjectBadIdException : public std::exception
-{
-	public: const char* what(){return "A DynamicObject was not found at this scope";}
-};
+
 
 /// dynamic objects are objects that are configured and contructed from a libxml++ parser
 /// dynamic objects are stored by the engine against unique ids
@@ -59,19 +53,24 @@ class DynamicObjectBadIdException : public std::exception
 class DynamicObject{
 	DynamicObjectFactoryMap m_factories;
 	DynamicObjectMap m_children;
-	DynamicObjectPtr m_parent;
+	DynamicObject* m_parent;
 	std::string m_id; ///< the id of the object
 	std::string m_classId; /// the rtti class string as it appears in xml
 public:
 	/// construct
 	DynamicObject();
 	/// construct
-	DynamicObject(const std::string& id);
+	DynamicObject(const std::string& id, DynamicObject* parent = 0);
 	/// destruct
 	virtual ~DynamicObject();
 
-	/// create a child node, in response to the 'new' xml command
+	/// attach a child DynamicObject directly. used by classes to create their own objects without the factory
+	/// also used by create_child
+	virtual void attach_child(DynamicObjectPtr object, const std::string& id);
+
+	/// create and attach a child node via a factory, in response to the 'new' xml command
 	/// pass in object class id to look up in factory and id
+	/// factories must be registered with register_factory in the current object scope
 	virtual void create_child(const std::string& objectClass, const std::string& id);
 
 	/// destroys a child node by name
@@ -95,7 +94,7 @@ public:
 	void register_factory(const std::string& classId, DynamicObjectFactory factory);
 
 	/// a static factory for empty DynamicObjects
-	static DynamicObjectPtr factory(const std::string& id);
+	static DynamicObjectPtr factory(const std::string& id, DynamicObject* parent);
 };
 
 

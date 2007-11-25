@@ -37,7 +37,7 @@ using namespace Resound;
 
 Engine::Engine(const char* port, const char* initScript) :
 //OSCManager(port),
-m_root(new DynamicObject("resound")) // an empty document
+m_root(new ResoundRoot("resound")) // an empty document
 {
 	
 	std::cout << "-Starting Resound-\n";
@@ -46,7 +46,7 @@ m_root(new DynamicObject("resound")) // an empty document
 	parse_xml_file(initScript);
 	std::cout << get_xml_string();
 	// start the xml tcp server
-	//start_tcp_server(); // initialises a thread
+	start_tcp_server(); // initialises a thread
 }
 Engine::~Engine(){
 
@@ -86,18 +86,14 @@ void Engine::parse_xml_file(const char* path){
 }
 
 void Engine::parse_xml_string(const std::string &str){
-	try
-	{
-		xmlpp::DomParser parser;
-		parser.set_validate(false);
-		parser.set_substitute_entities(); //We just want the text to be resolved/unescaped automatically.
-		parser.parse_memory(str);
-		if(parser){
-			const xmlpp::Node* pNode = parser.get_document()->get_root_node(); //deleted by DomParser.
-			m_root->parse_xml(pNode);
-		}
-	}catch(const std::exception& ex){
-		std::cout << "XML parsing exception: " << ex.what() << std::endl;
+
+	xmlpp::DomParser parser;
+	parser.set_validate(false);
+	parser.set_substitute_entities(); //We just want the text to be resolved/unescaped automatically.
+	parser.parse_memory(str);
+	if(parser){
+		const xmlpp::Node* pNode = parser.get_document()->get_root_node(); //deleted by DomParser.
+		m_root->parse_xml(pNode);
 	}
 }
 
@@ -145,8 +141,10 @@ int Engine::start_tcp_server(){
 		}
 
 		// perform read write operations ...
-		char buffer[256];
-		int n = recv(clientSocket,buffer,255,0);
+		const int BUFFER_SIZE = 4096; 
+		char buffer[BUFFER_SIZE];
+		int n = recv(clientSocket,buffer,BUFFER_SIZE-1,0);
+		if(n >= BUFFER_SIZE-1) std::cout << "XML Exceeds input buffer!";
 		buffer[n]='\0'; // null terminate the string
 		std::cout << "recv: "<< buffer << std::endl; 
 		if(std::strncmp(buffer,"GET ",4)==0){
@@ -154,8 +152,17 @@ int Engine::start_tcp_server(){
 			::send(clientSocket,str,strlen(str),0);
 		} else if (std::strncmp(buffer,"SETXML",6)==0){
 			std::cout << "SETXML: " << buffer << std::endl;
-			const char* str="OK"; // or we return FAIL Reason it failed
-			::send(clientSocket,str,strlen(str),0);
+			try{
+				std::string msg(buffer);
+				parse_xml_string(msg.substr(6));
+				const char* str="OK"; // or we return FAIL Reason it failed
+				::send(clientSocket,str,strlen(str),0);
+			}catch(const std::exception& ex){
+				std::cout << "XML parsing exception: " << ex.what() << std::endl;
+				::send(clientSocket,ex.what(),strlen(ex.what()),0);
+			}
+
+
 		} else if (std::strncmp(buffer,"GETXML",6)==0){
 			std::string xml=get_xml_string();
 			::send(clientSocket,xml.c_str(),xml.size(),0);

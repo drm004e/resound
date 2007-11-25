@@ -1,6 +1,14 @@
 <resound>
+	<new class="audiostreamfile" id="as1"/>
+	<new class="audiostreamfile" id="as2"/>
 	<new class="DynamicObject" id="genelec1"/>
-	<new class="DynamicObject" id="genelec2"/>
+	<new class="DynamicObject" id="genelec2">
+		<new class="DynamicObject" id="ott1">
+			<new class="DynamicObject" id="rtt1"/>
+		</new>
+		<new class="DynamicObject" id="ott2"/>
+		<new class="DynamicObject" id="ott3"/>	
+	</new>
 	<new class="DynamicObject" id="genelec3"/>
 	<genelec1>
 		<new class="DynamicObject" id="thing1"/>
@@ -12,4 +20,9 @@
 	<genelec1><thing1/></genelec1>
 	<genelec1.thing2/>
 	<genelec1.thing3/>
+	<genelec2.ott1.rtt1>
+		<new class="DynamicObject" id="thing1"/>
+		<new class="DynamicObject" id="thing2"/>
+		<new class="DynamicObject" id="thing3"/>
+	</genelec2.ott1.rtt1>
 </resound>

@@ -41,25 +41,21 @@ class ResoundLink
 		}
 	}
 	/// send a block or resound xml	to the resound server
-	/// returns true on success and false on fail
+	/// returns OK or the exception thrown by the server
 	function set_xml($xml){
 		$fp = @stream_socket_client($this->serverAddress, $errno, $errstr, 30);
 		if ($fp) {
 			$this->serverIsActive = true;
-			fwrite($fp, "SETXML ".$xml);
+			fwrite($fp, "SETXML $xml");
 			$result='';
 			while (!feof($fp)) {
 				$result=fgets($fp, 1024);
 			}
 			fclose($fp);
-			if($result == 'OK'){
-				return true;
-			} else {
-				return false;
-			}
+			return $result;
 		} else {
 			$this->serverIsActive = false;
-			return false;
+			return null;
 		}
 	}
 	/// returns xml received from the resound server
@@ -96,9 +92,15 @@ class ResoundLink
 $link = new ResoundLink("tcp://localhost:1100");
 $link->ping();
 echo "<h2>Get request returned:</h2><p><xmp>".$link->get_request()."</xmp></p>\n";
-echo "<h2>setxml request returned:</h2><p>".$link->set_xml('<resoundxml><filestream id="test" path="somefile.wav" channel="0"/></resoundxml>')."</p>\n";
-echo "<h2>xml request returned:</h2><p><xmp>".$link->get_xml()."</xmp></p>";
+$xml = stripslashes($_POST['xml']);
+echo "<h2>setxml request:</h2><p>".$link->set_xml($xml)."</p>\n";
+echo "<p><xmp>$xml</xmp></p>";
+echo "<h2>resound xml tree:</h2><p><xmp>".$link->get_xml()."</xmp></p>";
 ?>
+<form action="index.php" method="post">
+<textarea name="xml" cols="80" rows="10"><?=$xml?></textarea>
+<input type="submit" vlaue="submit"/>
+</form>
 <p>
 Server address: <?=$link->get_address();?><br/>
 Server status:  <?=$link->is_active();?><br/>

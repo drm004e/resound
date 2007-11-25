@@ -26,10 +26,15 @@ namespace Resound{
 
 /// a base class for audio streams
 class AudioStream : public DynamicObject{
+public:
+	AudioStream(const std::string& id, DynamicObject* parent) : DynamicObject(id,parent){}
 };
 
 /// a file stream
 class AudioStreamFile : public AudioStream{
+public:
+	AudioStreamFile(const std::string& id, DynamicObject* parent) : AudioStream(id,parent){}
+	static DynamicObjectPtr factory(const std::string& id, DynamicObject* parent){ return DynamicObjectPtr(new AudioStreamFile(id,parent));}
 };
 
 /// a live audio stream
@@ -52,6 +57,13 @@ class CoherentLoudspeakerSet : public CoherentSet{
 class Behaviour: public DynamicObject{
 };
 
+/// the root level object
+class ResoundRoot : public DynamicObject{
+public:
+	ResoundRoot(const std::string& id) : DynamicObject(id){
+		register_factory("audiostreamfile", AudioStreamFile::factory);
+	}
+};
 
 } // end namespace
 
