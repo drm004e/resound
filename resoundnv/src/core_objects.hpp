@@ -26,28 +26,58 @@ namespace Resound{
 
 /// a base class for audio streams
 class AudioStream : public DynamicObject{
+protected:
 	float m_gain;
 public:
 	AudioStream(const std::string& id, DynamicObject* parent) : DynamicObject(id,parent){}
 	/// overload for attribute handling
-	virtual void on_attribute_changed(const std::string& name, const std::string& value){if(name=="gain") m_gain = atof(value.c_str());}
+	virtual void on_attribute_changed(const std::string& name, const std::string& value);
 	/// overload this for attribute printing
-	virtual void write_attributes(std::stringstream& xml){DynamicObject::write_attributes(xml); xml << MAKE_ATTRIBUTE_STRING("gain",m_gain);};
+	virtual void write_attributes(std::stringstream& xml);
 };
 
 /// a file stream
 class AudioStreamFile : public AudioStream{
+protected:
+	std::string m_path;
 public:
 	AudioStreamFile(const std::string& id, DynamicObject* parent) : AudioStream(id,parent){}
 	static DynamicObjectPtr factory(const std::string& id, DynamicObject* parent){ return DynamicObjectPtr(new AudioStreamFile(id,parent));}
-
+	/// overload for attribute handling
+	virtual void on_attribute_changed(const std::string& name, const std::string& value);
+	/// overload this for attribute printing
+	virtual void write_attributes(std::stringstream& xml);
 };
 
 /// a live audio stream
 class AudioStreamLive : public AudioStream{
+protected:
+	std::string m_port;
+public:
+	AudioStreamLive(const std::string& id, DynamicObject* parent) : AudioStream(id,parent){}
+	static DynamicObjectPtr factory(const std::string& id, DynamicObject* parent){ return DynamicObjectPtr(new AudioStreamLive(id,parent));}
+	/// overload for attribute handling
+	virtual void on_attribute_changed(const std::string& name, const std::string& value);
+	/// overload this for attribute printing
+	virtual void write_attributes(std::stringstream& xml);
 };
 /// loudspeaker
 class Loudspeaker : public DynamicObject{
+protected:
+	float m_gain;
+	std::string m_port;
+	float m_x;
+	float m_y;
+	float m_z;
+	float m_az;
+	float m_el;
+public:
+	Loudspeaker(const std::string& id, DynamicObject* parent) : DynamicObject(id,parent){}
+	static DynamicObjectPtr factory(const std::string& id, DynamicObject* parent){ return DynamicObjectPtr(new Loudspeaker(id,parent));}
+	/// overload for attribute handling
+	virtual void on_attribute_changed(const std::string& name, const std::string& value);
+	/// overload this for attribute printing
+	virtual void write_attributes(std::stringstream& xml);
 };
 
 /// a base class for coherent sets
@@ -66,9 +96,7 @@ class Behaviour: public DynamicObject{
 /// the root level object
 class ResoundRoot : public DynamicObject{
 public:
-	ResoundRoot(const std::string& id) : DynamicObject(id){
-		register_factory("audiostreamfile", AudioStreamFile::factory);
-	}
+	ResoundRoot(const std::string& id);
 };
 
 } // end namespace
