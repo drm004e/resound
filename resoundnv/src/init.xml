@@ -1,10 +1,15 @@
 <resound>
-	<new class="loudspeaker" id="genelec1"/>
-	<new class="loudspeaker" id="genelec2"/>
-	<new class="loudspeaker" id="genelec3"/>
+	<new class="DynamicObject" id="genelec1"/>
+	<new class="DynamicObject" id="genelec2"/>
+	<new class="DynamicObject" id="genelec3"/>
 	<genelec1>
-		<new class="thing" id="thing1"/>
+		<new class="DynamicObject" id="thing1"/>
+		<new class="DynamicObject" id="thing2"/>
+		<new class="DynamicObject" id="thing3"/>
 	</genelec1>
 	<genelec2/>
 	<genelec3/>
+	<genelec1><thing1/></genelec1>
+	<genelec1.thing2/>
+	<genelec1.thing3/>
 </resound>

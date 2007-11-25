@@ -22,15 +22,32 @@
 
 using namespace Resound;
 
-DynamicObject::DynamicObject(){}
-
-DynamicObject::DynamicObject(const char* id) :
-	m_id(id){
+DynamicObject::DynamicObject(){
+	register_factory("DynamicObject", DynamicObject::factory);
 }
-DynamicObject::~DynamicObject(){}
+
+DynamicObject::DynamicObject(const std::string& id) :
+	m_id(id){
+	register_factory("DynamicObject", DynamicObject::factory);
+}
+DynamicObject::~DynamicObject(){
+	std::cout << "~DynamicObject():" << m_id << std::endl;
+}
 
 void DynamicObject::create_child(const std::string& objectClass, const std::string& id){
-	std::cout << "new class=" << objectClass << " id=" << id << "\n";
+	std::cout << "NEW: class=" << objectClass << " id=" << id << "\n";
+	DynamicObjectFactoryMap::iterator it = m_factories.find(objectClass);
+	if(it != m_factories.end()) {
+		DynamicObjectPtr ob = (it->second)(id);
+		DynamicObjectMap::iterator obIt = m_children.find(id);
+		if(it != m_factories.end()) {
+			m_children[id]=ob;
+		} else {
+			throw DynamicObjectDuplicateObjectException();
+		}
+	} else {
+		throw DynamicObjectUnknownClassException();
+	}
 }
 
 void DynamicObject::destroy_child(const std::string& id){
@@ -75,11 +92,7 @@ void DynamicObject::parse_xml(const xmlpp::Node* node){
 					std::cout << "rename object\n";
 				} else {
 					// its a direct reference to a child object
-					try{
-						get_object_by_id(id)->parse_xml(el);
-					} catch(...){
-						
-					}
+					get_object_by_id(id)->parse_xml(el);
 				}
 			}
 		}
@@ -91,25 +104,47 @@ DynamicObjectPtr DynamicObject::get_object_by_id(const std::string& id){
 	int n = id.find_first_of('.');
 	std::string childId;
 	childId=id.substr(0,n);
-	std::cout << "sub id lookup " << childId;
+	std::cout << "lookup " << childId;
 	DynamicObjectMap::iterator it = m_children.find(childId);
 	if(it != m_children.end()){
-		std::cout << " OK recursing\n";
+		
 		// recurse here
-		return it->second->get_object_by_id(id.substr(n));
+		if(n==std::string::npos){
+			std::cout << " OK\n";
+			return it->second;
+		} else {
+			std::cout << " recursing, ";
+			return it->second->get_object_by_id(id.substr(n+1));
+		}
+		
 	} else {
-		std::cout << " FAIL not found\n";
+		std::cout << " FAIL\n";
 		// probably throw here
-		throw std::exception();
+		throw DynamicObjectBadIdException();
 	}
 }
 
-void  DynamicObject::get_xml_string(std::stringstream& xml){
+void  DynamicObject::get_xml_string(std::stringstream& xml,int indentation){
+	for(int i = 0; i < indentation; ++i)
+    		xml << " ";
 	xml << "<" << m_id << ">\n";
 	// foreach child
 	DynamicObjectMap::iterator it = m_children.begin();
 	for(;it!= m_children.end(); it++){
-		it->second->get_xml_string(xml);
+		it->second->get_xml_string(xml,indentation+5);
 	}
+	for(unsigned int i = 0; i < indentation; ++i)
+    		xml << " ";
 	xml << "</" << m_id << ">\n";
+}
+
+void DynamicObject::register_factory(const std::string& classId, DynamicObjectFactory factory){
+	assert(factory);
+	DynamicObjectFactoryMap::iterator it = m_factories.find(classId);
+	if(it != m_factories.end()) { throw DynamicObjectDuplicateClassException(); }
+	m_factories[classId] = factory;
+}
+
+/*static*/DynamicObjectPtr DynamicObject::factory(const std::string& id){
+	return DynamicObjectPtr(new DynamicObject(id));
 }

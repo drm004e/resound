@@ -31,7 +31,7 @@ class DynamicObject;
 typedef boost::shared_ptr<DynamicObject> DynamicObjectPtr;
 
 /// a factory function pointer
-typedef DynamicObjectPtr (*DynamicObjectFactory)(void);
+typedef DynamicObjectPtr (*DynamicObjectFactory)(const std::string& id);
 
 /// a map of factory ptrs again class ids
 typedef std::map<std::string, DynamicObjectFactory> DynamicObjectFactoryMap;
@@ -39,19 +39,34 @@ typedef std::map<std::string, DynamicObjectFactory> DynamicObjectFactoryMap;
 /// a map of ids against object ptrs
 typedef std::map<std::string, DynamicObjectPtr> DynamicObjectMap;
 
+class DynamicObjectUnknownClassException : public std::exception{
+	public: const char* what(){return "An object class was specified that doesnt exist in the current scope";}
+};
+class DynamicObjectDuplicateClassException : public std::exception{
+	public: const char* what(){return "A factory name with this name already exists";}
+};
+class DynamicObjectDuplicateObjectException : public std::exception{
+	public: const char* what(){return "An object with this name already exists";}
+};
+class DynamicObjectBadIdException : public std::exception
+{
+	public: const char* what(){return "A DynamicObject was not found at this scope";}
+};
+
 /// dynamic objects are objects that are configured and contructed from a libxml++ parser
 /// dynamic objects are stored by the engine against unique ids
 /// the dynamic object system acts as a factory for nested objects
 class DynamicObject{
-	DynamicObjectFactoryMap m_factorys;
+	DynamicObjectFactoryMap m_factories;
 	DynamicObjectMap m_children;
 	DynamicObjectPtr m_parent;
-	std::string m_id; 
+	std::string m_id; ///< the id of the object
+	std::string m_classId; /// the rtti class string as it appears in xml
 public:
 	/// construct
 	DynamicObject();
 	/// construct
-	DynamicObject(const char* id);
+	DynamicObject(const std::string& id);
 	/// destruct
 	virtual ~DynamicObject();
 
@@ -74,7 +89,13 @@ public:
 	DynamicObjectPtr get_object_by_id(const std::string& id);
 
 	/// recursive stream output, writes the xml for self and all children outputing attributes
-	void get_xml_string(std::stringstream& xml);
+	void get_xml_string(std::stringstream& xml,int indentation=0);
+
+	/// register factory, registers a factory function. typically called by a constructor
+	void register_factory(const std::string& classId, DynamicObjectFactory factory);
+
+	/// a static factory for empty DynamicObjects
+	static DynamicObjectPtr factory(const std::string& id);
 };
 
 

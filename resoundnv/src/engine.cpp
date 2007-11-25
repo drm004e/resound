@@ -44,6 +44,7 @@ m_root(new DynamicObject("resound")) // an empty document
 	//init("Resoundnv");
 	std::cout << "Parsing initialisation script...\n";
 	parse_xml_file(initScript);
+	std::cout << get_xml_string();
 	// start the xml tcp server
 	//start_tcp_server(); // initialises a thread
 }
