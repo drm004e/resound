@@ -72,7 +72,7 @@ int run(){
 		for(;;)
 		{
 			usleep(1000000); // one second
-			theEngine->update_clients(); // cause the client list to be updated
+			//theEngine->update_clients(); // cause the client list to be updated
 			std::cout.flush(); //flush the output stream so we get updated display in KDevelop
 		}
 

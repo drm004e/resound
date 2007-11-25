@@ -20,31 +20,9 @@
 #ifndef __CORE_OBJECTS__
 #define __CORE_OBJECTS__
 
+#include "dynamicobject.hpp"
 namespace Resound{
 
-
-
-/// dynamic objects are objects that are configured and contructed based on the XML merging system
-/// dynamic objects are completely managed and form the base class for things like streams, loudspeakers and behaviours
-/// dynamic objects are stored by the engine against unique ids
-class DynamicObject{
-	xmlpp::Node* m_node; ///< the xml node that this dynamic object is paired with
-public:
-	// construct
-	DynamicObject();
-	// construct from a node
-	DynamicObject(xmlpp::Node* node);
-	// destruct
-	virtual ~DynamicObject();
-	// attach to a node, this will cause an update from the node
-	virtual void attach_to_node(xmlpp::Node* node);
-	// detach from a node
-	virtual void detach_from_node();
-	// virtual update call, called when the object must update itself from the node
-	virtual void update_from_node() = 0;	
-	// get a reference to the paired node
-	xmlpp::Node& get_node();
-};
 
 /// a base class for audio streams
 class AudioStream : public DynamicObject{

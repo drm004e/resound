@@ -52,6 +52,8 @@ ENDIF(UNIX)
 SET(sourcefiles
 	core_objects.hpp
 	core_objects.cpp
+	dynamicobject.hpp
+	dynamicobject.cpp
 	engine.hpp
 	engine.cpp
 	jackengine.hpp

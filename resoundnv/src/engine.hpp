@@ -34,9 +34,9 @@
 namespace Resound{
 
 /// the engine class is the main workhorse of the server. It sets up OSC, TCP comms, JACK and xml DOM parsing and brings them all together
-class Engine : public OSCManager, public JackEngine{
+class Engine :  public JackEngine{
 private:
-	xmlpp::Document* m_doc; ///< the main DOM document object
+	DynamicObjectPtr m_root; ///< the main DOM object
 public:
 	/// constructor
 	Engine(const char* port, const char* initScript);
@@ -75,8 +75,6 @@ public:
 	std::string get_xml_string();
 	
 private:
-	/// recursive node parsing function
-	void parse_xml_node(const xmlpp::Node* node);
 
 };
 }

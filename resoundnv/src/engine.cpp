@@ -36,19 +36,19 @@
 using namespace Resound;
 
 Engine::Engine(const char* port, const char* initScript) :
-OSCManager(port),
-m_doc(new xmlpp::Document()) // an empty document
+//OSCManager(port),
+m_root(new DynamicObject("resound")) // an empty document
 {
-	m_doc->create_root_node("resoundxml");
+	
 	std::cout << "-Starting Resound-\n";
 	//init("Resoundnv");
 	std::cout << "Parsing initialisation script...\n";
 	parse_xml_file(initScript);
 	// start the xml tcp server
-	start_tcp_server(); // initialises a thread
+	//start_tcp_server(); // initialises a thread
 }
 Engine::~Engine(){
-	if(m_doc) delete m_doc;
+
 	std::cout << "-Shutdown complete-\n";
 }
 
@@ -77,7 +77,7 @@ void Engine::parse_xml_file(const char* path){
 		parser.parse_file(path);
 		if(parser){
 			const xmlpp::Node* pNode = parser.get_document()->get_root_node(); //deleted by DomParser.
-			parse_xml_node(pNode);
+			m_root->parse_xml(pNode);
 		}
 	}catch(const std::exception& ex){
 		std::cout << "XML parsing exception: " << ex.what() << std::endl;
@@ -93,7 +93,7 @@ void Engine::parse_xml_string(const std::string &str){
 		parser.parse_memory(str);
 		if(parser){
 			const xmlpp::Node* pNode = parser.get_document()->get_root_node(); //deleted by DomParser.
-			parse_xml_node(pNode);
+			m_root->parse_xml(pNode);
 		}
 	}catch(const std::exception& ex){
 		std::cout << "XML parsing exception: " << ex.what() << std::endl;
@@ -101,36 +101,10 @@ void Engine::parse_xml_string(const std::string &str){
 }
 
 std::string Engine::get_xml_string(){
-	assert(m_doc);
-	return m_doc->write_to_string();
+	std::stringstream s;
+	m_root->get_xml_string(s);
+	return s.str();
 }
-
-void Engine::parse_xml_node(const xmlpp::Node* node){
-	const xmlpp::ContentNode* nodeContent = dynamic_cast<const xmlpp::ContentNode*>(node);
- 	const xmlpp::TextNode* nodeText = dynamic_cast<const xmlpp::TextNode*>(node);
-  	const xmlpp::CommentNode* nodeComment = dynamic_cast<const xmlpp::CommentNode*>(node);
-
-  	if(nodeText && nodeText->is_white_space()) //Let's ignore the indenting - you don't always want to do this.
-    		return;
-
-	if(!nodeContent)
-	{
-		//Recurse through child nodes:
-		xmlpp::Node::NodeList list = node->get_children();
-		for(xmlpp::Node::NodeList::iterator iter = list.begin(); iter != list.end(); ++iter){
-			Glib::ustring nodename = (*iter)->get_name();
-			if(nodename == "source"){
-				//parse_xml_node_source(dynamic_cast<const xmlpp::Element*>(*iter));
-			} else if(nodename == "cset"){
-				//parse_xml_node_cset(dynamic_cast<const xmlpp::Element*>(*iter));
-			} else if(nodename == "ugen"){
-				//parse_xml_node_ugen(dynamic_cast<const xmlpp::Element*>(*iter));
-			} else { // unknown
-			}
-		}
-	}
-}
-
 
 int Engine::start_tcp_server(){
 	int32_t listenSocket = ::socket(PF_INET, SOCK_STREAM, 0);
@@ -182,7 +156,7 @@ int Engine::start_tcp_server(){
 			const char* str="OK"; // or we return FAIL Reason it failed
 			::send(clientSocket,str,strlen(str),0);
 		} else if (std::strncmp(buffer,"GETXML",6)==0){
-			std::string xml=m_doc->write_to_string();
+			std::string xml=get_xml_string();
 			::send(clientSocket,xml.c_str(),xml.size(),0);
 		} else {
 			std::cout << "Unknown header: " << buffer << std::endl; 
