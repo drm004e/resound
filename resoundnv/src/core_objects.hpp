@@ -82,15 +82,45 @@ public:
 
 /// a base class for coherent sets
 class CoherentSet : public DynamicObject{
+protected:
+	AttributeHelper<float> m_gain;
+public:
+	CoherentSet(const std::string& id, DynamicObject* parent);
+	static DynamicObjectPtr factory(const std::string& id, DynamicObject* parent){ return DynamicObjectPtr(new CoherentSet(id,parent));}
+	/// overload for attribute handling
+	virtual void on_attribute_changed(const std::string& name, const std::string& value);
+	/// overload this for attribute printing
+	virtual void write_attributes(std::stringstream& xml);
 };
 /// cass
 class CoherentAudioStreamSet : public CoherentSet{
+public:
+	CoherentAudioStreamSet(const std::string& id, DynamicObject* parent);
+	static DynamicObjectPtr factory(const std::string& id, DynamicObject* parent){ return DynamicObjectPtr(new CoherentAudioStreamSet(id,parent));}
+	/// overload for attribute handling
+	virtual void on_attribute_changed(const std::string& name, const std::string& value);
+	/// overload this for attribute printing
+	virtual void write_attributes(std::stringstream& xml);
 };
 /// cls
 class CoherentLoudspeakerSet : public CoherentSet{
+public:
+	CoherentLoudspeakerSet(const std::string& id, DynamicObject* parent);
+	static DynamicObjectPtr factory(const std::string& id, DynamicObject* parent){ return DynamicObjectPtr(new CoherentLoudspeakerSet(id,parent));}
+	/// overload for attribute handling
+	virtual void on_attribute_changed(const std::string& name, const std::string& value);
+	/// overload this for attribute printing
+	virtual void write_attributes(std::stringstream& xml);
 };
 /// behaviour
 class Behaviour: public DynamicObject{
+public:
+	Behaviour(const std::string& id, DynamicObject* parent);
+	static DynamicObjectPtr factory(const std::string& id, DynamicObject* parent){ return DynamicObjectPtr(new Behaviour(id,parent));}
+	/// overload for attribute handling
+	virtual void on_attribute_changed(const std::string& name, const std::string& value);
+	/// overload this for attribute printing
+	virtual void write_attributes(std::stringstream& xml);
 };
 
 /// the root level object

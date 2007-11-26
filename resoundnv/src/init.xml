@@ -11,4 +11,9 @@
 	<new class="loudspeaker" id="genelec6" port="jackout5" x="0" y="0" z="0" az="0" el="0"/>
 	<new class="loudspeaker" id="genelec7" port="jackout6" x="0" y="0" z="0" az="0" el="0"/>
 	<new class="loudspeaker" id="genelec8" port="jackout7" x="0" y="0" z="0" az="0" el="0"/>
+	<new class="cass" id="stereo_in" />
+	<new class="cls" id="MAINS" />
+	<new class="cls" id="WIDES" />
+	<new class="cls" id="REARS" />
+	<new class="cls" id="DISTANT" />
 </resound>

@@ -85,9 +85,56 @@ void Loudspeaker::write_attributes(std::stringstream& xml){
 	xml << m_el.to_string();
 	xml << m_az.to_string();
 }
+//  ------------------CoherentSet
+CoherentSet::CoherentSet(const std::string& id, DynamicObject* parent):
+DynamicObject(id,parent),
+m_gain("gain",1.0f)
+{}
+void CoherentSet::on_attribute_changed(const std::string& name, const std::string& value){
+	if(name=="gain") m_gain.from_string(value);
+}
+void CoherentSet::write_attributes(std::stringstream& xml){
+	DynamicObject::write_attributes(xml); 
+	xml << m_gain.to_string();
+}
+
+//  ------------------CoherentAudioStreamSet
+CoherentAudioStreamSet::CoherentAudioStreamSet(const std::string& id, DynamicObject* parent):
+CoherentSet(id,parent)
+{}
+void CoherentAudioStreamSet::on_attribute_changed(const std::string& name, const std::string& value){}
+void CoherentAudioStreamSet::write_attributes(std::stringstream& xml){
+	CoherentSet::write_attributes(xml); 
+}
+
+
+
+//  ------------------CoherentLoudspeakerSet
+CoherentLoudspeakerSet::CoherentLoudspeakerSet(const std::string& id, DynamicObject* parent):
+CoherentSet(id,parent)
+{}
+void CoherentLoudspeakerSet::on_attribute_changed(const std::string& name, const std::string& value){}
+void CoherentLoudspeakerSet::write_attributes(std::stringstream& xml){
+	CoherentSet::write_attributes(xml); 
+}
+
+
+//  ------------------Behaviour
+Behaviour::Behaviour(const std::string& id, DynamicObject* parent):
+DynamicObject(id,parent)
+{}
+void Behaviour::on_attribute_changed(const std::string& name, const std::string& value){}
+void Behaviour::write_attributes(std::stringstream& xml){
+	DynamicObject::write_attributes(xml); 
+}
+
+
 // ---------------ResoundRoot
 ResoundRoot::ResoundRoot(const std::string& id) : DynamicObject(id){
 	register_factory("audiostreamfile", AudioStreamFile::factory);
 	register_factory("audiostreamlive", AudioStreamLive::factory);
 	register_factory("loudspeaker", Loudspeaker::factory);
+	register_factory("cass", CoherentAudioStreamSet::factory);
+	register_factory("cls", CoherentLoudspeakerSet::factory);
+	register_factory("behaviour", Behaviour::factory);
 }
