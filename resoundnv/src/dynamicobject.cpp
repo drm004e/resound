@@ -197,5 +197,5 @@ void DynamicObject::register_factory(const std::string& classId, DynamicObjectFa
 
 void DynamicObject::write_attributes(std::stringstream& xml){
 	// write the class
-	xml << MAKE_ATTRIBUTE_STRING("class",m_classId);
+	xml << " class=\""<<m_classId<<"\"";
 }

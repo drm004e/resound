@@ -27,9 +27,9 @@ namespace Resound{
 /// a base class for audio streams
 class AudioStream : public DynamicObject{
 protected:
-	float m_gain;
+	AttributeHelper<float> m_gain;
 public:
-	AudioStream(const std::string& id, DynamicObject* parent) : DynamicObject(id,parent){}
+	AudioStream(const std::string& id, DynamicObject* parent);
 	/// overload for attribute handling
 	virtual void on_attribute_changed(const std::string& name, const std::string& value);
 	/// overload this for attribute printing
@@ -39,9 +39,9 @@ public:
 /// a file stream
 class AudioStreamFile : public AudioStream{
 protected:
-	std::string m_path;
+	AttributeHelper<std::string> m_path;
 public:
-	AudioStreamFile(const std::string& id, DynamicObject* parent) : AudioStream(id,parent){}
+	AudioStreamFile(const std::string& id, DynamicObject* parent);
 	static DynamicObjectPtr factory(const std::string& id, DynamicObject* parent){ return DynamicObjectPtr(new AudioStreamFile(id,parent));}
 	/// overload for attribute handling
 	virtual void on_attribute_changed(const std::string& name, const std::string& value);
@@ -52,9 +52,9 @@ public:
 /// a live audio stream
 class AudioStreamLive : public AudioStream{
 protected:
-	std::string m_port;
+	AttributeHelper<std::string> m_port;
 public:
-	AudioStreamLive(const std::string& id, DynamicObject* parent) : AudioStream(id,parent){}
+	AudioStreamLive(const std::string& id, DynamicObject* parent);
 	static DynamicObjectPtr factory(const std::string& id, DynamicObject* parent){ return DynamicObjectPtr(new AudioStreamLive(id,parent));}
 	/// overload for attribute handling
 	virtual void on_attribute_changed(const std::string& name, const std::string& value);
@@ -64,15 +64,15 @@ public:
 /// loudspeaker
 class Loudspeaker : public DynamicObject{
 protected:
-	float m_gain;
-	std::string m_port;
-	float m_x;
-	float m_y;
-	float m_z;
-	float m_az;
-	float m_el;
+	AttributeHelper<float> m_gain;
+	AttributeHelper<std::string> m_port;
+	AttributeHelper<float> m_x;
+	AttributeHelper<float> m_y;
+	AttributeHelper<float> m_z;
+	AttributeHelper<float> m_az;
+	AttributeHelper<float> m_el;
 public:
-	Loudspeaker(const std::string& id, DynamicObject* parent) : DynamicObject(id,parent){}
+	Loudspeaker(const std::string& id, DynamicObject* parent);
 	static DynamicObjectPtr factory(const std::string& id, DynamicObject* parent){ return DynamicObjectPtr(new Loudspeaker(id,parent));}
 	/// overload for attribute handling
 	virtual void on_attribute_changed(const std::string& name, const std::string& value);

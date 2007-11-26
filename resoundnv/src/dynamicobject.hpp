@@ -46,21 +46,26 @@ public:
 	virtual const char* what() const throw() {return m_msg;}
 };
 
-inline std::string MAKE_ATTRIBUTE_STRING(const std::string& name, const std::string& value){
-	std::stringstream s;
-	s << " "<<name<<"=\""<<value<<"\"";
-	return s.str();
-}
-inline std::string MAKE_ATTRIBUTE_STRING(const std::string& name, float value){
-	std::stringstream s;
-	s << " "<<name<<"=\""<<value<<"\"";
-	return s.str();
-}
-inline std::string MAKE_ATTRIBUTE_STRING(const std::string& name, int value){
-	std::stringstream s;
-	s << " "<<name<<"=\""<<value<<"\"";
-	return s.str();
-}
+
+template<class T> class AttributeHelper{
+	T m_value;
+	std::string m_name;
+public:
+	AttributeHelper(const char* name, const T& value) : m_name(name), m_value(value){}
+	void set_value(const T& value){ m_value=value; }
+	const T& get_value() const { return m_value; }
+	operator const T&() const { return m_value; }
+	std::string to_string(){
+		std::stringstream s;
+		s << " "<<m_name<<"=\""<<m_value<<"\"";
+		return s.str();
+	}
+	void from_string(const std::string sval){
+		std::istringstream s(sval);
+		s >> m_value;
+	}
+};
+
 /// dynamic objects are objects that are configured and contructed from a libxml++ parser
 /// dynamic objects are stored by the engine against unique ids
 /// the dynamic object system acts as a factory for nested objects

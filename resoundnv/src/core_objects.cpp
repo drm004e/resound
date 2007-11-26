@@ -20,48 +20,70 @@
 #include "core_objects.hpp"
 using namespace Resound;
 // --------------- AudioStream
+AudioStream::AudioStream(const std::string& id, DynamicObject* parent) : 
+DynamicObject(id,parent),
+m_gain("gain",1.0f)
+{}
 void AudioStream::on_attribute_changed(const std::string& name, const std::string& value){
-	if(name=="gain") m_gain = atof(value.c_str());
+	if(name=="gain") m_gain.from_string(value);
 }
 void AudioStream::write_attributes(std::stringstream& xml){
 	DynamicObject::write_attributes(xml); 
-	xml << MAKE_ATTRIBUTE_STRING("gain",m_gain);
+	xml << m_gain.to_string();
 };
 // --------------- AudioStreamFile
+AudioStreamFile::AudioStreamFile(const std::string& id, DynamicObject* parent) : 
+AudioStream(id,parent),
+m_path("path","")
+{}
 void AudioStreamFile::on_attribute_changed(const std::string& name, const std::string& value){
-	if(name=="path") m_path = value;
+	if(name=="path") m_path.from_string(value);
 }
 void AudioStreamFile::write_attributes(std::stringstream& xml){
 	AudioStream::write_attributes(xml); 
-	xml << MAKE_ATTRIBUTE_STRING("path",m_path);
+	xml << m_path.to_string();
 }
 // --------------- AudioStreamLive
+AudioStreamLive::AudioStreamLive(const std::string& id, DynamicObject* parent) : 
+AudioStream(id,parent),
+m_port("port","")
+{}
 void AudioStreamLive::on_attribute_changed(const std::string& name, const std::string& value){
-	if(name=="port") m_port = value; // at this point we reroute the jack server
+	if(name=="port") m_port.from_string(value); // at this point we reroute the jack server
 }
 void AudioStreamLive::write_attributes(std::stringstream& xml){
 	AudioStream::write_attributes(xml); 
-	xml << MAKE_ATTRIBUTE_STRING("port",m_port);
+	xml << m_port.to_string();
 }
 // --------------- Loudspeaker
+Loudspeaker::Loudspeaker(const std::string& id, DynamicObject* parent) : 
+DynamicObject(id,parent),
+m_gain("gain",1.0f),
+m_port("port",""),
+m_x("x",0.0f),
+m_y("y",0.0f),
+m_z("z",0.0f),
+m_az("az",0.0f),
+m_el("el",0.0f)
+{}
 void Loudspeaker::on_attribute_changed(const std::string& name, const std::string& value){
-	if(name=="port") m_port = value; // at this point we reroute the jack server
-	else if(name=="gain") m_gain = atof(value.c_str());
-	else if(name=="x") m_x = atof(value.c_str());
-	else if(name=="y") m_y = atof(value.c_str());
-	else if(name=="z") m_z = atof(value.c_str());
-	else if(name=="az") m_az = atof(value.c_str());
-	else if(name=="el") m_el = atof(value.c_str());
+	if(name=="port") m_port.from_string(value); // at this point we reroute the jack server
+	else if(name=="gain") m_gain.from_string(value);
+	else if(name=="x") m_x.from_string(value);
+	else if(name=="y") m_y.from_string(value);
+	else if(name=="z") m_z.from_string(value);
+	else if(name=="az") m_az.from_string(value);
+	else if(name=="el") m_el.from_string(value);
 }
 void Loudspeaker::write_attributes(std::stringstream& xml){
 	DynamicObject::write_attributes(xml); 
-	xml << MAKE_ATTRIBUTE_STRING("gain",m_gain);
-	xml << MAKE_ATTRIBUTE_STRING("port",m_port);
-	xml << MAKE_ATTRIBUTE_STRING("x",m_x);
-	xml << MAKE_ATTRIBUTE_STRING("y",m_y);
-	xml << MAKE_ATTRIBUTE_STRING("z",m_z);
-	xml << MAKE_ATTRIBUTE_STRING("az",m_y);
-	xml << MAKE_ATTRIBUTE_STRING("el",m_z);
+	xml << m_gain.to_string();
+	xml << m_port.to_string();
+	xml << m_x.to_string();
+	xml << m_y.to_string();
+	xml << m_z.to_string();
+	xml << m_el.to_string();
+	xml << m_az.to_string();
 }
 // ---------------ResoundRoot
 ResoundRoot::ResoundRoot(const std::string& id) : DynamicObject(id){
