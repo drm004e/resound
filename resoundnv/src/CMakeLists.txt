@@ -50,6 +50,8 @@ ENDIF(UNIX)
 
 # build the excecutable
 SET(sourcefiles
+	core_behaviours.hpp
+	core_behaviours.cpp
 	core_objects.hpp
 	core_objects.cpp
 	dynamicobject.hpp

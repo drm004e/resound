@@ -32,4 +32,27 @@
 		<new class="alias" id="L" ref="genelec7"/>
 		<new class="alias" id="R" ref="genelec8"/>
 	</new>
+	<new class="att" id="stereo_to_mains" >
+		<new class="param" id="level" address="/fader1"/>
+		<new class="input" id="in1" ref="stereo_in"/>
+		<new class="output" id="out1" ref="MAINS"/>
+	</new>
+	
+	<new class="att" id="stereo_to_wides" >
+		<new class="param" id="level" address="/fader2"/>
+		<new class="input" id="in1" ref="stereo_in"/>
+		<new class="output" id="out1" ref="WIDES"/>
+	</new>
+	
+	<new class="att" id="stereo_to_rears" >
+		<new class="param" id="level" address="/fader3"/>
+		<new class="input" id="in1" ref="stereo_in"/>
+		<new class="output" id="out1" ref="REARS"/>
+	</new>
+	
+	<new class="att" id="stereo_to_distants" >
+		<new class="param" id="level" address="/fader4"/>
+		<new class="input" id="in1" ref="stereo_in"/>
+		<new class="output" id="out1" ref="DISTANTS"/>
+	</new>
 </resound>

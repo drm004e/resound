@@ -18,6 +18,8 @@
 //    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "core_objects.hpp"
+#include "core_behaviours.hpp"
+
 using namespace Resound;
 // --------------- AudioStream
 AudioStream::AudioStream(const std::string& id, DynamicObject* parent) : 
@@ -86,17 +88,17 @@ void Loudspeaker::write_attributes(std::stringstream& xml){
 	xml << m_az.to_string();
 }
 
-//  ------------------CoherentSetAlias
-CoherentSetAlias::CoherentSetAlias(const std::string& id, DynamicObject* parent):
+//  ------------------Alias
+Alias::Alias(const std::string& id, DynamicObject* parent):
 DynamicObject(id,parent),
 m_gain("gain",1.0f),
 m_ref("ref","")
 {}
-void CoherentSetAlias::on_attribute_changed(const std::string& name, const std::string& value){
+void Alias::on_attribute_changed(const std::string& name, const std::string& value){
 	if(name=="gain") m_gain.from_string(value);
 	else if(name=="ref") m_ref.from_string(value);
 }
-void CoherentSetAlias::write_attributes(std::stringstream& xml){
+void Alias::write_attributes(std::stringstream& xml){
 	DynamicObject::write_attributes(xml); 
 	xml << m_ref.to_string();
 	xml << m_gain.to_string();
@@ -107,7 +109,7 @@ CoherentSet::CoherentSet(const std::string& id, DynamicObject* parent):
 DynamicObject(id,parent),
 m_gain("gain",1.0f)
 {
-	register_factory("alias", CoherentSetAlias::factory);
+	register_factory("alias", Alias::factory);
 }
 void CoherentSet::on_attribute_changed(const std::string& name, const std::string& value){
 	if(name=="gain") m_gain.from_string(value);
@@ -137,14 +139,39 @@ void CoherentLoudspeakerSet::write_attributes(std::stringstream& xml){
 	CoherentSet::write_attributes(xml); 
 }
 
+//  ------------------BehaviourParameter
+BehaviourParameter::BehaviourParameter(const std::string& id, DynamicObject* parent):
+DynamicObject(id,parent),
+m_value("value",0.0f),
+m_min("min",0.0f),
+m_max("max",1.0f),
+m_address("address","")
+{}
+void BehaviourParameter::on_attribute_changed(const std::string& name, const std::string& value){
+	if(name=="value") m_value.from_string(value); // at this point we reroute the jack server
+	else if(name=="min") m_min.from_string(value);
+	else if(name=="max") m_max.from_string(value);
+	else if(name=="address") m_address.from_string(value);
+}
+void BehaviourParameter::write_attributes(std::stringstream& xml){
+	DynamicObject::write_attributes(xml); 
+	xml << m_value.to_string();
+	xml << m_min.to_string();
+	xml << m_max.to_string();
+	xml << m_address.to_string();
+}
 
 //  ------------------Behaviour
 Behaviour::Behaviour(const std::string& id, DynamicObject* parent):
 DynamicObject(id,parent)
-{}
+{
+	register_factory("param", BehaviourParameter::factory);
+	register_factory("input", Alias::factory);
+	register_factory("output", Alias::factory);
+}
 void Behaviour::on_attribute_changed(const std::string& name, const std::string& value){}
 void Behaviour::write_attributes(std::stringstream& xml){
-	DynamicObject::write_attributes(xml); 
+	DynamicObject::write_attributes(xml);
 }
 
 
@@ -156,4 +183,7 @@ ResoundRoot::ResoundRoot(const std::string& id) : DynamicObject(id){
 	register_factory("cass", CoherentAudioStreamSet::factory);
 	register_factory("cls", CoherentLoudspeakerSet::factory);
 	register_factory("behaviour", Behaviour::factory);
+
+	// behaviours - defined in core_behaviours.hpp
+	register_factory("att", BAttenuator::factory);
 }

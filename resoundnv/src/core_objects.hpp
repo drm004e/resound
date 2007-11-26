@@ -80,14 +80,16 @@ public:
 	virtual void write_attributes(std::stringstream& xml);
 };
 
-/// a set alias refers to a speaker by name
-class CoherentSetAlias : public DynamicObject{
+/// a set alias refers to a speaker of set or id by a new name
+/// it also tags a gain attribute
+/// used by CoherentSet and Behaviours
+class Alias : public DynamicObject{
 protected:
 	AttributeHelper<float> m_gain;
 	AttributeHelper<std::string> m_ref; ///< the alias reference is stored as an attribute
 public:
-	CoherentSetAlias(const std::string& id, DynamicObject* parent);
-	static DynamicObjectPtr factory(const std::string& id, DynamicObject* parent){ return DynamicObjectPtr(new CoherentSetAlias(id,parent));}
+	Alias(const std::string& id, DynamicObject* parent);
+	static DynamicObjectPtr factory(const std::string& id, DynamicObject* parent){ return DynamicObjectPtr(new Alias(id,parent));}
 	/// overload for attribute handling
 	virtual void on_attribute_changed(const std::string& name, const std::string& value);
 	/// overload this for attribute printing
@@ -126,6 +128,24 @@ public:
 	/// overload this for attribute printing
 	virtual void write_attributes(std::stringstream& xml);
 };
+
+
+/// BehaviourParameter
+class BehaviourParameter: public DynamicObject{
+protected:
+	AttributeHelper<float> m_value;
+	AttributeHelper<float> m_min;
+	AttributeHelper<float> m_max;
+	AttributeHelper<std::string> m_address; ///< osc address
+public:
+	BehaviourParameter(const std::string& id, DynamicObject* parent);
+	static DynamicObjectPtr factory(const std::string& id, DynamicObject* parent){ return DynamicObjectPtr(new BehaviourParameter(id,parent));}
+	/// overload for attribute handling
+	virtual void on_attribute_changed(const std::string& name, const std::string& value);
+	/// overload this for attribute printing
+	virtual void write_attributes(std::stringstream& xml);
+};
+
 /// behaviour
 class Behaviour: public DynamicObject{
 public:
