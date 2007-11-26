@@ -64,11 +64,32 @@ void DynamicObject::create_child(const std::string& objectClass, const std::stri
 void DynamicObject::destroy_child(const std::string& id){
 	std::cout << "DELETE: " << id << std::endl;
 	// need to think about how this works
+	DynamicObjectMap::iterator it = m_children.find(id);
+	if(it != m_children.end()) {
+		m_children.erase(it);
+	} else {
+		throw DynamicObjectException("Trying to delete an object which does not exist");
+	}
 }
 
 void DynamicObject::rename_child(const std::string& id, const std::string& newName){
 	std::cout << "RENAME: " << id << " to " << newName << std::endl;
 	// need to think about how this works
+	// check for existance of the new name
+	DynamicObjectMap::iterator nit = m_children.find(newName);
+	if(nit == m_children.end()) {
+		DynamicObjectMap::iterator it = m_children.find(id);
+		if(it != m_children.end()) {
+			DynamicObjectPtr t = it->second;
+			m_children.erase(it);
+			t->m_id=newName;
+			m_children[newName]=t;
+		} else {
+			throw DynamicObjectException("Trying to delete an object which does not exist");
+		}
+	} else {
+		throw DynamicObjectException("Attempted to rename to a name that is already in use");
+	}
 }
 
 void DynamicObject::parse_xml(const xmlpp::Node* node){
