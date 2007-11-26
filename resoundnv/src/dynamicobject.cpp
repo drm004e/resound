@@ -173,15 +173,20 @@ void  DynamicObject::get_xml_string(std::stringstream& xml,int indentation){
     		xml << " ";
 	xml << "<" << m_id;
 	this->write_attributes(xml);
-	xml << ">\n";
+	
 	// foreach child
-	DynamicObjectMap::iterator it = m_children.begin();
-	for(;it!= m_children.end(); it++){
-		it->second->get_xml_string(xml,indentation+5);
+	if(m_children.size() > 0){
+		xml << ">\n";
+		DynamicObjectMap::iterator it = m_children.begin();
+		for(;it!= m_children.end(); it++){
+			it->second->get_xml_string(xml,indentation+5);
+		}
+		for(unsigned int i = 0; i < indentation; ++i)
+			xml << " ";
+		xml << "</" << m_id << ">\n";
+	} else {
+		xml << "/>\n";
 	}
-	for(unsigned int i = 0; i < indentation; ++i)
-    		xml << " ";
-	xml << "</" << m_id << ">\n";
 }
 
 void DynamicObject::register_factory(const std::string& classId, DynamicObjectFactory factory){
