@@ -30,7 +30,7 @@
 #include <unistd.h>
 #include <cstring>
  
-
+#include <sstream>
 
 
 using namespace Resound;
@@ -44,9 +44,10 @@ m_root(new ResoundRoot("resound")) // an empty document
 	//init("Resoundnv");
 	std::cout << "Parsing initialisation script...\n";
 	parse_xml_file(initScript);
-	std::cout << get_xml_string();
+	std::cout << get_xml_string();	
+
 	// start the xml tcp server
-	start_tcp_server(); // initialises a thread
+	start_tcp_server(); // initialises a thread //WARNING THIS CAUSES A BLOCKING LOOP ATM
 }
 Engine::~Engine(){
 

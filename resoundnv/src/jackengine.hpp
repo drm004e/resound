@@ -59,13 +59,23 @@ public:
 	float* get_output_buffer(const std::string port, jack_nframes_t nframes);
 	
 	/// override with your dsp code
-	virtual int process(jack_nframes_t nframes) = 0;
+	
 	virtual void on_init(){}; // after jack has been initialised
 	virtual void on_start(){}; // prior to start
 	virtual void on_stop(){}; // post stoped
 	virtual void on_close(){}; // post closed
-	virtual void on_sample_rate_changed(){};
-	
+
+	// these are virtualized versions of the callbacks
+	virtual int on_buffer_size(jack_nframes_t nframes){ return 0; }
+	virtual void on_freewheel(int starting){}
+	virtual int on_graph_order(){ return 0; }
+	virtual void on_port_registration(jack_port_id_t port){}
+	virtual int on_process(jack_nframes_t nframes){ return 0;};
+	virtual int on_sample_rate(jack_nframes_t nframes){ return 0;}
+	virtual int on_thread_init(){ return 0;}
+	virtual int on_xrun(){ return 0;}
+
+	/// return the actual client pointer
 	jack_client_t* get_client(){return m_jc;}
 	
 	// the dsp mutex guards the dsp code and will be locked for the duration of the process
@@ -75,9 +85,16 @@ public:
 
 	bool dsp_is_running(){return m_dspIsRunning;}
 
-private: // callbacks
-	/// static dsp process callback
+private: 
+	/// jack static callbacks
+	static int jack_buffer_size_callback(jack_nframes_t nframes, void *arg);
+	static void jack_freewheel_callback(int starting, void *arg);
+	static int jack_graph_order_callback(void *arg);
+	static void jack_port_registration_callback(jack_port_id_t port, int, void *arg);
 	static int jack_process_callback(jack_nframes_t nframes, void *arg);
+	static int jack_sample_rate_callback(jack_nframes_t nframes, void *arg);
+	static void jack_thread_init_callback(void *arg);
+	static int jack_xrun_callback(void *arg);
 	
 };
 

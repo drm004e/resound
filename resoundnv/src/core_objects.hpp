@@ -157,6 +157,26 @@ public:
 	virtual void write_attributes(std::stringstream& xml);
 };
 
+/// jackport DynamicObject Wrapper
+/// these are created for every external jack connection (ie every OTHER program using jack)
+class JackPort : public DynamicObject{
+public:
+	JackPort(const std::string& id, DynamicObject* parent);
+	/// overload for attribute handling
+	virtual void on_attribute_changed(const std::string& name, const std::string& value);
+	/// overload this for attribute printing
+	virtual void write_attributes(std::stringstream& xml);
+};
+
+/// jackmanager object that communicates with jack and creates or destroys JackPorts when connections change
+class JackManager : public DynamicObject{
+public:
+	JackManager(DynamicObject* parent);
+	/// overload for attribute handling
+	virtual void on_attribute_changed(const std::string& name, const std::string& value);
+	/// overload this for attribute printing
+	virtual void write_attributes(std::stringstream& xml);
+};
 /// the root level object
 class ResoundRoot : public DynamicObject{
 public:

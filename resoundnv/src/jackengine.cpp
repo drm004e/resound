@@ -31,10 +31,20 @@ JackEngine::~JackEngine(){
 }
 void JackEngine::init(const std::string name){
 	m_jc = jack_client_open(name.c_str(),JackNullOption,0);
+
+	// set all the callbacks
+	jack_set_buffer_size_callback(m_jc,JackEngine::jack_buffer_size_callback,this);
+	jack_set_freewheel_callback(m_jc,JackEngine::jack_freewheel_callback,this);
+	jack_set_graph_order_callback(m_jc,JackEngine::jack_graph_order_callback,this);
+	jack_set_port_registration_callback(m_jc,JackEngine::jack_port_registration_callback,this);
+	jack_set_sample_rate_callback(m_jc,JackEngine::jack_sample_rate_callback,this);
+	jack_set_process_callback(m_jc,JackEngine::jack_process_callback,this);
+	jack_set_thread_init_callback(m_jc,JackEngine::jack_thread_init_callback,this);
+	jack_set_xrun_callback(m_jc,JackEngine::jack_xrun_callback,this);
 	// get some info from jackd about current SR and bufferSize;
 	m_bufferSize = jack_get_buffer_size(m_jc);
 	m_sampleRate = jack_get_sample_rate(m_jc);
-	jack_set_process_callback(m_jc,JackEngine::jack_process_callback,this);
+
 	this->on_init();
 }
 void JackEngine::start(){
@@ -70,12 +80,55 @@ float* JackEngine::get_output_buffer(const std::string port, jack_nframes_t nfra
 }
 
 
-// jack callback
+// jack callbacks ---------------- these are all static
+int JackEngine::jack_buffer_size_callback(jack_nframes_t nframes, void *arg){
+	JackEngine* ptr = static_cast<JackEngine*>(arg);
+	assert(ptr);
+	return ptr->on_buffer_size(nframes);
+}
+
+void JackEngine::jack_freewheel_callback(int starting, void *arg){
+	JackEngine* ptr = static_cast<JackEngine*>(arg);
+	assert(ptr);
+	ptr->on_freewheel(starting);
+}
+
+int JackEngine::jack_graph_order_callback(void *arg){
+	JackEngine* ptr = static_cast<JackEngine*>(arg);
+	assert(ptr);
+	return ptr->on_graph_order();
+}
+
+void JackEngine::jack_port_registration_callback(jack_port_id_t port, int, void *arg){
+	JackEngine* ptr = static_cast<JackEngine*>(arg);
+	assert(ptr);
+	ptr->on_port_registration(port);
+}
+
 int JackEngine::jack_process_callback(jack_nframes_t nframes, void *arg){
 	JackEngine* ptr = static_cast<JackEngine*>(arg);
-	assert(ptr && "Jack has returned an invalid JackEngine ptr");
+	assert(ptr);
 	ptr->lock_dsp_mutex();
-	int ret = ptr->process(nframes);
+	int ret = ptr->on_process(nframes);
 	ptr->unlock_dsp_mutex();
 	return ret;
 }
+
+int JackEngine::jack_sample_rate_callback(jack_nframes_t nframes, void *arg){
+	JackEngine* ptr = static_cast<JackEngine*>(arg);
+	assert(ptr);
+	return ptr->on_sample_rate(nframes);
+}
+
+void JackEngine::jack_thread_init_callback(void *arg){
+	JackEngine* ptr = static_cast<JackEngine*>(arg);
+	assert(ptr);
+	ptr->on_thread_init();
+}
+
+int JackEngine::jack_xrun_callback(void *arg){
+	JackEngine* ptr = static_cast<JackEngine*>(arg);
+	assert(ptr);
+	return ptr->on_xrun();
+}
+

@@ -174,6 +174,43 @@ void Behaviour::write_attributes(std::stringstream& xml){
 	DynamicObject::write_attributes(xml);
 }
 
+//  ------------------JackPort
+JackPort::JackPort(const std::string& id, DynamicObject* parent):
+DynamicObject(id,parent)
+{
+	set_class("jackport");
+}
+void JackPort::on_attribute_changed(const std::string& name, const std::string& value){
+}
+void JackPort::write_attributes(std::stringstream& xml){
+	DynamicObject::write_attributes(xml);
+}
+
+//  ------------------JackManager
+JackManager::JackManager(DynamicObject* parent):
+DynamicObject("jackd",parent)
+{
+	set_class("jackd");
+	// try making some fake jack ports
+	for(int n = 0; n < 10; n++){
+		std::stringstream s;
+		s << "jackin"<< n;
+		DynamicObjectPtr t(new JackPort(s.str(),this));
+		attach_child(t,s.str());
+	}
+	// try making some fake jack ports
+	for(int n = 0; n < 10; n++){
+		std::stringstream s;
+		s << "jackout"<< n;
+		DynamicObjectPtr t(new JackPort(s.str(),this));
+		attach_child(t,s.str());
+	}
+}
+void JackManager::on_attribute_changed(const std::string& name, const std::string& value){
+}
+void JackManager::write_attributes(std::stringstream& xml){
+	DynamicObject::write_attributes(xml);
+}
 
 // ---------------ResoundRoot
 ResoundRoot::ResoundRoot(const std::string& id) : DynamicObject(id){
@@ -186,4 +223,7 @@ ResoundRoot::ResoundRoot(const std::string& id) : DynamicObject(id){
 
 	// behaviours - defined in core_behaviours.hpp
 	register_factory("att", BAttenuator::factory);
+
+	// create the one and only jackmanager
+	attach_child(DynamicObjectPtr(new JackManager(this)),"jackd");
 }

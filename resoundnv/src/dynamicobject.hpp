@@ -83,6 +83,10 @@ public:
 	/// destruct
 	virtual ~DynamicObject();
 
+	/// setter getter for classid
+	void set_class(std::string cl){m_classId=cl;}
+	std::string get_class(){return m_classId;}
+	
 	/// attach a child DynamicObject directly. used by classes to create their own objects without the factory
 	/// also used by create_child
 	virtual void attach_child(DynamicObjectPtr object, const std::string& id);
