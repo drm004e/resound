@@ -85,11 +85,30 @@ void Loudspeaker::write_attributes(std::stringstream& xml){
 	xml << m_el.to_string();
 	xml << m_az.to_string();
 }
+
+//  ------------------CoherentSetAlias
+CoherentSetAlias::CoherentSetAlias(const std::string& id, DynamicObject* parent):
+DynamicObject(id,parent),
+m_gain("gain",1.0f),
+m_ref("ref","")
+{}
+void CoherentSetAlias::on_attribute_changed(const std::string& name, const std::string& value){
+	if(name=="gain") m_gain.from_string(value);
+	else if(name=="ref") m_ref.from_string(value);
+}
+void CoherentSetAlias::write_attributes(std::stringstream& xml){
+	DynamicObject::write_attributes(xml); 
+	xml << m_ref.to_string();
+	xml << m_gain.to_string();
+}
+
 //  ------------------CoherentSet
 CoherentSet::CoherentSet(const std::string& id, DynamicObject* parent):
 DynamicObject(id,parent),
 m_gain("gain",1.0f)
-{}
+{
+	register_factory("alias", CoherentSetAlias::factory);
+}
 void CoherentSet::on_attribute_changed(const std::string& name, const std::string& value){
 	if(name=="gain") m_gain.from_string(value);
 }

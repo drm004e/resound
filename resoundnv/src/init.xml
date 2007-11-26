@@ -11,9 +11,25 @@
 	<new class="loudspeaker" id="genelec6" port="jackout5" x="0" y="0" z="0" az="0" el="0"/>
 	<new class="loudspeaker" id="genelec7" port="jackout6" x="0" y="0" z="0" az="0" el="0"/>
 	<new class="loudspeaker" id="genelec8" port="jackout7" x="0" y="0" z="0" az="0" el="0"/>
-	<new class="cass" id="stereo_in" />
-	<new class="cls" id="MAINS" />
-	<new class="cls" id="WIDES" />
-	<new class="cls" id="REARS" />
-	<new class="cls" id="DISTANT" />
+	<new class="cass" id="stereo_in">
+		<new class="alias" id="L" ref="as1"/>
+		<new class="alias" id="R" ref="as2"/>
+	</new>
+	
+	<new class="cls" id="MAINS" >
+		<new class="alias" id="L" ref="genelec1"/>
+		<new class="alias" id="R" ref="genelec2"/>
+	</new>
+	<new class="cls" id="WIDES" >
+		<new class="alias" id="L" ref="genelec3"/>
+		<new class="alias" id="R" ref="genelec4"/>
+	</new>
+	<new class="cls" id="REARS" >
+		<new class="alias" id="L" ref="genelec5"/>
+		<new class="alias" id="R" ref="genelec6"/>
+	</new>
+	<new class="cls" id="DISTANT" >
+		<new class="alias" id="L" ref="genelec7"/>
+		<new class="alias" id="R" ref="genelec8"/>
+	</new>
 </resound>

@@ -80,6 +80,20 @@ public:
 	virtual void write_attributes(std::stringstream& xml);
 };
 
+/// a set alias refers to a speaker by name
+class CoherentSetAlias : public DynamicObject{
+protected:
+	AttributeHelper<float> m_gain;
+	AttributeHelper<std::string> m_ref; ///< the alias reference is stored as an attribute
+public:
+	CoherentSetAlias(const std::string& id, DynamicObject* parent);
+	static DynamicObjectPtr factory(const std::string& id, DynamicObject* parent){ return DynamicObjectPtr(new CoherentSetAlias(id,parent));}
+	/// overload for attribute handling
+	virtual void on_attribute_changed(const std::string& name, const std::string& value);
+	/// overload this for attribute printing
+	virtual void write_attributes(std::stringstream& xml);
+};
+
 /// a base class for coherent sets
 class CoherentSet : public DynamicObject{
 protected:
