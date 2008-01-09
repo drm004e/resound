@@ -1,5 +1,0 @@
-The simplest way to get setup is to do the following which sets up a symbolic link for appache to your development copy
-Modify as appropriate
-
-cd /var/www/
-ln -s /home/YOURACCOUNT_HERE/sandbox/resound/resoundnv/webclient/ resoundnv
