@@ -1,0 +1,11 @@
+Files in the docs folder are as follows:
+
+bitstream_3x_preset.bs3: Preset file for the Bitstream 3x MIDI USB MIDI controller device (see http://www.waveidea.com/en/products/bitstream_3x). The top two rows of rotary knobs (numbered 008 to 023 on the device) are assigned to MIDI CC 7 on channels 1 through 16 consecutively, thus controlling the top row of faders in the Resound GUI. The bottom row of rotary knobs and the eight faders (numbered 032 to 047 on the device) are assigned to MIDI CC 10 on channels 1 through 16, thus controlling the bottom row of GUI faders. The patch was created and saved with the Windows version of the Bitstream configuration software. It has not been tested on the Mac version of the software, but might well work...
+
+flexmix_uml.xmi: Not exactly sure what this is; probably deprecated or otherwise defunct.
+
+license_to_paste.txt: This is a copy of the GNU license to be pasted at the top of all code or other text-based files associated with the Resound project.
+
+pdsendosctoresound.pd: This is a very basic patch for PD (extended) to generate test OSC messages and send them to Resound GUI.
+
+test.txt: As the name suggests, simply a test file!
