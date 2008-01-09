@@ -43,7 +43,7 @@ m_needsUpdate(false)
 Resound::AMParameter::~AMParameter()
 {}
 
-const float FADER_LOW_LIMIT = -60.0f; //dB
+const float FADER_RANGE = 96.0f; //dB
 
 void Resound::AMParameter::on_value_changed()
 {
@@ -54,9 +54,12 @@ void Resound::AMParameter::on_value_changed()
 		VERBOSE(std::cout << m_oscAddress.c_str() << " -infdB 0.0" << std::endl;)
 		lo_send(global_host_address, m_oscAddress.c_str(), "f", 0.0f);
 	} else { // range map into FADER_LOW_LIMIT dB - 0dB
-		float dB = (127.0f-(float)f) * (1.0f/128.0f * FADER_LOW_LIMIT); // FADER_LOW_LIMIT - 0
-		float v = CLAMPF(pow(10.0,dB/20.0), 0.0f, 1.0f); // set the value of the node and clamp it
-		VERBOSE(std::cout << m_oscAddress.c_str() << " " << dB << "dB " << v << std::endl;)
+		float pos = 1.0f/128.0f * f; 
+		// formula below based on that of ardour2 . ie position has range 0 -> 1.0
+		// 2 to the power of the eight root of the position scaled by the desired dB range ie 96 dB and shifted so it goes from -96dB to 0
+		// so we get curve going from 0 to 1.0 with very steep graph
+		float v = CLAMPF(pow (2.0,(sqrt(sqrt(sqrt(pos)))*(FADER_RANGE*2.0f)-(FADER_RANGE*2.0f))/6.0),0.,1.); // set the value of the node and clamp it
+		VERBOSE(std::cout << m_oscAddress.c_str() << " " << v << " " << 20.0 * log10(v) << " dB" << std::endl;)
 		lo_send(global_host_address, m_oscAddress.c_str(), "f", v);
 	}
 	m_needsUpdate = false;
