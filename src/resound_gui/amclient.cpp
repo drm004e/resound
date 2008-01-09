@@ -43,11 +43,22 @@ m_needsUpdate(false)
 Resound::AMParameter::~AMParameter()
 {}
 
+const float FADER_LOW_LIMIT = -60.0f; //dB
+
 void Resound::AMParameter::on_value_changed()
 {
 	// update the target value
-	float v = CLAMPF((float)get_value() * (1.0f/128.0f), 0.0f, 1.0f); // set the value of the node and clamp it
-	lo_send(global_host_address, m_oscAddress.c_str(), "f", v);
+	// assume that the midi fader range 0 - 127 represents a dB range from FADER_LOW_LIMIT dB - 0dB with a special case of 0 = -inf dB
+	int f = get_value();
+	if(f==0){ // gain -inf dB
+		VERBOSE(std::cout << m_oscAddress.c_str() << " -infdB 0.0" << std::endl;)
+		lo_send(global_host_address, m_oscAddress.c_str(), "f", 0.0f);
+	} else { // range map into FADER_LOW_LIMIT dB - 0dB
+		float dB = (127.0f-(float)f) * (1.0f/128.0f * FADER_LOW_LIMIT); // FADER_LOW_LIMIT - 0
+		float v = CLAMPF(pow(10.0,dB/20.0), 0.0f, 1.0f); // set the value of the node and clamp it
+		VERBOSE(std::cout << m_oscAddress.c_str() << " " << dB << "dB " << v << std::endl;)
+		lo_send(global_host_address, m_oscAddress.c_str(), "f", v);
+	}
 	m_needsUpdate = false;
 }
 
