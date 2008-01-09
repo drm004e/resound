@@ -40,7 +40,7 @@ OSCManager(port)
 {
 	VERBOSE(std::cout << "Initialising I/O matrix... \n";)
 	m_nAttMatrix.Create(m_numInputs+1, m_numOutputs+1);
-	m_iAttMatrix.Create(m_numInputs+1, m_numOutputs+1);
+	m_prevGainMatrix.Create(m_numInputs+1, m_numOutputs+1);
 
 	// jack initialisation
 	VERBOSE(std::cout << "Connecting to jackd... \n";)
@@ -80,7 +80,7 @@ OSCManager(port)
 	for(int r=0; r < m_numInputs;r++){
 		for(int c=0; c < m_numOutputs;c++){
 			m_nAttMatrix.Index(r,c) = 0.0f;
-			m_iAttMatrix.Index(r,c) = 0.0f;
+			m_prevGainMatrix.Index(r,c) = 0.0f;
 		}
 	}
 
@@ -113,7 +113,7 @@ int Resound::DSPManager::process(jack_nframes_t nframes)
 	int maxIns = m_inputs.size() + 1; // plus one to allow for inputs outputs and global
 	int maxOuts = m_outputs.size() + 1;
 	int iOut, iIn;
-	float globalAtt, outAtt, inAtt, matAtt, finalAtt;
+	float globalAtt, outAtt, inAtt, matAtt, finalGain;
 
 	AudioBuffer* outputBuffer; // cached output buffer pointer
 	AudioBuffer* inputBuffer; // cached input buffer pointer
@@ -129,24 +129,25 @@ int Resound::DSPManager::process(jack_nframes_t nframes)
 //*/
 
 
-	globalAtt = DSPLogInterpolate(m_iAttMatrix.Index(0,0),m_nAttMatrix.Index(0,0));
+	globalAtt = m_nAttMatrix.Index(0,0); // get global gain factor
 	if(globalAtt != 0.0f) {
 		for(iOut = 1; iOut < maxOuts; iOut++) {
 			outputBuffer = new AudioBuffer((AudioSample*)jack_port_get_buffer(m_outputs[iOut-1],nframes),nframes); // we get this one encapsulating the jack port
 			// Clear output buffers ready for summing
 			MemsetBuffer(outputBuffer,0.0f,nframes);
-			// interpolate dsp factors
-			outAtt = DSPLogInterpolate(m_iAttMatrix.Index(0,iOut),m_nAttMatrix.Index(0,iOut));
+			outAtt = m_nAttMatrix.Index(0,iOut); // get output gain factor
 			if(outAtt != 0.0f) {
 
 				for(iIn = 1; iIn < maxIns; iIn++) {
-					inAtt = DSPLogInterpolate(m_iAttMatrix.Index(iIn,0),m_nAttMatrix.Index(iIn,0));
+					inAtt = m_nAttMatrix.Index(iIn,0); // get input gain factor
 					if(inAtt != 0.0f) {
 						inputBuffer = new AudioBuffer((AudioSample*)jack_port_get_buffer(m_inputs[iIn-1],nframes),nframes); // we get this one encapsulating the jack port
-						matAtt = DSPLogInterpolate(m_iAttMatrix.Index(iIn,iOut),m_nAttMatrix.Index(iIn,iOut));
+						matAtt = m_nAttMatrix.Index(iIn,iOut); // get node gain factor
 						if(matAtt != 0.0f) {
-							finalAtt = globalAtt * outAtt * inAtt * matAtt; // factor gains together
-							DSPSumToBuss(inputBuffer, outputBuffer, finalAtt ,nframes); // sum onto the buss
+							float& prevGain = m_prevGainMatrix.Index(iIn,iOut);
+							finalGain = globalAtt * outAtt * inAtt * matAtt; // factor gains together
+							Resound::dsp_sum_to_buss(inputBuffer, outputBuffer, prevGain, finalGain, m_interpSize ,nframes); // sum onto the buss
+							prevGain = finalGain; // remmember the gain factor
 						} // nodes
 						delete inputBuffer;
 					}
