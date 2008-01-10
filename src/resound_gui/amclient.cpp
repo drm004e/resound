@@ -49,7 +49,7 @@ void Resound::AMParameter::on_value_changed()
 {
 	// update the target value
 	// assume that the midi fader range 0 - 127 represents a dB range from FADER_LOW_LIMIT dB - 0dB with a special case of 0 = -inf dB
-	int f = get_value();
+	int f = CLAMP(get_value(),0,127);
 	if(f==0){ // gain -inf dB
 		VERBOSE(std::cout << m_oscAddress.c_str() << " -infdB 0.0" << std::endl;)
 		lo_send(global_host_address, m_oscAddress.c_str(), "f", 0.0f);

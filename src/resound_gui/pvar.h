@@ -76,7 +76,7 @@ public:
 	virtual void on_value_changed(); ///<a virtual function called directly by SetValue and SetValue Direct
 	virtual void lock(int lockedValue); ///< locks the value - the real value will still be changed but GetValue will return the locked value
 	virtual void unlock(); ///< get value will return the real value;
-
+	bool is_locked() const {return m_isLocked;}///<return the lock status of the parameter
 
 	void set_name(const EntityName& name) {};
 	const EntityName& get_name(){return m_name;};

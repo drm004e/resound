@@ -27,6 +27,10 @@
 // event table
 BEGIN_EVENT_TABLE(Resound::MonitorNodeWidget, Resound::ParameterAddressWidgetBase)
 EVT_TOGGLEBUTTON(MNW_LOCKBUTTON, Resound::MonitorNodeWidget::OnLockToggle)
+EVT_LEFT_DOWN(Resound::MonitorNodeWidget::OnLeftMouseDown)
+EVT_MOTION(Resound::MonitorNodeWidget::OnLeftMouseMove)
+EVT_LEFT_UP(Resound::MonitorNodeWidget::OnLeftMouseUp)
+EVT_RIGHT_UP(Resound::MonitorNodeWidget::OnRightMouseUp)
 END_EVENT_TABLE()
 
 // class constructor
@@ -46,8 +50,8 @@ Resound::MonitorNodeWidget::MonitorNodeWidget(wxWindow* parent, int id, Paramete
 	wxBoxSizer *topSizer = new wxBoxSizer( wxHORIZONTAL );
 	wxBoxSizer *leftSizer = new wxBoxSizer( wxVERTICAL );
 	SetToolTip(wxConvertMB2WX(addr.get_address().c_str())); 
-	leftSizer->Add(new wxStaticText(this,MNW_LABEL,label, wxPoint(0,0),wxSize(40,18),wxALIGN_CENTRE),wxSizerFlags(0).Align(0).Border(wxALL,0));
-	leftSizer->Add(new wxToggleButton(this,MNW_LOCKBUTTON,_("L"), wxPoint(0,0),wxSize(20,20)),wxSizerFlags(0).Center().Border(wxALL,0));
+	//leftSizer->Add(new wxStaticText(this,MNW_LABEL,label, wxPoint(0,0),wxSize(40,18),wxALIGN_CENTRE),wxSizerFlags(0).Align(0).Border(wxALL,0));
+	//leftSizer->Add(new wxToggleButton(this,MNW_LOCKBUTTON,_("L"), wxPoint(0,0),wxSize(20,20)),wxSizerFlags(0).Center().Border(wxALL,0));
 	topSizer->Add(leftSizer);
 	meter = new Resound::ParameterVUMeterWidget(this,MNW_METER,rand() % 128,0,128,_(RESOURCE_DIR "/image/smMeterOff.png"),_(RESOURCE_DIR "/image/smMeterOn.png"));
 	meter->SetTarget(addr);
@@ -69,11 +73,42 @@ void Resound::MonitorNodeWidget::OnLockToggle(wxCommandEvent& event)
 	bool isSelected = event.IsChecked();
 	try{
 		if(isSelected) {
-			RESOUND_NAMESPACE()->get_parameter(GetAddress())->lock(128); //FIXME note use of 128 constant here?
+			RESOUND_NAMESPACE()->get_parameter(GetAddress())->lock(127);
 		} else {
 			RESOUND_NAMESPACE()->get_parameter(GetAddress())->unlock();
 		}
 	} catch(ParameterAddressException& e){
 		
 	}
+}
+void Resound::MonitorNodeWidget::OnLeftMouseDown(wxMouseEvent& event)
+{	
+	
+	m_lastY = event.GetY();
+	CaptureMouse();
+	event.Skip();
+}
+void Resound::MonitorNodeWidget::OnLeftMouseMove(wxMouseEvent& event)
+{	
+	if(event.LeftIsDown()){
+		
+		int dY = event.GetY() - m_lastY;
+		m_lastY=event.GetY();
+		int lockValue = RESOUND_NAMESPACE()->get_parameter(GetAddress())->get_value() + dY;
+		if(lockValue <= 127 & lockValue >= 0){
+			
+			RESOUND_NAMESPACE()->get_parameter(GetAddress())->lock(lockValue);
+			Refresh();
+		}
+	}
+		
+}
+void Resound::MonitorNodeWidget::OnLeftMouseUp(wxMouseEvent& event)
+{	
+	ReleaseMouse();
+}
+void Resound::MonitorNodeWidget::OnRightMouseUp(wxMouseEvent& event)
+{	
+	RESOUND_NAMESPACE()->get_parameter(GetAddress())->unlock();
+	ReleaseMouse();
 }

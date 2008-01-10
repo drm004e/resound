@@ -41,6 +41,12 @@ public:
 	// class destructor
 	~MonitorNodeWidget();
 private:
+	int m_lastY;
+	// event handlers
+	void OnLeftMouseDown(wxMouseEvent& event);
+	void OnLeftMouseMove(wxMouseEvent& event);
+	void OnLeftMouseUp(wxMouseEvent& event);
+	void OnRightMouseUp(wxMouseEvent& event);
 	void OnLockToggle(wxCommandEvent& event);
 	Resound::ParameterVUMeterWidget *meter;
 	wxString label;
