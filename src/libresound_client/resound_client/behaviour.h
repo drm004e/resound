@@ -21,8 +21,6 @@
 #ifndef __BEHAVIOUR_H
 #define __BEHAVIOUR_H
 
-#include "pvarwidgets.h"
-
 namespace Resound
 {
 // pre defined

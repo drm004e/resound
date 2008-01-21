@@ -15,30 +15,12 @@
 //   along with this program; if not, write to the Free Software
 //   Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 //   MA 02111-1307 USA
-//   
-#ifndef __PCH_H__
-#define __PCH_H__
 
-// precompiled header
-// makefile has been altered to deal with this
+#include "resound_client/resound_client.h"
 
-#include <exception>
-#include <cstdlib>
-#include <cmath>
-#include <list>
-#include <string>
-#include <vector>
-#include <map>
-#include <iostream>
-
-
-// library headers
-#include <resound_common/array2.h>
-#include <resound_common/exception.h>
-#include <resound_common/verbose.h>
-
-// constants
-const float PI = 3.141592f;
-const float TWOPI = PI * 2.0f;
-
-#endif
+ResoundClient::m_singleton = 0;
+ResoundClient& ResoundClient::get_instance(){
+	if(!m_singleton) m_singleton = new ResoundClient;
+	assert(m_singleton);
+	return m_singleton;
+}

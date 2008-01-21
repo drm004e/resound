@@ -17,7 +17,7 @@
 #    along with Resound; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# resound_gui
+# libresound_client
 
 
 include(FindBoost)
@@ -32,8 +32,6 @@ ELSEIF(APPLE)
 	INCLUDE_DIRECTORIES(
 		${RESOUND_SOURCE_DIR}/
 		${Boost_INCLUDE_DIRS}
-		/opt/local/lib/wx/include/mac-unicode-release-2.8 
-		/opt/local/include/wx-2.8
 	)
 ELSE(UNIX)
 ENDIF(UNIX)
@@ -46,83 +44,46 @@ LINK_DIRECTORIES(
 IF(UNIX)
 	SET(CMAKE_CXX_FLAGS "-g -DUSE_MIDI -DRESOURCE_DIR='\"${CMAKE_INSTALL_PREFIX}/share/resound_gui\"'")
 ELSEIF(APPLE)
-	SET(CMAKE_CXX_FLAGS "-g -D__WXMAC__")
+	SET(CMAKE_CXX_FLAGS "-g")
 ELSE(UNIX)
-ENDIF(UNIX)
-
-IF(UNIX)
-	FIND_PACKAGE(wxWidgets)
-	INCLUDE(UsewxWidgets)
 ENDIF(UNIX)
 
 # build the excecutable
 SET(sourcefiles 
 	amclient.cpp
-	amclient.h
-	amclient_widgets.h
-	amclient_widgets.cpp
-	app.cpp
-	app.h
+	resound_client/amclient.h
 	automation.cpp
-	automation.h
+	resound_client/automation.h
 	basebehaviour.cpp
-	basebehaviour.h
-	base.cpp
-	base.h
+	resound_client/basebehaviour.h
 	behaviour.cpp
-	behaviour.h
-	behaviourview.cpp
-	behaviourview.h
-	coherency.cpp
-	coherency.h
-	faderwidget.cpp
-	faderwidget.h
-	masterfader.cpp
-	masterfader.h
+	resound_client/behaviour.h
 	mmanager.cpp
-	mmanager.h
+	resound_client/mmanager.h
 	mmanager_alsa.cpp #linux alsa
-	mmanager_alsa.cpp #linux alsa
+	resound_client/mmanager_alsa.h #linux alsa
 	mmanagerwin32.cpp #win32
-	mmanagerwin32.h #win32
-	monitorframe.cpp
-	monitorframe.h
-	monitornodewidget.cpp
-	monitornodewidget.h
-	monitorview.cpp
-	monitorview.h
+	resound_client/mmanagerwin32.h #win32
 	performance.cpp
-	performance.h
-	performanceview.cpp
-	performanceview.h
+	resound_client/performance.h
 	pvar.cpp
-	pvar.h
-	pvarwidgets.cpp
-	pvarwidgets.h
-	vumeterwidget.cpp
-	vumeterwidget.h
-	util.h
+	resound_client/pvar.h
+	resound_client/util.h
 )
 
 IF(UNIX)
-	add_executable (resound_gui ${sourcefiles})
+	add_library (resound_client ${sourcefiles})
 ELSEIF(APPLE)
-	FILE(MAKE_DIRECTORY resound_gui.app)
-	FILE(MAKE_DIRECTORY resound_gui.app/Contents)
-	FILE(MAKE_DIRECTORY resound_gui.app/Contents/MacOS)
-	FILE(MAKE_DIRECTORY resound_gui.app/Resources)
-	add_executable (resound_gui MACOSX_BUNDLE ${sourcefiles})
+	add_library (resound_client ${sourcefiles})
 ELSE(UNIX)
 ENDIF(UNIX)
 
 #link with libs
 IF(UNIX)
-	target_link_libraries (resound_gui boost_program_options resound_common boost_serialization asound ${wxWidgets_LIBRARIES})
+	target_link_libraries (resound_client boost_program_options resound_common boost_serialization asound)
 ELSEIF(APPLE)
-	target_link_libraries (resound_gui boost_program_options resound_common boost_serialization wx_macu-2.8)
+	target_link_libraries (resound_client boost_program_options resound_common boost_serialization)
 ELSE(UNIX)
 ENDIF(UNIX)
 
-INSTALL(DIRECTORY image DESTINATION share/resound_gui)
-
-INSTALL(TARGETS resound_gui DESTINATION bin)
+INSTALL(TARGETS resound_client DESTINATION lib)

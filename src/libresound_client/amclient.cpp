@@ -18,18 +18,15 @@
  *   MA 02111-1307 USA
  *   
 */
-#include "pch.h" // precompiler header
 
-#include "automation.h"
-#include "pvar.h"
-#include "vumeterwidget.h"
-#include "faderwidget.h"
-#include "pvarwidgets.h"
-#include "util.h"
-
-#include "app.h"
-#include "amclient.h" // classes header
 #include <sstream>
+#include "resound_client/pch.h"
+#include "resound_client/automation.h"
+#include "resound_client/pvar.h"
+#include "resound_client/util.h"
+#include "resound_client/amclient.h"
+#include "resound_client/resoundclient.h"
+
 
 lo_address global_host_address = 0; 
 
@@ -77,14 +74,14 @@ BOOST_CLASS_EXPORT(Resound::AMClient);
 
 Resound::AMClient::AMClient()
 {
-	global_host_address = lo_address_new(wxGetApp().get_server_ip().c_str(), wxGetApp().get_server_port().c_str());
+	global_host_address = lo_address_new(ResoundClient::get_instance().get_server_ip().c_str(), ResoundClient::get_instance().get_server_port().c_str());
 }
 
 Resound::AMClient::AMClient(int inputs, int outputs) :
 
 Resound::ParameterNamespace("am") // FIXME
 {
-	global_host_address = lo_address_new(wxGetApp().get_server_ip().c_str(), wxGetApp().get_server_port().c_str());
+	global_host_address = lo_address_new(ResoundClient::get_instance().get_server_ip().c_str(), ResoundClient::get_instance().get_server_port().c_str());
 	build_parameter_matrix(inputs,outputs); // fake matrix
 }
 Resound::AMClient::~AMClient()

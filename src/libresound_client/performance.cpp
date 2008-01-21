@@ -17,12 +17,12 @@
 //   MA 02111-1307 USA
 //   
 
-#include "performance.h" // class's header file
+#include "resound_client/performance.h" // class's header file
 
 #include <iostream>
 #include <fstream>
 
-#include "amclient.h"
+#include "resound_client/amclient.h"
 
 
 namespace Resound

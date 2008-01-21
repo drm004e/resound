@@ -16,10 +16,8 @@
 //   Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 //   MA 02111-1307 USA
 //   
-
-#include "performance.h" // class's header file
 #include <iostream>
-
+#include "resound_client/performance.h" // class's header file
 #include <resound_common/verbose.h>
 
 // ------------------------------- Entity ----------------------------------

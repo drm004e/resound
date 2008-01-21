@@ -18,18 +18,18 @@
  *   MA 02111-1307 USA
  *   
 */
-#include "pch.h"
+#include "resound_client/pch.h"
 
 #ifdef __WIN32__
-    #include "mmanagerwin32.h" // windows platform include
+    #include "resound_client/mmanagerwin32.h" // windows platform include
 #endif
 #ifdef __linux__
-    #include "mmanager_alsa.h" // linux alsa platform include
+    #include "resound_client/mmanager_alsa.h" // linux alsa platform include
 #endif
 
 #include <resound_common/exception.h>
 
-#include "mmanager.h"
+#include "resound_client/mmanager.h"
 
 // ------------------------------------- MListener ---------------------------
 MListener::MListener()

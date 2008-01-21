@@ -25,5 +25,7 @@ project(RESOUND)
 add_subdirectory(resound_common)
 # resound_server
 add_subdirectory(resound_server)
+# resound_client library
+add_subdirectory(libresound_client)
 # resound_gui
 add_subdirectory(resound_gui)

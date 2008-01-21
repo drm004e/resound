@@ -29,8 +29,19 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <iostream>
 
+
+// wx headers
+#include <wx/wx.h>
+#include <wx/socket.h>
+#include <wx/event.h>
+#include <wx/dcbuffer.h>
+#include <wx/notebook.h>
+#include <wx/wfstream.h>
+#include <wx/datstrm.h>
+#include <wx/txtstrm.h>
+#include <wx/tglbtn.h> // not sure bout this one
+#include <wx/gbsizer.h>
 
 // library headers
 #include <resound_common/array2.h>

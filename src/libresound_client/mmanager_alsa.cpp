@@ -21,7 +21,7 @@
 
 #ifdef __linux__
 
-#include "mmanager_alsa.h"
+#include "resound_client/mmanager_alsa.h"
 #include <iostream>
 #include <sstream>
 #include <resound_common/exception.h>

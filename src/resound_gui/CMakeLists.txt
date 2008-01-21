@@ -57,51 +57,30 @@ ENDIF(UNIX)
 
 # build the excecutable
 SET(sourcefiles 
-	amclient.cpp
-	amclient.h
 	amclient_widgets.h
 	amclient_widgets.cpp
 	app.cpp
 	app.h
-	automation.cpp
-	automation.h
-	basebehaviour.cpp
-	basebehaviour.h
 	base.cpp
 	base.h
-	behaviour.cpp
-	behaviour.h
 	behaviourview.cpp
 	behaviourview.h
-	coherency.cpp
-	coherency.h
 	faderwidget.cpp
 	faderwidget.h
 	masterfader.cpp
 	masterfader.h
-	mmanager.cpp
-	mmanager.h
-	mmanager_alsa.cpp #linux alsa
-	mmanager_alsa.cpp #linux alsa
-	mmanagerwin32.cpp #win32
-	mmanagerwin32.h #win32
 	monitorframe.cpp
 	monitorframe.h
 	monitornodewidget.cpp
 	monitornodewidget.h
 	monitorview.cpp
 	monitorview.h
-	performance.cpp
-	performance.h
 	performanceview.cpp
 	performanceview.h
-	pvar.cpp
-	pvar.h
 	pvarwidgets.cpp
 	pvarwidgets.h
 	vumeterwidget.cpp
 	vumeterwidget.h
-	util.h
 )
 
 IF(UNIX)
@@ -117,9 +96,9 @@ ENDIF(UNIX)
 
 #link with libs
 IF(UNIX)
-	target_link_libraries (resound_gui boost_program_options resound_common boost_serialization asound ${wxWidgets_LIBRARIES})
+	target_link_libraries (resound_gui resound_client boost_program_options resound_common boost_serialization asound ${wxWidgets_LIBRARIES})
 ELSEIF(APPLE)
-	target_link_libraries (resound_gui boost_program_options resound_common boost_serialization wx_macu-2.8)
+	target_link_libraries (resound_gui resound_client boost_program_options resound_common boost_serialization wx_macu-2.8)
 ELSE(UNIX)
 ENDIF(UNIX)
 
