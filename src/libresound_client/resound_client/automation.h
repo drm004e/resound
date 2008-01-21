@@ -23,6 +23,7 @@
 
 // Automation manager singleton class
 
+#include <list>
 
 namespace Resound
 {

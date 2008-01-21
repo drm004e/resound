@@ -1,6 +1,6 @@
 
 #include "amclient_widgets.h"
-#include "amclient.h"
+#include "resound_client/amclient.h"
 #include <sstream>
 
 // ----------------------------------------- AudioMatrixSelectPanel -----------------

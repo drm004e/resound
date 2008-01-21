@@ -19,8 +19,16 @@
 #ifndef __BASE_H
 #define __BASE_H
 
-#include "automation.h"
-#include<sys/time.h>
+#include "resound_client/automation.h"
+#ifdef USE_MIDI
+	#include "resound_client/mmanager.h"
+#endif
+#include <sys/time.h>
+
+#include "performanceview.h"
+#include "monitorview.h"
+#include "behaviourview.h"
+
 class AutomationDriver : public wxTimer{
 	double prevT;
 public:
@@ -28,7 +36,7 @@ public:
 	void Notify(){
 #ifdef USE_MIDI
 		MManager::get_instance().tick();
-#endif USE_MIDI
+#endif
 		double t = gettime();
 		Resound::AutomationManager::get_instance().tick(t-prevT); 
 		prevT = t;

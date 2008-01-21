@@ -19,14 +19,12 @@
  *   
 */
 
-#include <sstream>
-#include "resound_client/pch.h"
-#include "resound_client/automation.h"
-#include "resound_client/pvar.h"
-#include "resound_client/util.h"
 #include "resound_client/amclient.h"
+#include "resound_client/util.h"
 #include "resound_client/resoundclient.h"
-
+#include "resound_common/verbose.h"
+#include <iostream>
+#include <sstream>
 
 lo_address global_host_address = 0; 
 
@@ -78,8 +76,7 @@ Resound::AMClient::AMClient()
 }
 
 Resound::AMClient::AMClient(int inputs, int outputs) :
-
-Resound::ParameterNamespace("am") // FIXME
+	Resound::ParameterNamespace("am") // FIXME err why is this a fixme "am" is a naff magic name for this though
 {
 	global_host_address = lo_address_new(ResoundClient::get_instance().get_server_ip().c_str(), ResoundClient::get_instance().get_server_port().c_str());
 	build_parameter_matrix(inputs,outputs); // fake matrix

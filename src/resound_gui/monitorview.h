@@ -21,7 +21,7 @@
 #ifndef MONITORVIEW_H
 #define MONITORVIEW_H
 
-
+#include "resound_client/amclient.h"
 
 namespace Resound
 {

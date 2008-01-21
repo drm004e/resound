@@ -16,11 +16,11 @@
 //   Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 //   MA 02111-1307 USA
 
-#include "resound_client/resound_client.h"
-
-ResoundClient::m_singleton = 0;
+#include "resound_client/resoundclient.h"
+#include <cassert>
+ResoundClient* ResoundClient::m_singleton = 0;
 ResoundClient& ResoundClient::get_instance(){
 	if(!m_singleton) m_singleton = new ResoundClient;
 	assert(m_singleton);
-	return m_singleton;
+	return *m_singleton;
 }

@@ -19,27 +19,10 @@
  *   
 */
 
-#include "pch.h" // precompiler header
-#include "app.h"
-#include "automation.h"
-#include "pvar.h"
-#include "behaviour.h"
-#include "basebehaviour.h"
-
-// view classes
-#include "vumeterwidget.h"
-#include "faderwidget.h"
-#include "pvarwidgets.h"
-#include "masterfader.h"
-#include "performanceview.h"
-
-#include "amclient.h"
-#include "monitorview.h"
-#include "behaviourview.h"
-
+#include "wxincludes.h"
 #include "base.h"
-
-#include "performance.h"
+#include "resound_client/resoundclient.h"
+#include "resound_client/basebehaviour.h"
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 EVT_MENU(ID_MAINWIN_QUIT, MainFrame::OnQuit)
@@ -87,7 +70,7 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 	//wxMessageBox(_T("ok"));
 
 	// make the network client
-	Resound::ParameterNamespacePtr m_audioMatrix = Resound::ParameterNamespacePtr(new Resound::AMClient(wxGetApp().get_inputs(),wxGetApp().get_outputs()));
+	Resound::ParameterNamespacePtr m_audioMatrix = Resound::ParameterNamespacePtr(new Resound::AMClient(ResoundClient::get_instance().get_inputs(),ResoundClient::get_instance().get_outputs()));
 
 	// make the behaviour sub system
 	Resound::ParameterNamespacePtr m_behaviourManager = Resound::ParameterNamespacePtr(new Resound::BehaviourManager());

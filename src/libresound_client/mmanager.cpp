@@ -18,7 +18,9 @@
  *   MA 02111-1307 USA
  *   
 */
-#include "resound_client/pch.h"
+
+#include <vector>
+#include <string>
 
 #ifdef __WIN32__
     #include "resound_client/mmanagerwin32.h" // windows platform include

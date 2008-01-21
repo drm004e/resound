@@ -19,24 +19,6 @@
 #ifndef __PCH_H__
 #define __PCH_H__
 
-// precompiled header
-// makefile has been altered to deal with this
-
-#include <exception>
-#include <cstdlib>
-#include <cmath>
-#include <list>
-#include <string>
-#include <vector>
-#include <map>
-#include <iostream>
-
-
-// library headers
-#include <resound_common/array2.h>
-#include <resound_common/exception.h>
-#include <resound_common/verbose.h>
-
 // constants
 const float PI = 3.141592f;
 const float TWOPI = PI * 2.0f;

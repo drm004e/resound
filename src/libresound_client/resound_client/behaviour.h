@@ -21,6 +21,10 @@
 #ifndef __BEHAVIOUR_H
 #define __BEHAVIOUR_H
 
+#include "pvar.h"
+#include "resound_common/exception.h"
+#include "boost/shared_ptr.hpp"
+
 namespace Resound
 {
 // pre defined

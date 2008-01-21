@@ -22,9 +22,13 @@
 #define __MASTERFADER_H
 
 #ifndef __MManager__
-    #include "mmanager.h"
+    #include "resound_client/mmanager.h"
 #endif
-#include "performance.h"
+#include "resound_client/performance.h"
+
+#include "faderwidget.h"
+#include "vumeterwidget.h"
+#include "pvarwidgets.h"
 
 namespace Resound
 {

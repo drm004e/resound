@@ -16,10 +16,11 @@
 //   Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 //   MA 02111-1307 USA
 //   
-#include <iostream>
-#include "resound_client/performance.h" // class's header file
-#include <resound_common/verbose.h>
 
+#include "resound_client/pvar.h"
+#include "resound_client/performance.h"
+#include <resound_common/verbose.h>
+#include <iostream>
 // ------------------------------- Entity ----------------------------------
 Resound::Entity::Entity(const EntityName& name) :
 m_name(name)

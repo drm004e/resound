@@ -21,14 +21,15 @@
 #ifndef __BASEBEHAVIOUR_H
 #define __BASEBEHAVIOUR_H
 
+#include "behaviour.h"
+#include "automation.h"
+
 // A selection of basic beahviours
 namespace Resound
 {
 
 // function to register the behaviours in this file
 void register_base_behaviours(BehaviourManager* theManager);
-
-
 
 // multi cross fade
 // uses first set of collective

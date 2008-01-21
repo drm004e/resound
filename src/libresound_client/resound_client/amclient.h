@@ -23,6 +23,8 @@
 // include for transmited data format
 // and helper classes
 
+#include "pvar.h"
+#include "automation.h"
 #include <resound_common/osc_manager.h>
 
 namespace Resound

@@ -16,20 +16,10 @@
 //   Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 //   MA 02111-1307 USA
 //   
-#ifndef __PCH_H__
-#define __PCH_H__
+#ifndef __WXINCLUDES_H__
+#define __WXINCLUDES_H__
 
-// precompiled header
-// makefile has been altered to deal with this
-
-#include <exception>
-#include <cstdlib>
-#include <cmath>
-#include <list>
-#include <string>
-#include <vector>
-#include <map>
-
+#include <iostream> 
 
 // wx headers
 #include <wx/wx.h>
@@ -40,16 +30,8 @@
 #include <wx/wfstream.h>
 #include <wx/datstrm.h>
 #include <wx/txtstrm.h>
-#include <wx/tglbtn.h> // not sure bout this one
+#include <wx/tglbtn.h>
 #include <wx/gbsizer.h>
-
-// library headers
-#include <resound_common/array2.h>
-#include <resound_common/exception.h>
-#include <resound_common/verbose.h>
-
-// constants
-const float PI = 3.141592f;
-const float TWOPI = PI * 2.0f;
+#include <wx/numdlg.h>
 
 #endif

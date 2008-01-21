@@ -20,7 +20,10 @@
 
 #ifndef BEHAVIOURVIEW_H
 #define BEHAVIOURVIEW_H
-#include "behaviour.h"
+
+#include "resound_client/behaviour.h"
+#include "pvarwidgets.h"
+
 namespace Resound
 {
 

@@ -21,11 +21,10 @@
 #ifndef VUMETER_H
 #define VUMETER_H
 
-#include "pch.h" // precompiler header
-
-#include "util.h"
-#include "automation.h"
-#include "pvar.h"
+#include "wxincludes.h"
+#include "resound_client/util.h"
+#include "resound_client/automation.h"
+#include "resound_client/pvar.h"
 
 namespace Resound
 {

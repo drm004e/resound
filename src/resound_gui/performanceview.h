@@ -20,7 +20,11 @@
 
 #ifndef PERFORMANCEVIEW_H
 #define PERFORMANCEVIEW_H
+
 #include <resound_common/osc_manager.h>
+
+#include "masterfader.h"
+
 namespace Resound
 {
 // Main performance area sub window

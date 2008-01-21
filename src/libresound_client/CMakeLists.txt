@@ -68,6 +68,8 @@ SET(sourcefiles
 	resound_client/performance.h
 	pvar.cpp
 	resound_client/pvar.h
+	resoundclient.cpp
+	resound_client/resoundclient.h
 	resound_client/util.h
 )
 

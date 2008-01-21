@@ -26,6 +26,7 @@ include(FindBoost)
 IF(UNIX)
 	INCLUDE_DIRECTORIES(
 		${RESOUND_SOURCE_DIR}/
+		${RESOUND_SOURCE_DIR}/libresound_client
 		${Boost_INCLUDE_DIRS}
 	)
 ELSEIF(APPLE)
