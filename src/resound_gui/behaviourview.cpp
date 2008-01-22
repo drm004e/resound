@@ -58,7 +58,7 @@ void Resound::BehaviourSelectPanel::BuildPanel()
 	wxBoxSizer* sizer = new wxBoxSizer( wxVERTICAL );
 	behaviourSizer->Add(sizer);
 
-	for(BehaviourMap::iterator i = behaviourManager->get_behaviour_map().begin(); i !=  behaviourManager->get_behaviour_map().end(); i++) {
+	for(BehaviourMap::const_iterator i = behaviourManager->get_behaviour_map().begin(); i !=  behaviourManager->get_behaviour_map().end(); i++) {
 		int id = (*i).first;
 		BehaviourPtr b = (*i).second;
 		wxGridSizer* gridSizer = new wxGridSizer(1,0,1,1);
@@ -184,7 +184,7 @@ void Resound::BehaviourView::BuildPanel()
 	behaviourSizer->Layout();
 	wxBoxSizer* sizer = new wxBoxSizer( wxVERTICAL );
 	behaviourSizer->Add(sizer);
-	for(BehaviourMap::iterator i = behaviourManager->get_behaviour_map().begin(); i !=  behaviourManager->get_behaviour_map().end(); i++) {
+	for(BehaviourMap::const_iterator i = behaviourManager->get_behaviour_map().begin(); i !=  behaviourManager->get_behaviour_map().end(); i++) {
 		int id = (*i).first;
 		BehaviourPtr b = (*i).second;
 		wxWindow* p = new BehaviourViewItem(this,id,b);
@@ -199,12 +199,23 @@ void Resound::BehaviourView::BuildPanel()
 void Resound::BehaviourView::OnCreateBehaviour(wxCommandEvent &event)
 {
 	Resound::BehaviourManager* behaviourManager = dynamic_cast<Resound::BehaviourManager*>(&RESOUND_NAMESPACE()->get_parameter_namespace(1));
-	try {
-		behaviourManager->create_behaviour();
-	} catch(Resound::CreateBehaviourException& e) {
-		//Cancel was pressed so ignore this exception here.
+	
+	// construct arraystring of all names
+	wxArrayString aStr;
+	std::vector<BehaviourClassId> idLookup; // temp array for lookup
+	for(BehaviourClassFactoryMap::const_iterator i = behaviourManager->get_behaviour_class_map().begin();
+		i != behaviourManager->get_behaviour_class_map().end(); ++i)
+	{
+		idLookup.push_back(i->first); // store the associated FourCharId by index
+		aStr.Add(wxConvertMB2WX(i->second.get_name().c_str())); // add the string for the dialog 
 	}
-	BuildPanel();
+	int classIndex = wxGetSingleChoiceIndex(_T("Please select a behaviour class"),_T("Select Behaviour"),aStr);
+	if(classIndex >= 0){
+		behaviourManager->create_behaviour(idLookup[classIndex]);
+		BuildPanel();
+	} else {
+		// user cancelled 
+	}
 }
 void Resound::BehaviourView::OnRemove(wxCommandEvent &event)
 {

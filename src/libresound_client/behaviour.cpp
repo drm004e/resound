@@ -95,17 +95,17 @@ m_classNiceName(classNiceName),
 m_factory(factory)
 {}
 
-Resound::BehaviourClassId Resound::BehaviourClassFactory::get_class_id()
+Resound::BehaviourClassId Resound::BehaviourClassFactory::get_class_id() const
 {
 	return m_classId;
 }
 
-std::string Resound::BehaviourClassFactory::get_name()
+std::string Resound::BehaviourClassFactory::get_name() const
 {
 	return m_classNiceName;
 }
 
-Resound::BehaviourPtr Resound::BehaviourClassFactory::create()
+Resound::BehaviourPtr Resound::BehaviourClassFactory::create() const
 {
 	// create one of these class of behaviour
 	return m_factory();
@@ -138,7 +138,7 @@ void Resound::BehaviourManager::register_behaviour_class_factory(BehaviourClassF
 		m_classMap[classId] = bClass; // table look-up
 	}
 }
-
+/*
 Resound::BehaviourPtr Resound::BehaviourManager::create_behaviour_direct(BehaviourClassId classId)
 {
 	// first search for the class id
@@ -158,40 +158,9 @@ Resound::BehaviourPtr Resound::BehaviourManager::create_behaviour_direct(Behavio
 		throw Resound::CreateBehaviourException();
 	}
 }
-
+*/
 Resound::BehaviourPtr Resound::BehaviourManager::create_behaviour(BehaviourClassId classId)
 {
-	
-	
-	if(classId == "") // check for null type and set
-	{
-	std::cout << "Error removed GUI behaviour select dialog code from library\n";
-	throw Resound::CreateBehaviourException();
-
-	/*//TODO remove dialog from here -- this is gui functionality and needs to come out
-		// have to get user to select type first
-
-		// construct arraystring of all names
-		wxArrayString aStr;
-		std::vector<BehaviourClassId> idLookup; // temp array for lookup
-		for(BehaviourClassFactoryMap::iterator i = m_classMap.begin(); i != m_classMap.end(); i++)
-		{
-			idLookup.push_back((*i).first); // store the associated FourCharId by index
-			aStr.Add(wxConvertMB2WX((*i).second.get_name().c_str())); // add the string for the dialog // FIXME wxString conversion problem FIXED
-		}
-		int classIndex = wxGetSingleChoiceIndex(_T("Please select a behaviour class"),_T("Select Behaviour"),aStr);
-		if(classIndex >= 0){
-			// lookup the index
-			classId = idLookup[classIndex]; // set the class id
-		} 	else {
-			// user cancelled // this is a quick fix for sourceforge bug #1730756
-			// throw exception
-			throw Resound::CreateBehaviourException();
-		}
-	*/
-	}
-
-
 	// first search for the class id
 	BehaviourClassFactoryMap::iterator i = m_classMap.find(classId);
 	if(i != m_classMap.end()) {

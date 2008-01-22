@@ -139,9 +139,9 @@ public:
 	/// construct with id,name and factory ptr
 	BehaviourClassFactory(BehaviourClassId classId, std::string classNiceName, BehaviourFactory factory);
 	/// return the class id
-	BehaviourClassId get_class_id();
-	std::string get_name();
-	BehaviourPtr create(); // create one of these class of behaviour
+	BehaviourClassId get_class_id() const;
+	std::string get_name() const;
+	BehaviourPtr create() const; // create one of these class of behaviour
 
 private:
 	BehaviourClassId m_classId; // a unique identifier for a behaviour class // see similar to vst plugin 4 char id
@@ -197,16 +197,18 @@ public:
 	/// register a behaviour class factory
 	void register_behaviour_class_factory(BehaviourClassFactory bClass);
 	/// create a behaviour but dont register it or set its unique id
-	BehaviourPtr create_behaviour_direct(BehaviourClassId classId); // TODO do we need this
+	//BehaviourPtr create_behaviour_direct(BehaviourClassId classId); // TODO do we need this
 	/// create a behaviour and manage it
-	/// if a class id is not specified this will pop up a selection dialog // TODO consider other options remove GUI from behaviour manager
+	/// if a class id is not specified this will pop up a selection dialog 
 	BehaviourPtr create_behaviour(BehaviourClassId classId = "");
 	
 	/// remove behaviours
 	void remove_behaviour(int id);
 
 	/// return the behaviour map
-	BehaviourMap& get_behaviour_map(){return m_behaviourMap;} //TODO consider a more secure way of doing this
+	const BehaviourMap& get_behaviour_map() const {return m_behaviourMap;}
+	/// return the behaviour class map
+	const BehaviourClassFactoryMap& get_behaviour_class_map() const {return m_classMap;}
 
 	virtual void dummy(){};
 private:
