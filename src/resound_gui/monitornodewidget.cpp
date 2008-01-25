@@ -94,7 +94,7 @@ void Resound::MonitorNodeWidget::OnLeftMouseMove(wxMouseEvent& event)
 		
 		int dY = event.GetY() - m_lastY;
 		m_lastY=event.GetY();
-		int lockValue = RESOUND_NAMESPACE()->get_parameter(GetAddress())->get_value() + dY;
+		int lockValue = RESOUND_NAMESPACE()->get_parameter(GetAddress())->get_value() - dY;
 		if(lockValue <= 127 & lockValue >= 0){
 			
 			RESOUND_NAMESPACE()->get_parameter(GetAddress())->lock(lockValue);
