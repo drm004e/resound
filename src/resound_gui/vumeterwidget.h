@@ -92,6 +92,11 @@ public:
 	void SetTarget(ParameterAddress addr);
 private:
 	ParameterLink target;
+
+	// events handled
+	void OnPaint(wxPaintEvent& event);
+	// event handling macro
+	DECLARE_EVENT_TABLE()
 };
 
 }

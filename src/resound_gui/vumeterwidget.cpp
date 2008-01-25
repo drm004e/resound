@@ -106,6 +106,11 @@ void Resound::VUMeterWidget::tick(float dT)
 	}
 }
 // --------------------------------- Parameter  vu meter ----------------------
+// event table
+BEGIN_EVENT_TABLE(Resound::ParameterVUMeterWidget, Resound::StaticVUMeterWidget)
+EVT_PAINT(Resound::ParameterVUMeterWidget::OnPaint)
+END_EVENT_TABLE()
+
 // class constructor
 Resound::ParameterVUMeterWidget::ParameterVUMeterWidget(wxWindow *parent,int id,int _val, int _min, int _max, wxString offFilename, wxString onFilename)
 		: StaticVUMeterWidget(parent, id,_val,_min,_max,offFilename,onFilename)
@@ -128,4 +133,25 @@ void Resound::ParameterVUMeterWidget::tick(float dT)
 void Resound::ParameterVUMeterWidget::SetTarget(ParameterAddress addr)
 {
 	target.set_target(addr);
+}
+
+// paint handling
+void Resound::ParameterVUMeterWidget::OnPaint(wxPaintEvent& event)
+{
+	wxPaintDC dc(this);
+
+	// range adjust for val
+	int y = RANGEMAP(val,min,max,0,sizeY);
+	y = CLAMP(y,0,sizeY);
+	// blit off portion // top bit
+	dc.Blit(wxPoint(0,0),wxSize(sizeX,sizeY - y),&dcMeterOff,wxPoint(0,0));
+	// blit on portion // bottom bit
+	dc.Blit(wxPoint(0,sizeY - y),wxSize(sizeX,y),&dcMeterOn,wxPoint(0,sizeY - y));
+	try{
+		if(target.get_parameter()->is_locked()){
+			dc.DrawRectangle(0,0,4,4);
+		}
+	} catch (ParameterAddressException& e) {
+		// the target us invalid
+	}
 }

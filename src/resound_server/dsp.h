@@ -23,19 +23,20 @@
 
 
 namespace Resound{
-// interpolation logarithmic and simple
-inline float DSPLogInterpolate(float &dest, const float &src, float factor = 0.95f)
+/// interpolation logarithmic and simple
+inline float dsp_log_interpolate(float &dest, const float &src, float factor = 0.95f)
 {
 	return dest = (factor * dest) + ((1.0f - factor) * src);
 }
 
-// Take an input buffer and sum it to and output buffer using the gain value specified
-inline void DSPSumToBuss(AudioBuffer* bufferIn, AudioBuffer* bufferOut, float factor, int bufferSize)
+/// Take an input buffer and sum it to and output buffer using the gain value specified
+/// asumes that interpSize <= bufferSize
+inline void dsp_sum_to_buss(AudioBuffer* bufferIn, AudioBuffer* bufferOut, float startGain, float endGain, int interpSize, int bufferSize)
 {
 	float* in = bufferIn->get_data_ptr();
 	float* out = bufferOut->get_data_ptr();
 
-	if(factor == 1.0f) // gain factor of 1
+	if(startGain == 1.0f && endGain == 1.0f) // optimised with gain factor of 1
 	{
 		while(--bufferSize >= 0)
 		{
@@ -44,7 +45,7 @@ inline void DSPSumToBuss(AudioBuffer* bufferIn, AudioBuffer* bufferOut, float fa
 			++in;
 		}
 	}
-	else if(factor == -1.0f) // gain factor of -1
+	else if(startGain == -1.0f && endGain == -1.0f) // optimised with gain factor of -1
 	{
 		while(--bufferSize >= 0)
 		{
@@ -53,18 +54,33 @@ inline void DSPSumToBuss(AudioBuffer* bufferIn, AudioBuffer* bufferOut, float fa
 			++in;
 		}
 	}
-	else if(factor == 0.0f) // dont sum
+	else if(startGain == 0.0f && endGain == 0.0f) // optimised for 0 values
 	{
-	} else {
+	} 
+	else if(startGain == endGain ) // no interpolation needed
+	{	
 		while(--bufferSize >= 0) {
-			*out += *in * factor;
+			*out += *in * startGain;
+			++out;
+			++in;
+		}
+	} 
+	else { // linear interpolate and sum
+		float f = (endGain - startGain)/interpSize;
+		for(int n = 0; n < interpSize; n++, --bufferSize){
+			*out += *in * (startGain + f * (float)n);
+			++out;
+			++in;
+		}// remainder of buffer
+		while(--bufferSize >= 0) {
+			*out += *in * endGain;
 			++out;
 			++in;
 		}
 	}
 };
 
-// clear a buffer of its contents
+/// clear a buffer of its contents
 inline void MemsetBuffer(AudioBuffer* bufferIn, float value, int bufferSize)
 {
 	float* buffer = bufferIn->get_data_ptr();

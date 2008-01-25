@@ -59,10 +59,10 @@ public:
 	int process(jack_nframes_t nframes);
 
 private:
-
+	static const int m_interpSize = 64;
 	AudioMatrix* m_audioMatrix; ///< the matrix of buffers
-	AttenuationMatrix m_nAttMatrix; ///< non interpolated attenuations
-	AttenuationMatrix m_iAttMatrix; ///< interpolated attenuations
+	AttenuationMatrix m_nAttMatrix; ///< new values for interpolation
+	AttenuationMatrix m_prevGainMatrix; ///< the last factor used to do DSPSumtoBuss
 
 	int m_numInputs; ///< number of inputs created
 	int m_numOutputs; ///< number of outputs created
