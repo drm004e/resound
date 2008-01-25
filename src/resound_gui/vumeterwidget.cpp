@@ -147,7 +147,7 @@ void Resound::ParameterVUMeterWidget::OnPaint(wxPaintEvent& event)
 	dc.Blit(wxPoint(0,0),wxSize(sizeX,sizeY - y),&dcMeterOff,wxPoint(0,0));
 	// blit on portion // bottom bit
 	dc.Blit(wxPoint(0,sizeY - y),wxSize(sizeX,y),&dcMeterOn,wxPoint(0,sizeY - y));
-	try{
+	try{ // This causes crash if the fader was assigned a parameter of a behaviour that's been deleted...
 		if(target.get_parameter()->is_locked()){
 			dc.DrawRectangle(0,0,4,4);
 		}
