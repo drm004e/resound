@@ -8,4 +8,6 @@ license_to_paste.txt: This is a copy of the GNU license to be pasted at the top 
 
 pdsendosctoresound.pd: This is a very basic patch for PD (extended) to generate test OSC messages and send them to Resound GUI.
 
+resound_saffire_pro_patch.sfpro: This is a preset for the Focusrite Saffire Pro 20 IO firewire audio interface suitable for use with Resound. Note that this file can only be loaded from the Saffire Pro application in WinXP.
+
 test.txt: As the name suggests, simply a test file!
