@@ -17,4 +17,6 @@ pdsendosctoresound.pd: This is a very basic patch for PD (extended) to generate 
 
 resound_saffire_pro_patch.sfpro: This is a preset for the Focusrite Saffire Pro 20 IO firewire audio interface suitable for use with Resound. Note that this file can only be loaded from the Saffire Pro application in WinXP.
 
+resound-svn-diagram-v0.1.n.svg: Diagram of svn development tree. Useful mainly around revisions 104 onwards, when trunk and 0.1.104 branch are being manually maintained. File can be edited using Inkscape.
+
 test.txt: As the name suggests, simply a test file!
