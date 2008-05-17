@@ -145,7 +145,8 @@ void Resound::PerformanceView::on_select_preset(wxCommandEvent& evt){
 	recall_from_preset(m_presetCombo->GetCurrentSelection());
 }
 void Resound::PerformanceView::on_store_preset(wxCommandEvent& evt){
-	store_to_preset(wxGetNumberFromUser(_("Enter preset number"),_("Preset"),_("Store Preset"),m_presetCombo->GetCurrentSelection(),0,Resound::MAX_PRESETS-1));
+	int p = wxGetNumberFromUser(_("Enter preset number"),_("Preset"),_("Store Preset"),m_presetCombo->GetCurrentSelection(),0,Resound::MAX_PRESETS-1);
+	if (p > -1) store_to_preset(p); // wxGetNumberFromUser returns -1 if the dialog is cancelled
 }
 void Resound::PerformanceView::on_key(wxKeyEvent& evt){
 
