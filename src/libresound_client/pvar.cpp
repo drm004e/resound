@@ -198,7 +198,12 @@ void Resound::ParameterLink::set_target(const ParameterAddress &addr){
 	// notify previous target and remove influence
 	set_value(0); // removes any influence
 	m_targetAddress = addr;
-	m_targetPtr = RESOUND_NAMESPACE()->get_parameter(m_targetAddress);
+	try{
+		m_targetPtr = RESOUND_NAMESPACE()->get_parameter(m_targetAddress);
+	} catch (ParameterAddressException e) {
+		std::cout << "a parameter link tried to set its target to a null addess defaulting to null pointer" << std::endl;
+		m_targetPtr = ParameterPtr();
+	}	
 	m_lastValue = 0; // set last value to 0
 	m_lastScaledValue = 0; // set last value to 0
 }
