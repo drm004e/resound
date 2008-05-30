@@ -115,6 +115,7 @@ Resound::BehaviourPtr Resound::BehaviourClassFactory::create() const
 
 BOOST_CLASS_EXPORT(Resound::BehaviourManager);
 
+Resound::BehaviourClassFactoryMap Resound::BehaviourManager::m_classMap; // implementation of static
 
 Resound::BehaviourManager::BehaviourManager() :
 ParameterNamespace("bm")
