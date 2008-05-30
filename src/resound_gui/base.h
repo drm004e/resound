@@ -59,8 +59,11 @@ public:
 	void OnSave(wxCommandEvent& event);
 	void OnLoad(wxCommandEvent& event);
 
-	// Tom trying to get to grips with using widgets events
+	// About box menu handler
 	void OnAbout(wxCommandEvent& event);
+
+	// force update menu handler
+	void OnForceUpdate(wxCommandEvent& event);
 
 	void RebuildGUI(); // force a gui rebuild
 private:
@@ -77,7 +80,8 @@ enum
     ID_MAINWIN_QUIT = wxID_HIGHEST+1,
     ID_MAINWIN_LOAD,
     ID_MAINWIN_SAVE,
-    ID_MAINWIN_ABOUT
+    ID_MAINWIN_ABOUT,
+    ID_MAINWIN_FORCE_UPDATE
 };
 
 

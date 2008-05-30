@@ -30,6 +30,7 @@ EVT_MENU(ID_MAINWIN_QUIT, MainFrame::OnQuit)
 EVT_MENU(ID_MAINWIN_LOAD, MainFrame::OnLoad)
 EVT_MENU(ID_MAINWIN_SAVE, MainFrame::OnSave)
 EVT_MENU(ID_MAINWIN_ABOUT, MainFrame::OnAbout)
+EVT_MENU(ID_MAINWIN_FORCE_UPDATE, MainFrame::OnForceUpdate)
 END_EVENT_TABLE()
 
 MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &size)
@@ -48,6 +49,7 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 	FileMenu->Append(ID_MAINWIN_QUIT, _T("&Quit"));
 	FileMenu->Append(ID_MAINWIN_LOAD, _T("&Load Performance"));
 	FileMenu->Append(ID_MAINWIN_SAVE, _T("&Save Performance"));
+	FileMenu->Append(ID_MAINWIN_FORCE_UPDATE, _T("&Force Server Update"));
 
 	MenuBar->Append(FileMenu, _T("&File"));
 
@@ -165,6 +167,10 @@ MA 02111-1307 USA\n\
 "__VERSION_STRING__), _T("About Resound"));
 }
 
+void MainFrame::OnForceUpdate(wxCommandEvent& event)
+{
+	RESOUND_NAMESPACE()->force_update();
+}
 
 void MainFrame::RebuildGUI()
 {
