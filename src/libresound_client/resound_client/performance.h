@@ -111,10 +111,12 @@ public:
 	ParameterNamespaceManagerPtr get_parameter_global_namespace(){return m_parameterNamespaceManager;}
 
 	PerformancePreset& get_preset(int index){return m_presetArray[index];}
+	/// call this to force an update of parameter status to the server
+	void force_update(){ m_parameterNamespaceManager->force_update(); }
 private:
 	PerformancePreset m_presetArray[MAX_PRESETS];
 	ParameterNamespaceManagerPtr m_parameterNamespaceManager;
-
+	
 	friend class boost::serialization::access; ///< allow serialization access at low level
 	/// serialization definition
 	template<class Archive>

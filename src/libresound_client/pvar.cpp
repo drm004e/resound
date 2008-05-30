@@ -142,6 +142,14 @@ void Resound::ParameterNamespaceManager::remove_parameter(std::string address){
 	std::cout << "Remove Parameter: " << address << std::endl;
 	ParameterLink::reacquire_all();
 }
+
+void Resound::ParameterNamespaceManager::force_update(){
+	ParameterAddressMap::iterator it = m_parameterAddressMap.begin();
+	for( ; it != m_parameterAddressMap.end(); ++it){
+		it->second->on_value_changed();
+	}
+	
+}
 // -------------------------------- Parameter link --------------------------------
 Resound::ParameterLink::ParameterLink() :
 m_lastValue(0),

@@ -234,6 +234,9 @@ public:
 
 	/// remove a given parameter at the global osc/url path specified
 	void remove_parameter(std::string address);
+
+	/// cause all registered parameters to update and thus push data to server etc.
+	void force_update();
 private:
 	ParameterNamespaceList m_parameterNamespaceList; ///< the namespace list
 	ParameterAddressMap m_parameterAddressMap; ///< the global address space

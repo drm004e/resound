@@ -92,6 +92,9 @@ void PerformanceManager::load_performance_xml(const std::string& filepath){
     // restore the schedule from the archive
     ia >> BOOST_SERIALIZATION_NVP(m_activePerformance);
 
+   // force a push of parameters to the server
+	m_activePerformance->force_update();
+
 }
 
 } // namespace Resound
