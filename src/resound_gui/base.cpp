@@ -23,6 +23,7 @@
 #include "base.h"
 #include "resound_client/resoundclient.h"
 #include "resound_client/basebehaviour.h"
+#include "../version_string.hpp"
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 EVT_MENU(ID_MAINWIN_QUIT, MainFrame::OnQuit)
@@ -160,8 +161,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston,\n\
 MA 02111-1307 USA\n\
 \nContributors:\n\
 \tDr D. Moore\n\
-\tDr J. Mooney\n\
-"), _T("About Resound"));
+\tDr J. Mooney\n\n\
+"__VERSION_STRING__), _T("About Resound"));
 }
 
 

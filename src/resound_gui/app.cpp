@@ -25,6 +25,7 @@
 
 #include "resound_client/resoundclient.h"
 #include "resound_common/verbose.h"
+#include "../version_string.hpp"
 
 #include "base.h"
 
@@ -43,6 +44,7 @@ bool ResoundClientApp::parse(int argc, char** argv){
 		("serverip,s", po::value<std::string>()->default_value("127.0.0.1"), "set the server osc ip address")
 		("serverport,p", po::value<std::string>()->default_value("4567"), "set the server osc port")
 		("verbose,v", "verbose output")
+		("version,V", "display version string")
 	;
 	
 	po::variables_map vm;
@@ -71,6 +73,10 @@ bool ResoundClientApp::parse(int argc, char** argv){
 	}
 	if(vm.count("verbose")) {
 		Resound::useVerbose = true;
+	}
+	if (vm.count("version")) {
+		std::cout << __VERSION_STRING__ << "\n";
+		return 1;
 	}
 	return 0;
 }

@@ -26,6 +26,7 @@
 #include "dsp_manager.h"
 #include <string>
 #include <resound_common/audio_math.h>
+#include "../version_string.hpp"
 
 Resound::DSPManager* s_dsp = 0;
 int inputs;
@@ -43,6 +44,7 @@ bool parse(int argc, char** argv){
 		("outputs,o", po::value<int>()->default_value(8), "set number of audio outputs")
 		("port,p", po::value<std::string>()->default_value("4567"), "set number OSC server port")
 		("verbose,v", "verbose output")
+		("version,V", "display version string")
 	;
 	
 	po::variables_map vm;
@@ -69,6 +71,11 @@ bool parse(int argc, char** argv){
 	
 	if(vm.count("verbose")) {
 		Resound::useVerbose = true;
+	}
+	
+	if (vm.count("version")) {
+		std::cout << __VERSION_STRING__ << "\n";
+		return 1;
 	}
 
 	return 0;

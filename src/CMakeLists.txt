@@ -21,6 +21,8 @@
 
 project(RESOUND)
 
+EXEC_PROGRAM(./create_version_string_header.sh)
+
 # resound_common
 add_subdirectory(resound_common)
 # resound_server
