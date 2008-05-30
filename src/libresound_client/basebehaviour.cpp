@@ -106,6 +106,9 @@ void Resound::BWave::tick(float dT)
 
 	// calculate wave function
 	angle += dT * freq;
+	while(angle > TWOPI) angle -= TWOPI;
+	while(angle < -TWOPI) angle += TWOPI;
+
 	float s = sinf(angle) * amp;
 	int val = (int)(s * 128.0f);
 
@@ -147,6 +150,8 @@ void Resound::BMexicanWave::tick(float dT)
 
 	// calculate wave function
 	angle += dT * freq;
+	while(angle > TWOPI) angle -= TWOPI;
+	while(angle < -TWOPI) angle += TWOPI;
 
 	// apply to collective.Set(n)
 	for(int n = 0; n < rCol.get_num_elements(); n++) {
