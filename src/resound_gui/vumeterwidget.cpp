@@ -149,7 +149,7 @@ void Resound::ParameterVUMeterWidget::OnPaint(wxPaintEvent& event)
 	// blit on portion // bottom bit
 	dc.Blit(wxPoint(0,sizeY - y),wxSize(sizeX,y),&dcMeterOn,wxPoint(0,sizeY - y));
 	try{
-		if(target.get_parameter()->is_locked()){
+		if(target.get_parameter() && target.get_parameter()->is_locked()){
 			dc.DrawRectangle(0,0,4,4);
 		}
 	} catch (ParameterAddressException& e) {
