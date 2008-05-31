@@ -22,13 +22,58 @@
 // ----------------------------------------- Registration function -----------
 void Resound::register_base_behaviours(BehaviourManager* theManager)
 {
+	theManager->register_behaviour_class_factory(BehaviourClassFactory("phsr", "Phasor", BPhasor::Factory));
 	theManager->register_behaviour_class_factory(BehaviourClassFactory("mpcr", "Multipoint Crossfade", BMultiCrossfade::Factory));
 	theManager->register_behaviour_class_factory(BehaviourClassFactory("wave", "Sinusoidal Wave", BWave::Factory));
 	theManager->register_behaviour_class_factory(BehaviourClassFactory("mwve", "Mexican Wave", BMexicanWave::Factory));
 	theManager->register_behaviour_class_factory(BehaviourClassFactory("rand", "Random", BRandom::Factory));
 }
 
+// ---------------------------------------- BPhasor ------------------
 
+BOOST_CLASS_EXPORT(Resound::BPhasor);
+
+// class constructor
+Resound::BPhasor::BPhasor(std::string name) :
+Resound::Behaviour(name),
+m_amp(new BehaviourParameter("amp", this)),
+m_freq(new BehaviourParameter("freq", this)),
+m_phase(new BehaviourParameter("phase", this))
+{
+	register_parameter(m_amp);
+	register_parameter(m_freq);
+	register_parameter(m_phase);
+}
+
+// class destructor
+Resound::BPhasor::~BPhasor()
+{
+	// insert your code here
+}
+
+void Resound::BPhasor::on_parameter_changed(){
+	// get pvars and range adjust
+	//float amp = (float)m_amp->get_value() * (1.0f/128.0f);
+	//float pos = (float)m_pos->get_value() * (1.0f/128.0f) * TWOPI;
+
+	// get the target collective
+	//Collective& rCol = get_collective();
+	//float offset = TWOPI / (float)rCol.get_num_elements();
+
+	// calculate wave function
+	//float angle = -pos;
+
+	// apply to collective.Set(n)
+	//for(int n = 0; n < rCol.get_num_elements(); n++) {
+	//	float s = cosf(angle + (offset*n)) * amp;
+	//	int val = (int)(s * 128.0f);
+	//	rCol[n].set_value(val);
+	//}
+}
+
+void Resound::BPhasor::tick(float dT)
+{
+}
 // ---------------------------------------- Multicrossfade ------------------
 
 BOOST_CLASS_EXPORT(Resound::BMultiCrossfade);
@@ -37,10 +82,12 @@ BOOST_CLASS_EXPORT(Resound::BMultiCrossfade);
 Resound::BMultiCrossfade::BMultiCrossfade(std::string name) :
 Resound::Behaviour(name),
 m_amp(new BehaviourParameter("amp", this)),
-m_pos(new BehaviourParameter("pos", this))
+m_pos(new BehaviourParameter("pos", this)),
+m_offset(new BehaviourParameter("offset", this))
 {
 	register_parameter(m_amp);
 	register_parameter(m_pos);
+	register_parameter(m_offset);
 	// this 
 }
 
@@ -54,18 +101,18 @@ void Resound::BMultiCrossfade::on_parameter_changed(){
 	// get pvars and range adjust
 	float amp = (float)m_amp->get_value() * (1.0f/128.0f);
 	float pos = (float)m_pos->get_value() * (1.0f/128.0f) * TWOPI;
-
+	float offset = (float)m_offset->get_value();
 	// get the target collective
 	Collective& rCol = get_collective();
-	float offset = TWOPI / (float)rCol.get_num_elements();
+	float phaseOffset = TWOPI / (float)rCol.get_num_elements();
 
 	// calculate wave function
 	float angle = -pos;
 
 	// apply to collective.Set(n)
 	for(int n = 0; n < rCol.get_num_elements(); n++) {
-		float s = cosf(angle + (offset*n)) * amp;
-		int val = (int)(s * 128.0f);
+		float s = cosf(angle + (phaseOffset*n)) * amp;
+		int val = (int)((s * 128.0f) + offset);
 		rCol[n].set_value(val);
 	}
 }
@@ -77,11 +124,14 @@ BOOST_CLASS_EXPORT(Resound::BWave);
 Resound::BWave::BWave(std::string name) :
 Resound::Behaviour(name),
 m_amp(new BehaviourParameter("amp", this)),
-m_freq(new BehaviourParameter("freq", this))
+m_freq(new BehaviourParameter("freq", this)),
+//m_phase(new BehaviourParameter("phase", this)),
+m_offset(new BehaviourParameter("offset", this))
 {
 	register_parameter(m_amp);
 	register_parameter(m_freq);
-
+	//register_parameter(m_phase);
+	register_parameter(m_offset);
 	// init
 	angle = 0;
 	/* TODO (dave#1#): angles have the potential to go behond float range over time
@@ -100,6 +150,7 @@ void Resound::BWave::tick(float dT)
 	// get pvars and range adjust
 	float amp = (float)m_amp->get_value() * (1.0f/128.0f);
 	float freq = (float)m_freq->get_value() * (1.0f/128.0f) * 50.0f;
+	float offset = (float)m_offset->get_value();
 
 	// get the target collective
 	Collective& rCol = get_collective();
@@ -110,7 +161,7 @@ void Resound::BWave::tick(float dT)
 	while(angle < -TWOPI) angle += TWOPI;
 
 	float s = sinf(angle) * amp;
-	int val = (int)(s * 128.0f);
+	int val = (int)((s * 128.0f) + offset);
 
 	// apply to collective
 	// this will apply to all elements and links
@@ -124,10 +175,14 @@ BOOST_CLASS_EXPORT(Resound::BMexicanWave);
 Resound::BMexicanWave::BMexicanWave(std::string name) :
 Resound::Behaviour(name),
 m_amp(new BehaviourParameter("amp", this)),
-m_freq(new BehaviourParameter("freq", this))
+m_freq(new BehaviourParameter("freq", this)),
+//m_phase(new BehaviourParameter("phase", this)),
+m_offset(new BehaviourParameter("offset", this))
 {
 	register_parameter(m_amp);
 	register_parameter(m_freq);
+//	register_parameter(m_phase);
+	register_parameter(m_offset);
 
 	// init
 	angle = 0;
@@ -142,11 +197,12 @@ void Resound::BMexicanWave::tick(float dT)
 	// get pvars and range adjust
 	float amp = (float)m_amp->get_value() * (1.0f/128.0f);
 	float freq = (float)m_freq->get_value() * (1.0f/128.0f) * 100.0f - 50.0f;
+	float offset = (float)m_offset->get_value();
 
 	// get the target collective
 	Collective& rCol = get_collective();
 
-	float offset = TWOPI / (float)rCol.get_num_elements();
+	float phaseOffset = TWOPI / (float)rCol.get_num_elements();
 
 	// calculate wave function
 	angle += dT * freq;
@@ -155,8 +211,8 @@ void Resound::BMexicanWave::tick(float dT)
 
 	// apply to collective.Set(n)
 	for(int n = 0; n < rCol.get_num_elements(); n++) {
-		float s = sinf(angle + (offset*n)) * amp;
-		int val = (int)(s * 128.0f);
+		float s = sinf(angle + (phaseOffset*n)) * amp;
+		int val = (int)((s * 128.0f) + offset);
 		rCol[n].set_value(val);
 	}
 }

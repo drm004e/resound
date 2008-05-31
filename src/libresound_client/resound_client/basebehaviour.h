@@ -31,6 +31,39 @@ namespace Resound
 // function to register the behaviours in this file
 void register_base_behaviours(BehaviourManager* theManager);
 
+// phasor a simple positive phoasor with amplitude and frequency
+class BPhasor : public Behaviour, public AutomatedObject
+{
+public:
+	static BehaviourPtr Factory()
+	{
+		return BehaviourPtr(new BPhasor("mp_phasor"));
+	};
+	// class constructor
+	BPhasor(){}
+	BPhasor(std::string name);
+	// class destructor
+	~BPhasor();
+
+	void on_parameter_changed();
+	virtual void tick(float dT);
+private:
+	ParameterPtr m_amp;
+	ParameterPtr m_freq;
+	ParameterPtr m_phase;
+	float m_angle;
+	friend class boost::serialization::access; ///< allow serialization access at low level
+	/// serialization definition
+	template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+	ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(Behaviour);
+        ar & BOOST_SERIALIZATION_NVP(m_amp);
+	ar & BOOST_SERIALIZATION_NVP(m_freq);
+    	ar & BOOST_SERIALIZATION_NVP(m_phase);
+	}
+};
+
 // multi cross fade
 // uses first set of collective
 class BMultiCrossfade : public Behaviour
@@ -50,6 +83,7 @@ public:
 private:
 	ParameterPtr m_amp;
 	ParameterPtr m_pos;
+	ParameterPtr m_offset;
 	friend class boost::serialization::access; ///< allow serialization access at low level
 	/// serialization definition
 	template<class Archive>
@@ -58,6 +92,7 @@ private:
 	ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(Behaviour);
         ar & BOOST_SERIALIZATION_NVP(m_amp);
     	ar & BOOST_SERIALIZATION_NVP(m_pos);
+	ar & BOOST_SERIALIZATION_NVP(m_offset);
 	}
 };
 
@@ -82,7 +117,8 @@ private:
 	float angle;
 	ParameterPtr m_amp;
 	ParameterPtr m_freq;
-
+	ParameterPtr m_phase;
+	ParameterPtr m_offset;
 	friend class boost::serialization::access; ///< allow serialization access at low level
 	/// serialization definition
 	template<class Archive>
@@ -91,6 +127,8 @@ private:
 	ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(Behaviour);
         ar & BOOST_SERIALIZATION_NVP(m_amp);
     	ar & BOOST_SERIALIZATION_NVP(m_freq);
+	ar & BOOST_SERIALIZATION_NVP(m_phase);
+	ar & BOOST_SERIALIZATION_NVP(m_offset);
 	}
 };
 
@@ -115,6 +153,8 @@ private:
 	float angle;
 	ParameterPtr m_amp;
 	ParameterPtr m_freq;
+	ParameterPtr m_phase;
+	ParameterPtr m_offset;
 
 	friend class boost::serialization::access; ///< allow serialization access at low level
 	/// serialization definition
@@ -124,6 +164,8 @@ private:
 	ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(Behaviour);
         ar & BOOST_SERIALIZATION_NVP(m_amp);
     	ar & BOOST_SERIALIZATION_NVP(m_freq);
+	ar & BOOST_SERIALIZATION_NVP(m_phase);
+	ar & BOOST_SERIALIZATION_NVP(m_offset);
 	}
 };
 
