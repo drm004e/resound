@@ -58,7 +58,7 @@ void Resound::BPhasor::tick(float dT)
 {
 	// get pvars and range adjust
 	float amp = (float)m_amp->get_value() * (1.0f/128.0f);
-	float freq = (float)m_freq->get_value() * (1.0f/128.0f) * 1.0f;
+	float freq = (float)m_freq->get_value() * (1.0f/128.0f) * 32.0f - 16.0;
 	//std::cout << "B DT "<< dT << std::endl;
 	// get the target collective
 	Collective& rCol = get_collective();
@@ -125,13 +125,6 @@ m_offset(new BehaviourParameter("offset", this))
 	register_parameter(m_freq);
 	//register_parameter(m_phase);
 	register_parameter(m_offset);
-	// init
-	angle = 0;
-	/* TODO (dave#1#): angles have the potential to go behond float range over time
-	may need better solution - this applies to all behaviours
-	possible sollutions are to table lookup the sin wave and use bitwise & to cycle
-	or a simple if statement garanteing range
-	personnaly I would prefer the table lookup*/
 }
 // class destructor
 Resound::BWave::~BWave()
@@ -142,18 +135,16 @@ void Resound::BWave::tick(float dT)
 {
 	// get pvars and range adjust
 	float amp = (float)m_amp->get_value() * (1.0f/128.0f);
-	float freq = (float)m_freq->get_value() * (1.0f/128.0f) * 1.0f;
+	float freq = (float)m_freq->get_value() * (1.0f/128.0f) * 32.0f - 16.0;
 	float offset = (float)m_offset->get_value();
 
 	// get the target collective
 	Collective& rCol = get_collective();
 
-	// calculate wave function
-	angle += dT * freq;
-	while(angle > TWOPI) angle -= TWOPI;
-	while(angle < -TWOPI) angle += TWOPI;
+	m_phasor.set_freq(freq);
+	m_phasor.tick(dT);
 
-	float s = sinf(angle) * amp;
+	float s = sinf(m_phasor.get_value() * TWOPI) * amp;
 	int val = (int)((s * 128.0f) + offset);
 
 	// apply to collective
@@ -177,8 +168,6 @@ m_offset(new BehaviourParameter("offset", this))
 //	register_parameter(m_phase);
 	register_parameter(m_offset);
 
-	// init
-	angle = 0;
 }
 // class destructor
 Resound::BMexicanWave::~BMexicanWave()
@@ -189,7 +178,7 @@ void Resound::BMexicanWave::tick(float dT)
 {
 	// get pvars and range adjust
 	float amp = (float)m_amp->get_value() * (1.0f/128.0f);
-	float freq = (float)m_freq->get_value() * (1.0f/128.0f) * 100.0f - 50.0f;
+	float freq = (float)m_freq->get_value() * (1.0f/128.0f) * 32.0f - 16.0;
 	float offset = (float)m_offset->get_value();
 
 	// get the target collective
@@ -197,14 +186,12 @@ void Resound::BMexicanWave::tick(float dT)
 
 	float phaseOffset = TWOPI / (float)rCol.get_num_elements();
 
-	// calculate wave function
-	angle += dT * freq;
-	while(angle > TWOPI) angle -= TWOPI;
-	while(angle < -TWOPI) angle += TWOPI;
+	m_phasor.set_freq(freq);
+	m_phasor.tick(dT);
 
 	// apply to collective.Set(n)
 	for(int n = 0; n < rCol.get_num_elements(); n++) {
-		float s = sinf(angle + (phaseOffset*n)) * amp;
+		float s = sinf((m_phasor.get_value() * TWOPI) + (phaseOffset*n)) * amp;
 		int val = (int)((s * 128.0f) + offset);
 		rCol[n].set_value(val);
 	}
@@ -233,7 +220,7 @@ void Resound::BRandom::tick(float dT)
 {
 	// get pvars and range adjust
 	float amp = (float)m_amp->get_value() * (1.0f/128.0f);
-	float freq = (float)m_freq->get_value() * (1.0f/128.0f) * 100.0f - 50.0f;
+	float freq = (float)m_freq->get_value() * (1.0f/128.0f) * 32.0f - 16.0;
 
 	// get the target collective
 	Collective& rCol = get_collective();

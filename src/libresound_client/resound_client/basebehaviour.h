@@ -144,7 +144,7 @@ public:
 	virtual void tick(float dT);
 
 private:
-	float angle;
+	Phasor m_phasor;
 	ParameterPtr m_amp;
 	ParameterPtr m_freq;
 	ParameterPtr m_phase;
@@ -180,7 +180,7 @@ public:
 	virtual void tick(float dT);
 
 private:
-	float angle;
+	Phasor m_phasor;
 	ParameterPtr m_amp;
 	ParameterPtr m_freq;
 	ParameterPtr m_phase;
