@@ -9,7 +9,7 @@ sleep 5
 sleep 5
 
 # Run resound server with 24 I/O
-resound_server -i8 -o24 -v &
+resound_server -i8 -o24 &
 sleep 10
 
 # Make jack input connections
