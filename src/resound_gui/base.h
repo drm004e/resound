@@ -30,21 +30,28 @@
 #include "behaviourview.h"
 
 class AutomationDriver : public wxTimer{
+	int m_startTSec;
 	double prevT;
 public:
-	AutomationDriver(): prevT(gettime()){}
+	AutomationDriver(){
+		timeval tv;
+		gettimeofday(&tv, 0 );
+		m_startTSec = tv.tv_sec;
+		prevT = 0.0;
+	}
 	void Notify(){
 #ifdef USE_MIDI
 		MManager::get_instance().tick();
 #endif
-		double t = gettime();
-		Resound::AutomationManager::get_instance().tick(t-prevT); 
-		prevT = t;
-	}
-	double gettime(){		
 		timeval tv;
 		gettimeofday(&tv, 0 );
-		return double(tv.tv_sec) + double(tv.tv_usec) / 1000000.;
+		int tSec = tv.tv_sec - m_startTSec;
+		double tFrac = double(tv.tv_usec) / 1000000.;
+		double t = double(tSec) + tFrac;
+		double dT = t - prevT;
+		//std::cout << t << "" << dT << std::endl;
+		Resound::AutomationManager::get_instance().tick(dT); 
+		prevT = t;
 	}
 };
 

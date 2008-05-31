@@ -42,7 +42,7 @@ public:
 	void tick(float dT) {
 		// increment by the dT * freq
 		// check bounds
-		m_phase += dT * m_freq;
+		m_phase += dT * m_freq * TWOPI;
 		while(m_phase > TWOPI){m_phase -= TWOPI;}
 		while(m_phase < 0){m_phase += TWOPI;}
 	}	

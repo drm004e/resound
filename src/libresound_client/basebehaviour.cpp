@@ -19,6 +19,7 @@
 
 #include "resound_client/basebehaviour.h"
 #include "resound_client/pch.h"
+#include <iostream>
 // ----------------------------------------- Registration function -----------
 void Resound::register_base_behaviours(BehaviourManager* theManager)
 {
@@ -57,8 +58,8 @@ void Resound::BPhasor::tick(float dT)
 {
 	// get pvars and range adjust
 	float amp = (float)m_amp->get_value() * (1.0f/128.0f);
-	float freq = (float)m_freq->get_value() * (1.0f/128.0f) * 4.0f;
-
+	float freq = (float)m_freq->get_value() * (1.0f/128.0f) * 1.0f;
+	//std::cout << "B DT "<< dT << std::endl;
 	// get the target collective
 	Collective& rCol = get_collective();
 	m_phasor.set_freq(freq);
@@ -141,7 +142,7 @@ void Resound::BWave::tick(float dT)
 {
 	// get pvars and range adjust
 	float amp = (float)m_amp->get_value() * (1.0f/128.0f);
-	float freq = (float)m_freq->get_value() * (1.0f/128.0f) * 50.0f;
+	float freq = (float)m_freq->get_value() * (1.0f/128.0f) * 1.0f;
 	float offset = (float)m_offset->get_value();
 
 	// get the target collective
