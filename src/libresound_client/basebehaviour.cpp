@@ -37,12 +37,10 @@ BOOST_CLASS_EXPORT(Resound::BPhasor);
 Resound::BPhasor::BPhasor(std::string name) :
 Resound::Behaviour(name),
 m_amp(new BehaviourParameter("amp", this)),
-m_freq(new BehaviourParameter("freq", this)),
-m_phase(new BehaviourParameter("phase", this))
+m_freq(new BehaviourParameter("freq", this))
 {
 	register_parameter(m_amp);
 	register_parameter(m_freq);
-	register_parameter(m_phase);
 }
 
 // class destructor
@@ -52,27 +50,21 @@ Resound::BPhasor::~BPhasor()
 }
 
 void Resound::BPhasor::on_parameter_changed(){
-	// get pvars and range adjust
-	//float amp = (float)m_amp->get_value() * (1.0f/128.0f);
-	//float pos = (float)m_pos->get_value() * (1.0f/128.0f) * TWOPI;
 
-	// get the target collective
-	//Collective& rCol = get_collective();
-	//float offset = TWOPI / (float)rCol.get_num_elements();
-
-	// calculate wave function
-	//float angle = -pos;
-
-	// apply to collective.Set(n)
-	//for(int n = 0; n < rCol.get_num_elements(); n++) {
-	//	float s = cosf(angle + (offset*n)) * amp;
-	//	int val = (int)(s * 128.0f);
-	//	rCol[n].set_value(val);
-	//}
 }
 
 void Resound::BPhasor::tick(float dT)
 {
+	// get pvars and range adjust
+	float amp = (float)m_amp->get_value() * (1.0f/128.0f);
+	float freq = (float)m_freq->get_value() * (1.0f/128.0f) * 4.0f;
+
+	// get the target collective
+	Collective& rCol = get_collective();
+	m_phasor.set_freq(freq);
+	m_phasor.tick(dT);
+	// apply to collective.Set(n)
+	rCol.set_value(int(m_phasor.get_value() * 128.0f * amp));
 }
 // ---------------------------------------- Multicrossfade ------------------
 

@@ -23,7 +23,7 @@
 
 #include "behaviour.h"
 #include "automation.h"
-
+#include "pch.h"
 // A selection of basic beahviours
 namespace Resound
 {
@@ -31,9 +31,41 @@ namespace Resound
 // function to register the behaviours in this file
 void register_base_behaviours(BehaviourManager* theManager);
 
+/// this is a helper phasor class used by other behaviours for cyclic stuff
+class Phasor{
+private:
+	float m_freq;
+	float m_phase;
+public:
+	Phasor(){ m_freq = 1.0f; m_phase = 0.0f;}
+	/// increment the phasor phase by dT seconds
+	void tick(float dT) {
+		// increment by the dT * freq
+		// check bounds
+		m_phase += dT * m_freq;
+		while(m_phase > TWOPI){m_phase -= TWOPI;}
+		while(m_phase < 0){m_phase += TWOPI;}
+	}	
+	/// set the frequecy of the phasor
+	void set_freq(float v) { m_freq = v; }
+	/// return the current frequency	
+	float get_freq() { return m_freq; }
+	/// set the phase ie. the position between 0 - 2PI
+	void set_phase(float v) { m_phase = fmod(v,TWOPI); }
+	/// get the phase position 0 - 2PI
+	float get_phase() { return m_phase; }
+	/// get the value of the phasor at its current phase
+	float get_value() {
+		return m_phase * 1.0f/TWOPI;
+	}
+};
+
+
 // phasor a simple positive phoasor with amplitude and frequency
 class BPhasor : public Behaviour, public AutomatedObject
 {
+private:
+	Phasor m_phasor;
 public:
 	static BehaviourPtr Factory()
 	{
@@ -50,8 +82,7 @@ public:
 private:
 	ParameterPtr m_amp;
 	ParameterPtr m_freq;
-	ParameterPtr m_phase;
-	float m_angle;
+
 	friend class boost::serialization::access; ///< allow serialization access at low level
 	/// serialization definition
 	template<class Archive>
@@ -60,7 +91,6 @@ private:
 	ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(Behaviour);
         ar & BOOST_SERIALIZATION_NVP(m_amp);
 	ar & BOOST_SERIALIZATION_NVP(m_freq);
-    	ar & BOOST_SERIALIZATION_NVP(m_phase);
 	}
 };
 
