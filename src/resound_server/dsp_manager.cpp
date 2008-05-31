@@ -130,7 +130,7 @@ int Resound::DSPManager::process(jack_nframes_t nframes)
 
 
 	globalAtt = m_nAttMatrix.Index(0,0); // get global gain factor
-	if(globalAtt != 0.0f) {
+	//if(globalAtt != 0.0f) {
 		for(iOut = 1; iOut < maxOuts; iOut++) {
 			outputBuffer = new AudioBuffer((AudioSample*)jack_port_get_buffer(m_outputs[iOut-1],nframes),nframes); // we get this one encapsulating the jack port
 			// Clear output buffers ready for summing
@@ -157,7 +157,7 @@ int Resound::DSPManager::process(jack_nframes_t nframes)
 			delete outputBuffer;
 
 		} // outputs
-	}//*/
+	//}//*/
 
 	// compute vu's
 	float rms,peak;
