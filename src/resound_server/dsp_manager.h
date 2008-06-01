@@ -51,7 +51,7 @@ class DSPManager : public OSCManager
 {
 public:
 	/// construct
-	DSPManager(const std::string& name, int inputs, int outputs, const char* port);
+	DSPManager(const std::string& name, int inputs, int outputs, const char* port, bool autoConnect);
 	/// detruct 
 	virtual ~DSPManager(); 
 

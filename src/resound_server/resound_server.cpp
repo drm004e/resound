@@ -32,7 +32,7 @@ Resound::DSPManager* s_dsp = 0;
 int inputs;
 int outputs;
 std::string port;
-
+bool autoConnect = false;
 /// command line options
 bool parse(int argc, char** argv){
 	namespace po = boost::program_options;
@@ -45,6 +45,7 @@ bool parse(int argc, char** argv){
 		("port,p", po::value<std::string>()->default_value("4567"), "set number OSC server port")
 		("verbose,v", "verbose output")
 		("version,V", "display version string")
+		("auto_connect,a", "automatically connect to jack system capture and playback ports")
 	;
 	
 	po::variables_map vm;
@@ -54,6 +55,9 @@ bool parse(int argc, char** argv){
 	if (vm.count("help")) {
 		std::cout << desc << "\n";
 		return 1;
+	}
+	if(vm.count("auto_connect")) {
+		autoConnect = true;
 	}
 
 	if (vm.count("inputs")) {
@@ -97,7 +101,7 @@ int main(int argc, char** argv){
 	// parse command line
 	if(parse(argc,argv)) return 1;
 	// init the dsp manager
-	s_dsp = new Resound::DSPManager("Resound",inputs,outputs,port.c_str());
+	s_dsp = new Resound::DSPManager("Resound",inputs,outputs,port.c_str(),autoConnect);
 	// run for ever
 	return run();
 }

@@ -30,7 +30,7 @@
 
 #include <resound_common/verbose.h>
 
-Resound::DSPManager::DSPManager(const std::string& name, int inputs, int outputs, const char* port) :
+Resound::DSPManager::DSPManager(const std::string& name, int inputs, int outputs, const char* port, bool autoConnect) :
 m_name(name),
 m_numInputs(inputs),
 m_numOutputs(outputs),
@@ -52,11 +52,26 @@ OSCManager(port)
 		std::stringstream s;
 		s << "Input" << n;
 		m_inputs.push_back(jack_port_register(m_jc,s.str().c_str(),JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput,0));
+		if(autoConnect){
+			// auto connection
+			std::stringstream name1, name2;
+			name1 << "system:capture_" << n+1;		
+			name2 << "Resound:Input" << n;		
+			jack_connect(m_jc,name1.str().c_str(),name2.str().c_str());
+		}
 	}
 	for(int n = 0; n < m_numOutputs; n++){
 		std::stringstream s;
 		s << "Output" << n;
 		m_outputs.push_back(jack_port_register(m_jc,s.str().c_str(),JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput,0));
+
+		if(autoConnect){
+			// auto connection
+			std::stringstream name1, name2;	
+			name1 << "Resound:Output" << n;
+			name2 << "system:playback_" << n+1;	
+			jack_connect(m_jc,name1.str().c_str(),name2.str().c_str());
+		}
 	}
 
 	// register callbacks
