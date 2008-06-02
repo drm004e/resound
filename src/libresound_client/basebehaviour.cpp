@@ -205,10 +205,13 @@ BOOST_CLASS_EXPORT(Resound::BRandom);
 Resound::BRandom::BRandom(std::string name) :
 Resound::Behaviour(name),
 m_amp(new BehaviourParameter("amp", this)),
-m_freq(new BehaviourParameter("freq", this))
+m_freq(new BehaviourParameter("freq", this)),
+m_offset(new BehaviourParameter("offset", this))
 {
 	register_parameter(m_amp);
 	register_parameter(m_freq);
+	register_parameter(m_offset);
+	m_edgeTrigger = true;
 }
 
 // class destructor
@@ -221,14 +224,22 @@ void Resound::BRandom::tick(float dT)
 	// get pvars and range adjust
 	float amp = (float)m_amp->get_value() * (1.0f/128.0f);
 	float freq = (float)m_freq->get_value() * (1.0f/128.0f) * 32.0f - 16.0;
+	float offset = (float)m_offset->get_value();
 
 	// get the target collective
 	Collective& rCol = get_collective();
 
-	// apply to collective
-	for(int r = 0; r < rCol.get_num_elements(); r++) {
-		int val = (int)((float)((rand() % 256) - 128) * amp);
-		rCol[r].set_value(val);
-	}
+	m_phasor.set_freq(freq);
+	m_phasor.tick(dT);
 
+	// apply to collective
+	if(m_phasor.get_value() <= 0.5 && m_edgeTrigger){
+		m_edgeTrigger = false;
+		for(int r = 0; r < rCol.get_num_elements(); r++) {
+			int val = (int)((float)((rand() % 256) - 128) * amp);
+			rCol[r].set_value(val + offset);
+		}
+	} else if(m_phasor.get_value() > 0.5) {
+		m_edgeTrigger = true;
+	}
 }

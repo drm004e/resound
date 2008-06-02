@@ -204,6 +204,7 @@ class BRandom : public Behaviour, public AutomatedObject
 {
 	ParameterPtr m_amp;
 	ParameterPtr m_freq;
+	ParameterPtr m_offset;
 public:
 	static BehaviourPtr Factory()
 	{
@@ -219,6 +220,8 @@ public:
 	virtual void tick(float dT);
 
 private:
+	Phasor m_phasor;
+	bool m_edgeTrigger;
 
 	friend class boost::serialization::access; ///< allow serialization access at low level
 	/// serialization definition
@@ -226,6 +229,9 @@ private:
     void serialize(Archive & ar, const unsigned int version)
     {
 	ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(Behaviour);
+        ar & BOOST_SERIALIZATION_NVP(m_amp);
+    	ar & BOOST_SERIALIZATION_NVP(m_freq);
+	ar & BOOST_SERIALIZATION_NVP(m_offset);
         }
 
 };
