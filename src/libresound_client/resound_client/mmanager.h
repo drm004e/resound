@@ -22,6 +22,7 @@
 #define __MManager__
 
 #include <vector>
+#include <string>
 
 typedef unsigned char MIDI_BYTE;
 typedef long MIDI_TIME_STAMP;
