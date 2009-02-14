@@ -2,4 +2,6 @@ testing minor edit to test file
 
 hello
 
+some git testing 
+
 goodbye
